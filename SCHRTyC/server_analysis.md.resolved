@@ -1,0 +1,53 @@
+# Informe Técnico: Análisis de Infraestructura SCHRTyC
+
+Este documento detalla la información recopilada sobre el entorno de alojamiento actual del Sistema Chiapaneco de Radio, Televisión y Cinematografía (SCHRTyC) para planificar la migración/despliegue del nuevo gestor web y el portal institucional.
+
+## 📊 Datos del Servidor (Basado en Análisis Externo)
+
+| Parámetro | Detalle |
+| :--- | :--- |
+| **URL Oficial** | [radiotvycine.chiapas.gob.mx](http://radiotvycine.chiapas.gob.mx/) |
+| **Dirección IP** | `187.217.208.18` |
+| **Proveedor (ISP)** | Uninet (Telmex / América Móvil) |
+| **Servidor Web** | Apache |
+| **Ubicación Física** | Tapachula / Tuxtla Gutiérrez, Chiapas, MX |
+
+---
+
+## 🛠️ Diagnóstico Tecnológico
+
+### 1. Sistema Operativo Probable
+Debido al uso de **Apache** en una red institucional de este tipo, el servidor corre casi con total seguridad sobre una distribución de **Linux**. Las opciones más comunes en el sector gubernamental son:
+*   **CentOS / Rocky Linux** (Estándar de estabilidad)
+*   **Red Hat Enterprise Linux** (Soporte corporativo)
+*   **Debian / Ubuntu Server** (Versatilidad)
+
+### 2. Arquitectura de Hardware
+Dado que el servidor fue renovado después del año 2006 (según información del usuario) y está integrado en una red empresarial de Uninet:
+*   **Arquitectura:** x86_64 (64 bits) garantizada.
+*   **Compatibilidad con Docker:** Alta. Los kernels de Linux modernos y las CPUs de 64 bits son el entorno nativo de Docker.
+
+### 3. Rendimiento y Carga
+Al ser un servidor físico dedicado (on-premise) conectado a una línea empresarial:
+*   **Capacidad:** Superior a un hosting compartido tradicional.
+*   **Escalabilidad:** Se recomienda el uso de contenedores para aprovechar mejor los recursos de CPU y RAM sin conflictos de dependencias.
+
+---
+
+## 🚀 Recomendaciones de Despliegue
+
+### Estrategia Sugerida: **Docker Compose**
+Para minimizar riesgos de incompatibilidad con el "servidor viejo", se propone empaquetar la solución en 3 contenedores:
+
+1.  **Container API (Backend):** Node.js 20+ (Express).
+2.  **Container Admin (Frontend):** Nginx sirviendo el build de Vite del Gestor.
+3.  **Container Web (Público):** Nginx sirviendo el build de Vite de la web de SCHRTyC.
+
+### Ventajas:
+*   **Portabilidad:** Si el servidor físico falla mañana, puedes mover los contenedores a cualquier otro servidor en minutos.
+*   **Seguridad:** Aislamiento total entre las aplicaciones y el sistema operativo base del servidor.
+*   **Mantenimiento:** Actualizaciones de Node.js sin necesidad de tocar las configuraciones globales del servidor.
+
+---
+> [!NOTE]
+> **Siguiente Paso:** Una vez obtenidos los accesos (Usuario/Password), se debe verificar la versión exacta del Kernel de Linux y la memoria RAM disponible para ajustar los límites de recursos en Docker.

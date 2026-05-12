@@ -1,0 +1,31 @@
+{
+  "identidad": {
+    "nombre": "SCHRTyC",
+    "siglas": "SCHRTyC",
+    "eslogan": "La Radio y Televisión de los Chiapanecos",
+    "logoUrl": "",
+    "faviconUrl": ""
+  },
+  "contacto": {
+    "telefono": "961 123 4567",
+    "email": "contacto@schrtyc.chiapas.gob.mx",
+    "direccion": "Tuxtla Gutiérrez, Chiapas, México",
+    "horario": "Lunes a Viernes 09:00 - 15:00"
+  },
+  "redes": {
+    "facebook": "https://facebook.com/schrtyc",
+    "instagram": "https://instagram.com/schrtyc",
+    "twitter": "https://twitter.com/schrtyc",
+    "youtube": "https://youtube.com/schrtyc",
+    "tiktok": ""
+  },
+  "seo": {
+    "tituloPrincipal": "SCHRTyC | Sistema Chiapaneco de Radio, Televisión y Cinematografía",
+    "descripcionMeta": "Portal oficial del Sistema Chiapaneco de Radio, Televisión y Cinematografía. Programación en vivo, noticias y cultura.",
+    "keywords": "Chiapas, Radio, Televisión, Canal 10, Radio Chiapas, Cultura, Noticias"
+  },
+  "sistema": {
+    "modoMantenimiento": false,
+    "mensajeMantenimiento": "Estamos actualizando nuestro portal para brindarte un mejor servicio. Volveremos pronto."
+  }
+}

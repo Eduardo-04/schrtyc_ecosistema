@@ -1,0 +1,41 @@
+[
+  {
+    "id": 1,
+    "titulo": "Gran Inauguración de la Galería de Arte Digital",
+    "categoria": "Cultura",
+    "fecha": "2026-05-03",
+    "autor": "Eduardo Magariño",
+    "publicada": true,
+    "destacada": false,
+    "descripcion": "El Sistema Chiapaneco de Radio, Televisión y Cinematografía inaugura su nuevo espacio dedicado a las expresiones visuales digitales.",
+    "imagen": "https://i.pinimg.com/736x/89/98/6a/89986a278007b15c847f051056c98db9.jpg",
+    "contenido": "dsadasdashdsk ota as hola comoe sta hasdjasjdas hola  dsadasdashdsk ota as hola comoe sta hasdjasjdas hola dsadasdashdsk ota as hola comoe\n\n\n\n[imagen:2]\n\n\n sta hasdjasjdas hola dsadasdashdsk ota as hola comoe sta hasdjasjdas hola dsadasdashdsk ota as hola comoe sta hasdjasjdas hola dsadasdashdsk ota as hola comoe sta hasdjasjdas hola \n\n\ndsadasdashdsk ota as hola comoe sta hasdjasjdas hola dsadasdashdsk ota as hola comoe sta hasdjasjdas hola dsadasdashdsk ota as hola comoe sta hasdjasjdas hola dsadasdashdsk ota as hola comoe sta hasdjasjdas hola  \n",
+    "imagenes": "https://i.pinimg.com/736x/c6/4b/ab/c64bab6584b8c02fd04d98a7bcf0313c.jpg\nhttps://i.pinimg.com/474x/95/8d/32/958d3287cb24b7882f1224080a78900f.jpg\nhttps://i.pinimg.com/1200x/2d/be/aa/2dbeaaf46b0177f3e0c66527edce4413.jpg\nhttps://open.spotify.com/intl-es/track/5pfn68duSmBKo4FhYknOms?si=32a48d44daba40b4"
+  },
+  {
+    "id": 2,
+    "titulo": "Convocatoria para el Festival de Cine Chiapas 2026",
+    "categoria": "Cine",
+    "fecha": "2026-05-01",
+    "autor": "Coordinación de Cine",
+    "publicada": true,
+    "destacada": true,
+    "descripcion": "Se abren las inscripciones para cineastas locales que deseen participar en la muestra estatal de cortometrajes.",
+    "imagen": "https://i.pinimg.com/736x/4a/25/fe/4a25fe156c34e4116c714c231155f35f.jpg",
+    "contenido": "",
+    "imagenes": ""
+  },
+  {
+    "id": 3,
+    "titulo": "Nueva programación en Radio Chiapas",
+    "categoria": "Radio",
+    "fecha": "2026-04-28",
+    "autor": "Dirección de Radio",
+    "publicada": true,
+    "destacada": true,
+    "descripcion": "A partir de este lunes, Radio Chiapas renueva su barra matutina con contenidos enfocados en la educación y la salud.",
+    "imagen": "https://i.pinimg.com/1200x/d7/d4/fb/d7d4fb942ddcdc92dfd220e283d1597d.jpg",
+    "contenido": "SISTEMA CHIAAPANECO DE RADIO Y TV ESTRENA NUEVO PROGRAMA CULTURAL ",
+    "imagenes": ""
+  }
+]

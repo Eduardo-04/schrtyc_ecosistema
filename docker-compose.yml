@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  db:
+    image: mariadb:10.6
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: myrootpassword
+      MYSQL_DATABASE: schrtyc_db
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppassword
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    # No se expone puerto 3306 al host para evitar colisiones
+
+  api:
+    build: 
+      context: ./SCHRTyC/backend
+    restart: unless-stopped
+    ports:
+      - "3005:3001"
+    environment:
+      - DB_HOST=db
+      - DB_USER=appuser
+      - DB_PASSWORD=apppassword
+      - DB_NAME=schrtyc_db
+      - PORT=3001
+    volumes:
+      - ./SCHRTyC/backend/uploads:/app/uploads
+    depends_on:
+      - db
+
+  admin:
+    build: 
+      context: ./SCHRTyC/frontend
+    restart: unless-stopped
+    ports:
+      - "3001:80"
+
+  web:
+    build: 
+      context: ./schrtyc-web/web
+    restart: unless-stopped
+    ports:
+      - "3000:80"

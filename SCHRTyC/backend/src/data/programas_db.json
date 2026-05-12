@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "nombre": "Amanecer Chiapaneco",
+    "conductor": "Juan Pérez",
+    "horario": "Lunes a Viernes 06:00–07:00",
+    "descripcion": "Programa matutino de noticias e información regional.",
+    "descripcionLarga": "Amanecer Chiapaneco es el espacio informativo que da inicio a la jornada en Canal 10. Con análisis puntual de la agenda política, económica y social de Chiapas.",
+    "imagen": "https://i.pinimg.com/736x/d4/7d/66/d47d66a450ae7d4c031389d1c6d28503.jpg",
+    "tipo": "Radio",
+    "estacion": "Radio 1 - 92.5 FM",
+    "activo": true,
+    "embeds": [
+      {
+        "titulo": "Video random",
+        "url": "https://www.youtube.com/embed/ZPDlrZFS4ho"
+      },
+      {
+        "titulo": "canción random",
+        "url": "https://open.spotify.com/intl-es/track/2S1Jt52R8lguZK9KJ2WnEH?si=535ce2c1e9cb4656"
+      },
+      {
+        "titulo": "",
+        "url": "https://www.youtube.com/embed/ZPDlrZFS4ho"
+      },
+      {
+        "titulo": "",
+        "url": "https://www.youtube.com/embed/ZPDlrZFS4ho"
+      }
+    ]
+  }
+]

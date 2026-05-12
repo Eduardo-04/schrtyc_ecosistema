@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "nombre": "Canal 10 TV",
+    "tipo": "TV",
+    "frecuencia": "",
+    "streamUrl": "https://5ca9af4645e15.streamlock.net/chiapas/videochiapas/playlist.m3u8",
+    "activo": true
+  },
+  {
+    "id": 2,
+    "nombre": "TUXTLAN",
+    "tipo": "Radio",
+    "frecuencia": "92.5 FM",
+    "streamUrl": "http://streamingcwsradio10.com:9340/",
+    "imagen": "",
+    "descripcion": "Transmisión en vivo desde Tuxtla Gutiérrez",
+    "activo": true
+  },
+  {
+    "id": 3,
+    "nombre": "Radio 2 - 101.3 FM",
+    "tipo": "Radio",
+    "frecuencia": "101.3 FM",
+    "streamUrl": "http://streamingcwsradio10.com:9340/",
+    "activo": true
+  },
+  {
+    "id": 4,
+    "nombre": "Radio 3 - 101.3 FM",
+    "tipo": "Radio",
+    "frecuencia": "101.3 FM",
+    "streamUrl": "",
+    "activo": false
+  },
+  {
+    "id": 5,
+    "nombre": "Radio 3 - 102.3 FM",
+    "tipo": "Radio",
+    "frecuencia": "102.3 FM",
+    "streamUrl": "",
+    "activo": true
+  }
+]
