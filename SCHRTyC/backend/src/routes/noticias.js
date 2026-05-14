@@ -1,6 +1,6 @@
 const express = require('express')
 const router  = express.Router()
-const { verificarToken } = require('../middleware/auth')
+const { verificarToken, verificarRol } = require('../middleware/auth')
 const { pool } = require('../db')
 
 // GET /api/noticias
@@ -40,8 +40,11 @@ router.get('/:id', async (req, res) => {
   }
 })
 
+// Rutas protegidas (Solo admin y editor_prensa pueden escribir)
+router.use(verificarToken, verificarRol(['admin', 'editor_prensa']))
+
 // POST /api/noticias
-router.post('/', verificarToken, async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const { titulo, categoria, fecha, autor, publicada, destacada, descripcion, imagen, contenido, imagenes } = req.body
     if (!titulo || !categoria)
@@ -65,7 +68,7 @@ router.post('/', verificarToken, async (req, res) => {
 })
 
 // PUT /api/noticias/:id
-router.put('/:id', verificarToken, async (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params
     const { titulo, categoria, fecha, autor, publicada, destacada, descripcion, imagen, contenido, imagenes } = req.body
@@ -115,7 +118,7 @@ router.put('/:id', verificarToken, async (req, res) => {
 })
 
 // DELETE /api/noticias/:id
-router.delete('/:id', verificarToken, async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params
     const [result] = await pool.query('DELETE FROM noticias WHERE id = ?', [id])

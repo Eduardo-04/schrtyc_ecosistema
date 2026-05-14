@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { verificarToken } = require('../middleware/auth');
+const { verificarToken, verificarRol } = require('../middleware/auth');
 const { pool } = require('../db');
 
 const CAMPOS_EDITABLES = [
@@ -54,7 +54,7 @@ router.get('/:slug', async (req, res) => {
 });
 
 // PUT /api/paginas/:slug
-router.put('/:slug', verificarToken, async (req, res) => {
+router.put('/:slug', verificarToken, verificarRol(['admin', 'editor_inst']), async (req, res) => {
   try {
     const { slug } = req.params;
     

@@ -1,8 +1,9 @@
 const express = require('express')
 const router  = express.Router()
-const { verificarToken } = require('../middleware/auth')
+const { verificarToken, verificarRol } = require('../middleware/auth')
 const multer  = require('multer')
 const XLSX    = require('xlsx')
+const { pool } = require('../db')
 
 const upload = multer({ storage: multer.memoryStorage() })
 
@@ -78,7 +79,10 @@ function parsearParrilla(filas, estacion) {
   return programas
 }
 
-router.post('/preview', verificarToken, upload.single('archivo'), async (req, res) => {
+// Rutas protegidas (Solo admin puede importar)
+router.use(verificarToken, verificarRol(['admin']))
+
+router.post('/preview', upload.single('archivo'), async (req, res) => {
   try {
     const { estacion } = req.body
     if (!req.file) return res.status(400).json({ error: 'No se subió archivo' })
@@ -95,7 +99,7 @@ router.post('/preview', verificarToken, upload.single('archivo'), async (req, re
   }
 })
 
-router.post('/guardar', verificarToken, upload.single('archivo'), async (req, res) => {
+router.post('/guardar', upload.single('archivo'), async (req, res) => {
   try {
     const { estacion } = req.body
     if (!req.file) return res.status(400).json({ error: 'No se subió archivo' })
@@ -105,18 +109,20 @@ router.post('/guardar', verificarToken, upload.single('archivo'), async (req, re
     const filas     = XLSX.utils.sheet_to_json(hoja, { header: 1, defval: '' })
     const programas = parsearParrilla(filas, estacion)
 
-    const progRoute = require('./programacion')
-    const db        = progRoute.leerDB()
-    const getNextId = progRoute.getNextId
+    // Obtener ID inicial
+    const [idRows] = await pool.query('SELECT MAX(id) as maxId FROM programacion')
+    let currentId = (idRows[0].maxId || 0) + 1
 
     let insertados = 0
     for (const p of programas) {
-      db.push({ id: getNextId(db), ...p })
+      await pool.query(
+        `INSERT INTO programacion (id, hora_inicio, hora_fin, dia, nombre, conductor, estacion, descripcion, tipo) 
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [currentId++, p.hora_inicio, p.hora_fin, p.dia, p.nombre, p.conductor, p.estacion, p.descripcion, p.tipo]
+      )
       insertados++
     }
     
-    progRoute.guardarDB(db)
-
     res.json({ ok: true, insertados })
   } catch (err) {
     console.error(err)

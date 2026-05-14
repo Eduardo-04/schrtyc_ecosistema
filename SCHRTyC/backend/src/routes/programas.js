@@ -3,7 +3,7 @@ const router  = express.Router()
 const multer  = require('multer')
 const path    = require('path')
 const fs      = require('fs')
-const { verificarToken } = require('../middleware/auth')
+const { verificarToken, verificarRol } = require('../middleware/auth')
 const { pool } = require('../db')
 
 // ── Storage ───────────────────────────────────────────────────
@@ -72,8 +72,11 @@ router.get('/', async (req, res) => {
   }
 })
 
+// Rutas protegidas (Solo admin y editor_prog pueden escribir)
+router.use(verificarToken, verificarRol(['admin', 'editor_prog']))
+
 // ── POST /api/programas ───────────────────────────────────────
-router.post('/', verificarToken, upload.single('imagen'), async (req, res) => {
+router.post('/', upload.single('imagen'), async (req, res) => {
   try {
     const {
       nombre, conductor, horario, descripcion, descripcionLarga,
@@ -107,7 +110,7 @@ router.post('/', verificarToken, upload.single('imagen'), async (req, res) => {
 })
 
 // ── PUT /api/programas/:id ────────────────────────────────────
-router.put('/:id', verificarToken, upload.single('imagen'), async (req, res) => {
+router.put('/:id', upload.single('imagen'), async (req, res) => {
   try {
     const id = req.params.id
     const [rows] = await pool.query('SELECT * FROM programas WHERE id = ?', [id])
@@ -146,7 +149,7 @@ router.put('/:id', verificarToken, upload.single('imagen'), async (req, res) => 
 })
 
 // ── DELETE /api/programas/:id ─────────────────────────────────
-router.delete('/:id', verificarToken, async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
     const id = req.params.id
     const [result] = await pool.query('DELETE FROM programas WHERE id = ?', [id])

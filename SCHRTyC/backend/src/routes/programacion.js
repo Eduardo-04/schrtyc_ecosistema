@@ -1,6 +1,6 @@
 const express = require('express')
 const router  = express.Router()
-const { verificarToken } = require('../middleware/auth')
+const { verificarToken, verificarRol } = require('../middleware/auth')
 const { pool } = require('../db')
 
 // GET todos (con filtros opcionales: tipo, estacion, dia)
@@ -44,8 +44,11 @@ router.get('/:id', async (req, res) => {
   }
 })
 
+// Rutas protegidas (Solo admin y editor_prog pueden escribir)
+router.use(verificarToken, verificarRol(['admin', 'editor_prog']))
+
 // POST crear
-router.post('/', verificarToken, async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const { hora_inicio, hora_fin, nombre, conductor, estacion, descripcion, tipo, dia } = req.body
     if (!hora_inicio || !hora_fin || !nombre || !estacion || !tipo)
@@ -68,7 +71,7 @@ router.post('/', verificarToken, async (req, res) => {
 })
 
 // PUT editar
-router.put('/:id', verificarToken, async (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
     const id = req.params.id
     const { hora_inicio, hora_fin, nombre, conductor, estacion, descripcion, tipo, dia } = req.body
@@ -97,7 +100,7 @@ router.put('/:id', verificarToken, async (req, res) => {
 })
 
 // DELETE todos (o por estacion)
-router.delete('/', verificarToken, async (req, res) => {
+router.delete('/', async (req, res) => {
   try {
     const { estacion } = req.query
     let query = 'DELETE FROM programacion'
@@ -117,7 +120,7 @@ router.delete('/', verificarToken, async (req, res) => {
 })
 
 // DELETE por id
-router.delete('/:id', verificarToken, async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
     const id = req.params.id
     const [result] = await pool.query('DELETE FROM programacion WHERE id = ?', [id])

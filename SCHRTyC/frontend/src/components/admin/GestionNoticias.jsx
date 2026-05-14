@@ -14,6 +14,7 @@ const FORM_VACIO = {
 }
 
 const isVideoUrl = (url) => {
+  if (!url || typeof url !== 'string') return false
   try {
     const u = new URL(url.trim())
     const host = u.hostname.replace('www.', '')
@@ -21,7 +22,10 @@ const isVideoUrl = (url) => {
   } catch { return false }
 }
 
-const parseLines      = (raw = '') => raw.split('\n').map(u => u.trim()).filter(Boolean)
+const parseLines      = (raw = '') => {
+  if (!raw || typeof raw !== 'string') return []
+  return raw.split('\n').map(u => u.trim()).filter(Boolean)
+}
 const parseImageLines = (raw = '') => parseLines(raw).filter(u => !isVideoUrl(u))
 const parseVideoLines = (raw = '') => parseLines(raw).filter(u => isVideoUrl(u))
 const calcStats       = (texto = '') => ({ chars: texto.length, lines: texto.split('\n').filter(p => p.trim()).length })

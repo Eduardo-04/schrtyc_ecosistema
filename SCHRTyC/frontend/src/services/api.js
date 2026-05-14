@@ -1,5 +1,9 @@
 const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3005/api'
 
+// Variable en memoria para el token (Seguridad)
+let accessToken = null
+export const setAccessToken = (token) => { accessToken = token }
+
 // Helper para construir URL absoluta de uploads
 export const getUploadUrl = (ruta) => {
   if (!ruta) return ''
@@ -8,356 +12,121 @@ export const getUploadUrl = (ruta) => {
   return `${apiBase}${ruta}`
 }
 
+// ── Base Fetch Wrapper ────────────────────────────────────────
+const request = async (endpoint, options = {}) => {
+  const url = `${BASE_URL}${endpoint}`
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(accessToken ? { 'Authorization': `Bearer ${accessToken}` } : {}),
+    ...options.headers,
+  }
 
+  const response = await fetch(url, {
+    ...options,
+    headers,
+    credentials: 'include' // Obligatorio para enviar cookies de Refresh Token
+  })
+
+  const json = await response.json()
+  
+  if (!response.ok) {
+    // Si el token expiró, AuthContext se encargará del refresh
+    const error = new Error(json.message || 'Error en la petición')
+    error.status = response.status
+    error.code = json.code
+    throw error
+  }
+
+  return json
+}
 
 // ── Auth ──────────────────────────────────────────────────────
-export const login = async (email, password) => {
-  const res = await fetch(`${BASE_URL}/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password })
-  })
-  const json = await res.json()
-  if (!json.ok) throw new Error(json.message)
-  return json
-}
+export const authLogin = (email, password) => 
+  request('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) })
 
-export const verificarToken = async () => {
-  const token = localStorage.getItem('schrtyc_token')
-  if (!token) throw new Error('Sin token')
-  const res = await fetch(`${BASE_URL}/auth/verificar`, {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${token}` }
-  })
-  const json = await res.json()
-  if (!json.ok) throw new Error(json.message)
-  return json
-}
+export const authRefresh = () => 
+  request('/auth/refresh', { method: 'POST' })
 
-// ── Programación (base) ───────────────────────────────────────
-export const fetchProgramacion = async (filtros = {}) => {
+export const authLogout = () => 
+  request('/auth/logout', { method: 'POST' })
+
+export const authVerificar = () => 
+  request('/auth/verificar')
+
+// ── Usuarios CRUD (Admin Only) ────────────────────────────────
+export const getUsuarios = () => request('/usuarios')
+export const crearUsuario = (datos) => request('/usuarios', { method: 'POST', body: JSON.stringify(datos) })
+export const editarUsuario = (id, datos) => request(`/usuarios/${id}`, { method: 'PUT', body: JSON.stringify(datos) })
+export const eliminarUsuario = (id) => request(`/usuarios/${id}`, { method: 'DELETE' })
+
+// ── Noticias ──────────────────────────────────────────────────
+export const getNoticias = (filtros = {}) => {
   const params = new URLSearchParams(filtros).toString()
-  const res = await fetch(`${BASE_URL}/programacion${params ? `?${params}` : ''}`)
-  if (!res.ok) throw new Error('Error al cargar programación')
-  const json = await res.json()
-  return json.data
+  return request(`/noticias${params ? `?${params}` : ''}`).then(j => j.data)
 }
+export const crearNoticia = (datos) => request('/noticias', { method: 'POST', body: JSON.stringify(datos) }).then(j => j.data)
+export const editarNoticia = (id, datos) => request(`/noticias/${id}`, { method: 'PUT', body: JSON.stringify(datos) }).then(j => j.data)
+export const eliminarNoticia = (id) => request(`/noticias/${id}`, { method: 'DELETE' })
 
-export const fetchEstaciones = async () => {
-  const res = await fetch(`${BASE_URL}/estaciones`)
-  if (!res.ok) throw new Error('Error al cargar estaciones')
-  const json = await res.json()
-  return json.data
-}
+// ── Páginas Institucionales ───────────────────────────────────
+export const getPaginas = () => request('/paginas')
+export const editarPagina = (slug, datos) => request(`/paginas/${slug}`, { method: 'PUT', body: JSON.stringify(datos) }).then(j => j.pagina)
 
-export const fetchNoticias = async () => {
-  const res = await fetch(`${BASE_URL}/noticias`)
-  if (!res.ok) throw new Error('Error al cargar noticias')
-  const json = await res.json()
-  return json.data
-}
-
-// ── Portal Web (Radio y Canal 10) ─────────────────────────────
-const DIAS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
-
-export const getEstaciones = () => fetchEstaciones()
-
-export const getProgramacionHoy = () => {
-  const hoy = DIAS[new Date().getDay()]
-  return fetchProgramacion({ dia: hoy })
-}
-
-// ── Headers con token (Helper) ────────────────────────────────
-const getHeaders = () => ({
-  'Content-Type': 'application/json',
-  'Authorization': `Bearer ${localStorage.getItem('schrtyc_token')}`
-})
-
-// ── Noticias CRUD ─────────────────────────────────────────────
-export const getNoticias = async (filtros = {}) => {
+// ── Programación ──────────────────────────────────────────────
+export const fetchProgramacion = (filtros = {}) => {
   const params = new URLSearchParams(filtros).toString()
-  const res = await fetch(`${BASE_URL}/noticias${params ? `?${params}` : ''}`)
-  const json = await res.json()
-  return json.data
+  return request(`/programacion${params ? `?${params}` : ''}`).then(j => j.data)
 }
-
-export const crearNoticia = async (datos) => {
-  const res = await fetch(`${BASE_URL}/noticias`, {
-    method: 'POST',
-    headers: getHeaders(),
-    body: JSON.stringify(datos)
-  })
-  const json = await res.json()
-  if (!json.ok) throw new Error(json.message)
-  return json.data
-}
-
-export const editarNoticia = async (id, datos) => {
-  const res = await fetch(`${BASE_URL}/noticias/${id}`, {
-    method: 'PUT',
-    headers: getHeaders(),
-    body: JSON.stringify(datos)
-  })
-  const json = await res.json()
-  if (!json.ok) throw new Error(json.message)
-  return json.data
-}
-
-export const eliminarNoticia = async (id) => {
-  const res = await fetch(`${BASE_URL}/noticias/${id}`, {
-    method: 'DELETE',
-    headers: getHeaders()
-  })
-  const json = await res.json()
-  if (!json.ok) throw new Error(json.message)
-  return json
-}
-
-// ── Programación CRUD ─────────────────────────────────────────
-export const crearPrograma = async (datos) => {
-  const res = await fetch(`${BASE_URL}/programacion`, {
-    method: 'POST',
-    headers: getHeaders(),
-    body: JSON.stringify(datos)
-  })
-  const json = await res.json()
-  if (!json.ok) throw new Error(json.message)
-  return json.data
-}
-
-export const editarPrograma = async (id, datos) => {
-  const res = await fetch(`${BASE_URL}/programacion/${id}`, {
-    method: 'PUT',
-    headers: getHeaders(),
-    body: JSON.stringify(datos)
-  })
-  const json = await res.json()
-  if (!json.ok) throw new Error(json.message)
-  return json.data
-}
-
-export const eliminarPrograma = async (id) => {
-  const res = await fetch(`${BASE_URL}/programacion/${id}`, {
-    method: 'DELETE',
-    headers: getHeaders()
-  })
-  const json = await res.json()
-  if (!json.ok) throw new Error(json.message)
-  return json
-}
-
-// ── Estaciones CRUD ───────────────────────────────────────────
-export const getEstacionesCRUD = async (filtros = {}) => {
+export const fetchEstaciones = () => request('/estaciones').then(j => j.data)
+export const fetchProgramas = (filtros = {}) => {
   const params = new URLSearchParams(filtros).toString()
-  const res = await fetch(`${BASE_URL}/estaciones${params ? `?${params}` : ''}`)
-  const json = await res.json()
-  return json.data
+  return request(`/programas${params ? `?${params}` : ''}`).then(j => j.data)
 }
 
-export const crearEstacion = async (datos) => {
-  const res = await fetch(`${BASE_URL}/estaciones`, {
-    method: 'POST',
-    headers: getHeaders(),
-    body: JSON.stringify(datos)
-  })
-  const json = await res.json()
-  if (!json.ok) throw new Error(json.message)
-  return json.data
-}
+export const crearPrograma = (datos) => request('/programacion', { method: 'POST', body: JSON.stringify(datos) }).then(j => j.data)
+export const editarPrograma = (id, datos) => request(`/programacion/${id}`, { method: 'PUT', body: JSON.stringify(datos) }).then(j => j.data)
+export const eliminarPrograma = (id) => request(`/programacion/${id}`, { method: 'DELETE' })
 
-export const editarEstacion = async (id, datos) => {
-  const res = await fetch(`${BASE_URL}/estaciones/${id}`, {
-    method: 'PUT',
-    headers: getHeaders(),
-    body: JSON.stringify(datos)
-  })
-  const json = await res.json()
-  if (!json.ok) throw new Error(json.message)
-  return json.data
-}
+export const crearEstacion = (datos) => request('/estaciones', { method: 'POST', body: JSON.stringify(datos) }).then(j => j.data)
+export const editarEstacion = (id, datos) => request(`/estaciones/${id}`, { method: 'PUT', body: JSON.stringify(datos) }).then(j => j.data)
+export const eliminarEstacion = (id) => request(`/estaciones/${id}`, { method: 'DELETE' })
 
-export const eliminarEstacion = async (id) => {
-  const res = await fetch(`${BASE_URL}/estaciones/${id}`, {
-    method: 'DELETE',
-    headers: getHeaders()
-  })
-  const json = await res.json()
-  if (!json.ok) throw new Error(json.message)
-  return json
-}
+export const crearProgramaCatalogo = (datos) => request('/programas', { method: 'POST', body: JSON.stringify(datos) }).then(j => j.data)
+export const editarProgramaCatalogo = (id, datos) => request(`/programas/${id}`, { method: 'PUT', body: JSON.stringify(datos) }).then(j => j.data)
+export const eliminarProgramaCatalogo = (id) => request(`/programas/${id}`, { method: 'DELETE' })
 
-// ── Programas (catálogo con poster) ──────────────────────────
-export const getProgramas = async (filtros = {}) => {
-  const params = new URLSearchParams(filtros).toString()
-  const res = await fetch(`${BASE_URL}/programas${params ? `?${params}` : ''}`)
-  const json = await res.json()
-  return json.data
-}
+// ── Galería ───────────────────────────────────────────────────
+export const getGaleria = () => request('/galeria')
+export const crearGaleriaItem = (datos) => request('/galeria', { method: 'POST', body: JSON.stringify(datos) }).then(j => j.item)
+export const editarGaleriaItem = (id, datos) => request(`/galeria/${id}`, { method: 'PUT', body: JSON.stringify(datos) }).then(j => j.item)
+export const eliminarGaleriaItem = (id) => request(`/galeria/${id}`, { method: 'DELETE' })
 
-export const crearProgramaCatalogo = async (datos) => {
-  const res = await fetch(`${BASE_URL}/programas`, {
-    method: 'POST',
-    headers: getHeaders(),
-    body: JSON.stringify(datos)
-  })
-  const json = await res.json()
-  if (!json.ok) throw new Error(json.message)
-  return json.data
-}
+export const getGaleriaFiltros = () => request('/galeria/filtros')
+export const crearGaleriaFiltro = (nombre) => request('/galeria/filtros', { method: 'POST', body: JSON.stringify({ nombre }) }).then(j => j.filtros)
+export const eliminarGaleriaFiltro = (nombre) => request(`/galeria/filtros/${nombre}`, { method: 'DELETE' }).then(j => j.filtros)
 
-export const editarProgramaCatalogo = async (id, datos) => {
-  const res = await fetch(`${BASE_URL}/programas/${id}`, {
-    method: 'PUT',
-    headers: getHeaders(),
-    body: JSON.stringify(datos)
-  })
-  const json = await res.json()
-  if (!json.ok) throw new Error(json.message)
-  return json.data
-}
+// ── Configuración ─────────────────────────────────────────────
+export const getConfiguracion = () => request('/configuracion').then(j => j.data)
+export const actualizarConfiguracion = (config) => request('/configuracion', { method: 'PUT', body: JSON.stringify(config) }).then(j => j.data)
 
-export const eliminarProgramaCatalogo = async (id) => {
-  const res = await fetch(`${BASE_URL}/programas/${id}`, {
-    method: 'DELETE',
-    headers: getHeaders()
-  })
-  const json = await res.json()
-  if (!json.ok) throw new Error(json.message)
-  return json
-}
-
-// ── Páginas Institucionales (NUEVO) ───────────────────────────
-export const getPaginas = async () => {
-  const res = await fetch(`${BASE_URL}/paginas`)
-  if (!res.ok) throw new Error('Error al cargar páginas institucionales')
-  const json = await res.json()
-  // Retorna el objeto directamente, no envuelto en .data, según el diseño de la API mock
-  return json
-}
-
-export const editarPagina = async (slug, datos) => {
-  const res = await fetch(`${BASE_URL}/paginas/${slug}`, {
-    method: 'PUT',
-    headers: getHeaders(),
-    body: JSON.stringify(datos)
-  })
-  const json = await res.json()
-  if (!json.ok) throw new Error(json.mensaje || json.message)
-  return json.pagina
-}
-
-// ── Galería de Arte ──────────────────────────────────────────
-export const getGaleria = async () => {
-  const res = await fetch(`${BASE_URL}/galeria`)
-  if (!res.ok) throw new Error('Error al cargar galería')
-  return await res.json()
-}
-
-export const crearGaleriaItem = async (datos) => {
-  const res = await fetch(`${BASE_URL}/galeria`, {
-    method: 'POST',
-    headers: getHeaders(),
-    body: JSON.stringify(datos)
-  })
-  const json = await res.json()
-  if (!json.ok) throw new Error(json.mensaje || json.message)
-  return json.item
-}
-
-export const editarGaleriaItem = async (id, datos) => {
-  const res = await fetch(`${BASE_URL}/galeria/${id}`, {
-    method: 'PUT',
-    headers: getHeaders(),
-    body: JSON.stringify(datos)
-  })
-  const json = await res.json()
-  if (!json.ok) throw new Error(json.mensaje || json.message)
-  return json.item
-}
-
-export const eliminarGaleriaItem = async (id) => {
-  const res = await fetch(`${BASE_URL}/galeria/${id}`, {
-    method: 'DELETE',
-    headers: getHeaders()
-  })
-  const json = await res.json()
-  if (!json.ok) throw new Error(json.mensaje || json.message)
-  return json
-}
-
-// ── Filtros de Galería ───────────────────────────────────────
-export const getGaleriaFiltros = async () => {
-  const res = await fetch(`${BASE_URL}/galeria/filtros`)
-  if (!res.ok) throw new Error('Error al cargar filtros')
-  return await res.json()
-}
-
-export const crearGaleriaFiltro = async (nombre) => {
-  const res = await fetch(`${BASE_URL}/galeria/filtros`, {
-    method: 'POST',
-    headers: getHeaders(),
-    body: JSON.stringify({ nombre })
-  })
-  const json = await res.json()
-  if (!json.ok) throw new Error(json.mensaje || json.message)
-  return json.filtros
-}
-
-export const eliminarGaleriaFiltro = async (nombre) => {
-  const res = await fetch(`${BASE_URL}/galeria/filtros/${nombre}`, {
-    method: 'DELETE',
-    headers: getHeaders()
-  })
-  const json = await res.json()
-  if (!json.ok) throw new Error(json.mensaje || json.message)
-  return json.filtros
-}
-
-// ── Configuración ──────────────────────────────────────────
-export const getConfiguracion = async () => {
-  const res = await fetch(`${BASE_URL}/configuracion`)
-  const json = await res.json()
-  if (!json.ok) throw new Error(json.message)
-  return json.data
-}
-
-export const actualizarConfiguracion = async (config) => {
-  const res = await fetch(`${BASE_URL}/configuracion`, {
-    method: 'PUT',
-    headers: getHeaders(),
-    body: JSON.stringify(config)
-  })
-  const json = await res.json()
-  if (!json.ok) throw new Error(json.message)
-  return json.data
-}
-
-// ── Archivero (Descubrimiento de archivos) ───────────────────
-export const getArchivero = async () => {
-  const res = await fetch(`${BASE_URL}/archivero`, {
-    headers: getHeaders()
-  })
-  const json = await res.json()
-  if (!json.ok) throw new Error(json.message)
-  return json.data
-}
-
+// ── Archivero ─────────────────────────────────────────────────
+export const getArchivero = () => request('/archivero').then(j => j.data)
 export const subirArchivo = async (file, oldPath = null) => {
   const formData = new FormData()
   formData.append('file', file)
 
-  let url = `${BASE_URL}/archivero/upload`
+  let url = `/archivero/upload`
   if (oldPath) url += `?replace=${encodeURIComponent(oldPath)}`
 
-  const res = await fetch(url, {
+  const headers = { 'Authorization': `Bearer ${accessToken}` }
+  
+  const res = await fetch(`${BASE_URL}${url}`, {
     method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('schrtyc_token')}`
-      // Nota: No poner Content-Type, el navegador lo pone con el boundary
-    },
-    body: formData
+    headers,
+    body: formData,
+    credentials: 'include'
   })
   const json = await res.json()
   if (!json.ok) throw new Error(json.message)
-  return { ...json, ruta: getUploadUrl(json.ruta) }
+  return json
 }

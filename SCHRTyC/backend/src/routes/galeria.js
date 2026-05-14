@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { verificarToken } = require('../middleware/auth');
+const { verificarToken, verificarRol } = require('../middleware/auth');
 const { pool } = require('../db');
 
 // GET /api/galeria
@@ -25,8 +25,11 @@ router.get('/filtros', async (req, res) => {
   }
 });
 
+// Rutas protegidas (Solo admin y editor_prensa pueden escribir)
+router.use(verificarToken, verificarRol(['admin', 'editor_prensa']));
+
 // POST /api/galeria/filtros
-router.post('/filtros', verificarToken, async (req, res) => {
+router.post('/filtros', async (req, res) => {
   try {
     const { nombre } = req.body;
     if (!nombre) return res.status(400).json({ ok: false, mensaje: 'Nombre del filtro requerido' });
@@ -42,7 +45,7 @@ router.post('/filtros', verificarToken, async (req, res) => {
 });
 
 // DELETE /api/galeria/filtros/:nombre
-router.delete('/filtros/:nombre', verificarToken, async (req, res) => {
+router.delete('/filtros/:nombre', async (req, res) => {
   try {
     const { nombre } = req.params;
     await pool.query('DELETE FROM galeria_filtros WHERE nombre = ?', [nombre]);
@@ -56,7 +59,7 @@ router.delete('/filtros/:nombre', verificarToken, async (req, res) => {
 });
 
 // POST /api/galeria
-router.post('/', verificarToken, async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const { titulo, autor, tecnica, formato, ciudad, año, descripcion, imagen, telefono, fecha, url } = req.body;
     if (!imagen) return res.status(400).json({ ok: false, mensaje: 'URL de imagen requerida' });
@@ -78,7 +81,7 @@ router.post('/', verificarToken, async (req, res) => {
 });
 
 // PUT /api/galeria/:id
-router.put('/:id', verificarToken, async (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const { titulo, autor, tecnica, formato, ciudad, año, descripcion, imagen, telefono, fecha, url } = req.body;
@@ -111,7 +114,7 @@ router.put('/:id', verificarToken, async (req, res) => {
 });
 
 // DELETE /api/galeria/:id
-router.delete('/:id', verificarToken, async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const [result] = await pool.query('DELETE FROM galeria WHERE id = ?', [id]);

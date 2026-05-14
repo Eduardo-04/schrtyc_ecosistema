@@ -25,6 +25,9 @@ services:
       - DB_PASSWORD=apppassword
       - DB_NAME=schrtyc_db
       - PORT=3001
+      - ADMIN_EMAIL=admin@example.com
+      - ADMIN_HASH=$$2b$$10$$EsCwRvexLPVTb4zkFMrp7ubb6F8PZrpW3aSHb2Tj40nICENT1Jd5q
+      - JWT_SECRET=supersecret
     volumes:
       - ./SCHRTyC/backend/uploads:/app/uploads
     depends_on:
@@ -43,3 +46,11 @@ services:
     restart: unless-stopped
     ports:
       - "3000:80"
+
+  adminer:
+    image: adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db

@@ -164,7 +164,7 @@ export default function ArchiveroModal({ onSelect, onCerrar }) {
               {filtrados.map((f, i) => (
                 <button 
                   key={i}
-                  onClick={() => onSelect(getUploadUrl(f.ruta))}
+                  onClick={() => onSelect(f.ruta)}
                   className="group flex flex-col gap-2 text-left hover:scale-105 transition-all"
                 >
                   <div className="aspect-square rounded-2xl overflow-hidden bg-gray-100 border border-gray-50 relative">

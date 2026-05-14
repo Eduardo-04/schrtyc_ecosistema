@@ -41,33 +41,47 @@ const integranteVacio = () => ({
 
 // ── Parsers ──
 const parseTramites = (str) => {
-  if (!str || !str.trim()) return []
+  if (!str) return []
+  if (Array.isArray(str)) return str // Ya procesado por el backend
+  if (typeof str !== 'string' || !str.trim()) return []
   try {
-    return JSON.parse(str).map(t => ({ ...tramiteVacio(), ...t, id: t.id || Date.now() + Math.random(), modo: t.requisitos?.length > 0 ? 'requisitos' : 'cards' }))
+    const parsed = JSON.parse(str)
+    return Array.isArray(parsed) ? parsed.map(t => ({ 
+      ...tramiteVacio(), 
+      ...t, 
+      id: t.id || Date.now() + Math.random(), 
+      modo: t.requisitos?.length > 0 ? 'requisitos' : 'cards' 
+    })) : []
   } catch { return [] }
 }
 
 const parseIntegrantes = (str) => {
-  if (!str || !str.trim()) return []
-  try { return JSON.parse(str).map(p => ({ ...integranteVacio(), ...p })) } catch { return [] }
+  if (!str) return []
+  if (Array.isArray(str)) return str // Ya procesado por el backend
+  if (typeof str !== 'string' || !str.trim()) return []
+  try { 
+    const parsed = JSON.parse(str)
+    return Array.isArray(parsed) ? parsed.map(p => ({ ...integranteVacio(), ...p })) : []
+  } catch { return [] }
 }
 
 const serializeTramites = (arr) => {
   const limpio = arr.map(({ id, modo, ...t }) => ({
     ...t,
     cards: modo === 'cards' ? t.cards.filter(c => c.label || c.value) : [],
-    requisitos: modo === 'requisitos' ? t.requisitos.filter(r => r.trim()) : [],
+    requisitos: modo === 'requisitos' ? t.requisitos.filter(r => typeof r === 'string' && r.trim()) : [],
   }))
   return JSON.stringify(limpio, null, 2)
 }
 
 const serializeIntegrantes = (arr) => {
-  const limpio = arr.map(({ id, ...p }) => p).filter(p => p.nombre.trim())
+  const limpio = arr.map(({ id, ...p }) => p).filter(p => typeof p.nombre === 'string' && p.nombre.trim())
   return JSON.stringify(limpio, null, 2)
 }
 
 // ── parseLineaMedia ──
 const parseLineaMedia = (lineaRaw) => {
+  if (!lineaRaw || typeof lineaRaw !== 'string') return null
   const linea = lineaRaw.trim()
   if (!linea) return null
   if (linea.startsWith('▶') || (!linea.startsWith('http') && !linea.includes('.'))) {
@@ -360,7 +374,7 @@ function ModalEditor({ pagina, schema, onClose, onSave }) {
 
   const aplicarPlantilla = useCallback((tipo) => {
     const nueva = PLANTILLAS[tipo] || ''
-    setForm(f => ({ ...f, multimedia: f.multimedia.trim() ? f.multimedia + '\n\n' + nueva : nueva }))
+    setForm(f => ({ ...f, multimedia: (typeof f.multimedia === 'string' && f.multimedia.trim()) ? f.multimedia + '\n\n' + nueva : nueva }))
   }, [])
 
   const handleTramiteChange = useCallback((i, updated) => {
@@ -724,16 +738,28 @@ export default function GestionPaginas({ slugEspecifico = null }) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {PAGINAS_FIJAS.map(schema => {
             const data = paginasData[schema.slug]
-            const camposLlenos = ['titulo','herobadge','contenido','multimedia','tramites'].filter(c => data?.[c]?.trim?.()?.length)
-            const estado = camposLlenos === 0 ? 'vacio' : camposLlenos >= 3 ? 'completo' : 'parcial'
+            const camposLlenos = ['titulo','herobadge','contenido','multimedia','tramites'].filter(c => {
+              const val = data?.[c]
+              if (!val) return false
+              if (Array.isArray(val)) return val.length > 0
+              return val.trim?.()?.length > 0
+            })
+            const estado = camposLlenos.length === 0 ? 'vacio' : camposLlenos.length >= 3 ? 'completo' : 'parcial'
             const estadoConfig = {
               vacio:    { label: 'Sin contenido', dot: 'bg-gray-300',    text: 'text-gray-400' },
               parcial:  { label: 'En progreso',   dot: 'bg-amber-400',   text: 'text-amber-600' },
               completo: { label: 'Publicado',      dot: 'bg-emerald-400', text: 'text-emerald-600' },
             }[estado]
-            const numTramites = (() => { try { return JSON.parse(data?.tramites).length } catch { return 0 } })()
-            const numIntegrantes = (() => { try { return JSON.parse(data?.integrantes).length } catch { return 0 } })()
-            const tienePortada = !!data?.imagenportada?.trim()
+            
+            const getNum = (val) => {
+              if (!val) return 0
+              if (Array.isArray(val)) return val.length
+              try { return JSON.parse(val).length } catch { return 0 }
+            }
+
+            const numTramites = getNum(data?.tramites)
+            const numIntegrantes = getNum(data?.integrantes)
+            const tienePortada = !!data?.imagenportada?.trim?.()
 
             return (
               <div key={schema.slug} className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-xl hover:border-gray-200 transition-all duration-300 flex flex-col group">

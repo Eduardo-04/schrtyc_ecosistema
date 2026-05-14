@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { verificarToken } = require('../middleware/auth')
+const { verificarToken, verificarRol } = require('../middleware/auth')
 const { pool } = require('../db')
 
 // GET /api/estaciones  — público (solo activas)
@@ -14,8 +14,11 @@ router.get('/', async (req, res) => {
   }
 })
 
+// Rutas protegidas (Solo admin y editor_prog pueden escribir o ver todas)
+router.use(verificarToken, verificarRol(['admin', 'editor_prog']))
+
 // GET /api/estaciones/todas  — CRUD (todas, incluso inactivas)
-router.get('/todas', verificarToken, async (req, res) => {
+router.get('/todas', async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT * FROM estaciones')
     res.json({ ok: true, data: rows })
@@ -26,7 +29,7 @@ router.get('/todas', verificarToken, async (req, res) => {
 })
 
 // POST /api/estaciones
-router.post('/', verificarToken, async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const { nombre, tipo, frecuencia, streamUrl, activo, imagen, descripcion } = req.body
     if (!nombre || !tipo) return res.status(400).json({ ok: false, message: 'nombre y tipo son requeridos' })
@@ -49,7 +52,7 @@ router.post('/', verificarToken, async (req, res) => {
 })
 
 // PUT /api/estaciones/:id
-router.put('/:id', verificarToken, async (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
     const id = parseInt(req.params.id)
     const { nombre, tipo, frecuencia, streamUrl, activo, imagen, descripcion } = req.body
@@ -77,7 +80,7 @@ router.put('/:id', verificarToken, async (req, res) => {
 })
 
 // DELETE /api/estaciones/:id
-router.delete('/:id', verificarToken, async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
     const id = parseInt(req.params.id)
     const [result] = await pool.query('DELETE FROM estaciones WHERE id = ?', [id])

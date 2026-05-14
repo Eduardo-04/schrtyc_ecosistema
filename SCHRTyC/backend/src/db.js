@@ -136,15 +136,16 @@ async function initDB() {
       )
     `);
 
-    // Tabla Configuracion
+    // Tabla Usuarios (RBAC)
     await connection.query(`
-      CREATE TABLE IF NOT EXISTS configuracion (
-        id INT PRIMARY KEY,
-        identidad JSON,
-        contacto JSON,
-        redes JSON,
-        seo JSON,
-        sistema JSON
+      CREATE TABLE IF NOT EXISTS usuarios (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        nombre VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        password_hash VARCHAR(255) NOT NULL,
+        rol ENUM('admin', 'editor_prensa', 'editor_inst', 'editor_prog') DEFAULT 'editor_prensa',
+        activo BOOLEAN DEFAULT TRUE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
 
@@ -213,6 +214,20 @@ async function seedDB(connection) {
         console.error(`Error seedeando ${item.table}:`, err.message);
       }
     }
+  }
+
+  // Seed Usuario Admin Inicial
+  try {
+    const [uRows] = await connection.query('SELECT COUNT(*) as count FROM usuarios');
+    if (uRows[0].count === 0 && process.env.ADMIN_EMAIL && process.env.ADMIN_HASH) {
+      console.log('Creando usuario administrador inicial...');
+      await connection.query(
+        'INSERT INTO usuarios (nombre, email, password_hash, rol) VALUES (?, ?, ?, ?)',
+        ['Admin SCHRTyC', process.env.ADMIN_EMAIL, process.env.ADMIN_HASH, 'admin']
+      );
+    }
+  } catch (err) {
+    console.error('Error seedeando usuario admin:', err.message);
   }
 }
 

@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { verificarToken } = require('../middleware/auth')
+const { verificarToken, verificarRol } = require('../middleware/auth')
 const { pool } = require('../db')
 
 // GET /api/configuracion (Público)
@@ -26,8 +26,8 @@ router.get('/', async (req, res) => {
   }
 })
 
-// PUT /api/configuracion (Protegido)
-router.put('/', verificarToken, async (req, res) => {
+// PUT /api/configuracion (Protegido - Solo Admin)
+router.put('/', verificarToken, verificarRol(['admin']), async (req, res) => {
   try {
     const { identidad, contacto, redes, seo, sistema } = req.body
     

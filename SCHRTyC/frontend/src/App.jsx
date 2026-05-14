@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Sidebar            from './components/admin/Sidebar'
 import Header             from './components/admin/Header'
 import Dashboard          from './components/admin/Dashboard'
@@ -8,63 +8,56 @@ import GestionEstaciones  from './components/admin/GestionEstaciones'
 import GestionProgramas   from './components/admin/GestionProgramas'
 import GestionPaginas     from './components/admin/GestionPaginas'
 import GestionGaleria     from './components/admin/GestionGaleria'
+import GestionUsuarios    from './components/admin/GestionUsuarios'
 import Configuracion      from './components/admin/Configuracion'
 import Login              from './components/admin/Login'
-import { verificarToken } from './services/api'
+import { useAuth }        from './context/AuthContext'
 
 export default function App() {
-  const [usuario, setUsuario]             = useState(null)
-  const [verificando, setVerificando]     = useState(true)
+  const { usuario, loading, logout } = useAuth()
   const [seccionActiva, setSeccionActiva] = useState('dashboard')
 
-  useEffect(() => {
-    verificarToken()
-      .then(data => setUsuario(data.usuario))
-      .catch(() => setUsuario(null))
-      .finally(() => setVerificando(false))
-  }, [])
-
-  const cerrarSesion = () => {
-    localStorage.removeItem('schrtyc_token')
-    localStorage.removeItem('schrtyc_usuario')
-    setUsuario(null)
-  }
-
   const renderSeccion = () => {
+    // Protección por rol en el renderizado
+    const esAdmin = usuario?.rol === 'admin'
+    const esPrensa = esAdmin || usuario?.rol === 'editor_prensa'
+    const esInst = esAdmin || usuario?.rol === 'editor_inst'
+    const esProg = esAdmin || usuario?.rol === 'editor_prog'
+
     switch (seccionActiva) {
       case 'dashboard':    return <Dashboard onNavegar={setSeccionActiva} />
-      case 'noticias':     return <GestionNoticias />
-      case 'estaciones':   return <GestionEstaciones />
-      case 'programas':    return <GestionProgramas />
-      case 'programacion': return <GrillaProgramacion />
-      case 'paginas':      return <GestionPaginas />
-      case 'galeria':      return <GestionGaleria />
-      case 'configuracion':return <Configuracion />
+      case 'noticias':     return esPrensa ? <GestionNoticias /> : <Dashboard />
+      case 'estaciones':   return esProg ? <GestionEstaciones /> : <Dashboard />
+      case 'programas':    return esProg ? <GestionProgramas /> : <Dashboard />
+      case 'programacion': return esProg ? <GrillaProgramacion /> : <Dashboard />
+      case 'paginas':      return esInst ? <GestionPaginas /> : <Dashboard />
+      case 'galeria':      return esPrensa ? <GestionGaleria /> : <Dashboard />
+      case 'usuarios':     return esAdmin ? <GestionUsuarios /> : <Dashboard />
+      case 'configuracion':return esAdmin ? <Configuracion /> : <Dashboard />
       default:             return <Dashboard onNavegar={setSeccionActiva} />
     }
   }
 
-  if (verificando) return (
-    <div style={{ height:'100vh', display:'flex', alignItems:'center',
-                  justifyContent:'center', backgroundColor:'#611232' }}>
-      <div style={{ color:'white', fontSize:'16px', fontWeight:'600' }}>
-        Verificando sesión...
+  if (loading) return (
+    <div className="h-screen flex items-center justify-center bg-[#611232]">
+      <div className="text-white text-lg font-bold animate-pulse">
+        Cargando sistema...
       </div>
     </div>
   )
 
-  if (!usuario) return <Login onLoginExitoso={setUsuario} />
+  if (!usuario) return <Login />
 
   return (
-    <div style={{ display:'flex', height:'100vh', width:'100vw', overflow:'hidden' }}>
+    <div className="flex h-screen w-screen overflow-hidden bg-gray-50">
       <Sidebar
         seccionActiva={seccionActiva}
         onNavegar={setSeccionActiva}
-        onCerrarSesion={cerrarSesion}
+        onCerrarSesion={logout}
       />
-      <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden', minWidth:0 }}>
-        <Header usuario={usuario} onCerrarSesion={cerrarSesion} />
-        <main style={{ flex:1, overflowY:'auto', backgroundColor:'#f8f9fa' }}>
+      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+        <Header usuario={usuario} onCerrarSesion={logout} />
+        <main className="flex-1 overflow-y-auto">
           {renderSeccion()}
         </main>
       </div>

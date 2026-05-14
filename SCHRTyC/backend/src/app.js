@@ -2,6 +2,7 @@ const express = require('express')
 const cors    = require('cors')
 const helmet  = require('helmet')
 const rateLimit = require('express-rate-limit')
+const cookieParser = require('cookie-parser')
 require('dotenv').config()
 const { initDB } = require('./db')
 
@@ -16,15 +17,16 @@ const galeriaRoutes      = require('./routes/galeria')
 const configuracionRoutes = require('./routes/configuracion')
 const registrosRoutes    = require('./routes/registros') // Ruta de prueba MariaDB
 const archiveroRoutes    = require('./routes/archivero')
+const usuariosRoutes     = require('./routes/usuarios')
 
 const app  = express()
 const PORT = process.env.PORT || 3001
 
-app.use(cors()) // Permitir todo temporalmente para depurar
-// app.use(helmet({
-//   crossOriginResourcePolicy: { policy: "cross-origin" },
-//   contentSecurityPolicy: false
-// }))
+app.use(cors({
+  origin: true,
+  credentials: true
+}))
+app.use(cookieParser())
 app.use(express.json())
 
 // Servir archivos de la carpeta uploads
@@ -38,6 +40,25 @@ const authLimiter = rateLimit({
 })
 
 // Rutas
+app.get('/api', (req, res) => {
+  res.json({ 
+    ok: true, 
+    mensaje: 'API SCHRTyC activa 🚀',
+    documentacion: 'Consulta CONTEXTO7.md para más detalles',
+    endpoints: [
+      '/api/auth',
+      '/api/programacion',
+      '/api/noticias',
+      '/api/estaciones',
+      '/api/programas',
+      '/api/paginas',
+      '/api/galeria',
+      '/api/configuracion',
+      '/api/health'
+    ]
+  })
+})
+
 app.use('/api/auth',         authLimiter, authRoutes)
 app.use('/api/programacion', programacionRoutes)
 app.use('/api/noticias',     noticiasRoutes)
@@ -49,6 +70,7 @@ app.use('/api/galeria',      galeriaRoutes)
 app.use('/api/configuracion', configuracionRoutes)
 app.use('/api/registros',    registrosRoutes) // Prueba MariaDB
 app.use('/api/archivero',    archiveroRoutes)
+app.use('/api/usuarios',     usuariosRoutes)
 
 // Health check
 app.get('/api/health', (req, res) => {
