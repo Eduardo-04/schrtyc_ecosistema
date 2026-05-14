@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, memo, useMemo } from 'react'
 import { Palette, Plus, Pencil, Trash2, Check, RefreshCw, X, Image as ImageIcon, Settings2, Filter, Hash } from 'lucide-react'
+import ArchiveroInput from '../shared/ArchiveroInput'
 import { 
   getGaleria, crearGaleriaItem, editarGaleriaItem, eliminarGaleriaItem,
   getPaginas, editarPagina,
@@ -10,8 +11,6 @@ const FORM_VACIO = {
   titulo: '', autor: '', tecnica: '', formato: '', 
   ciudad: '', año: '', descripcion: '', imagen: '', telefono: '' 
 }
-
-import ArchiveroInput from '../shared/ArchiveroInput'
 
 // ── Modal para Añadir/Editar Obra ──────────────────────────────────────────
 const ModalGaleria = memo(({ item, onGuardar, onCerrar, tecnicas = [] }) => {

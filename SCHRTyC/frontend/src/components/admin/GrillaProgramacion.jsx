@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Tv, RefreshCw, Clock, Mic, Radio, Plus, Pencil, Trash2, X, Check, Upload, FileSpreadsheet, AlertTriangle, Filter } from 'lucide-react'
 import { useProgramacion } from '../../hooks/useProgramacion'
-import { crearPrograma, editarPrograma, eliminarPrograma, fetchEstaciones } from '../../services/api'
+import { crearPrograma, editarPrograma, eliminarPrograma, fetchEstaciones, previewImportar, guardarImportar, limpiarProgramacion } from '../../services/api'
 
 const DIAS = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo']
 
@@ -43,14 +43,7 @@ function ModalImportar({ estaciones, onCerrar, onImportado }) {
       const form = new FormData()
       form.append('archivo', archivo)
       form.append('estacion', estacion)
-      const token = localStorage.getItem('schrtyc_token')
-      const res  = await fetch((import.meta.env.VITE_API_URL || 'http://localhost:3005/api') + '/importar/preview', { 
-        method: 'POST', 
-        headers: { 'Authorization': `Bearer ${token}` },
-        body: form 
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Error al procesar')
+      const data = await previewImportar(form)
       setPreview(data)
     } catch(e) { setError(e.message) }
     finally { setLoading(false) }
@@ -62,13 +55,7 @@ function ModalImportar({ estaciones, onCerrar, onImportado }) {
       const form = new FormData()
       form.append('archivo', archivo)
       form.append('estacion', estacion)
-      const token = localStorage.getItem('schrtyc_token')
-      const res  = await fetch((import.meta.env.VITE_API_URL || 'http://localhost:3005/api') + '/importar/guardar', { 
-        method: 'POST', 
-        headers: { 'Authorization': `Bearer ${token}` },
-        body: form 
-      })
-      if (!res.ok) throw new Error('Error al guardar')
+      await guardarImportar(form)
       onImportado()
     } catch(e) { setError(e.message) }
     finally { setGuardando(false) }
@@ -279,17 +266,13 @@ export default function GrillaProgramacion() {
   }
 
   const handleLimpiarTodo = async () => {
-    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3005/api'
-    const url = filtroEstacion
-      ? `${baseUrl}/programacion?estacion=${encodeURIComponent(filtroEstacion)}`
-      : `${baseUrl}/programacion`
-    const token = localStorage.getItem('schrtyc_token')
-    await fetch(url, { 
-      method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-    setModalLimpiar(false)
-    await refetch()
+    try {
+      await limpiarProgramacion(filtroEstacion)
+      setModalLimpiar(false)
+      await refetch()
+    } catch (e) {
+      alert(e.message)
+    }
   }
 
   return (

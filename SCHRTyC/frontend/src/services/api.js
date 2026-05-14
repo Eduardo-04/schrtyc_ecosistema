@@ -21,6 +21,11 @@ const request = async (endpoint, options = {}) => {
     ...options.headers,
   }
 
+  // Si enviamos FormData, dejamos que el navegador ponga el Content-Type (con boundary)
+  if (options.body instanceof FormData) {
+    delete headers['Content-Type']
+  }
+
   const response = await fetch(url, {
     ...options,
     headers,
@@ -94,6 +99,25 @@ export const eliminarEstacion = (id) => request(`/estaciones/${id}`, { method: '
 export const crearProgramaCatalogo = (datos) => request('/programas', { method: 'POST', body: JSON.stringify(datos) }).then(j => j.data)
 export const editarProgramaCatalogo = (id, datos) => request(`/programas/${id}`, { method: 'PUT', body: JSON.stringify(datos) }).then(j => j.data)
 export const eliminarProgramaCatalogo = (id) => request(`/programas/${id}`, { method: 'DELETE' })
+
+// ── Importación ──────────────────────────────────────────────
+export const previewImportar = (formData) => request('/importar/preview', { 
+  method: 'POST', 
+  body: formData,
+  // Para FormData no debemos enviar Content-Type application/json
+  headers: {} 
+}).then(j => j)
+
+export const guardarImportar = (formData) => request('/importar/guardar', { 
+  method: 'POST', 
+  body: formData,
+  headers: {}
+}).then(j => j)
+
+export const limpiarProgramacion = (estacion = null) => {
+  const endpoint = estacion ? `/programacion?estacion=${encodeURIComponent(estacion)}` : '/programacion'
+  return request(endpoint, { method: 'DELETE' })
+}
 
 // ── Galería ───────────────────────────────────────────────────
 export const getGaleria = () => request('/galeria')

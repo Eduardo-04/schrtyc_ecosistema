@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import {
-  ArrowLeft, Plus, Pencil, Trash2, ImageIcon, Loader2,
+  ArrowLeft, Plus, Pencil, Trash2, Image as ImageIcon, Loader2,
   AlertCircle, X, Check, Eye, EyeOff, ChevronDown, Link, Globe, Play, User, Clock, Search, RefreshCw
 } from 'lucide-react'
 import {
-  getProgramas,
+  fetchProgramas,
   fetchEstaciones,
   crearProgramaCatalogo,
   editarProgramaCatalogo,
@@ -95,7 +95,7 @@ export default function GestionProgramas() {
   const cargar = useCallback(async () => {
     setCargando(true)
     try {
-      const [progs, ests] = await Promise.all([getProgramas(), fetchEstaciones()])
+      const [progs, ests] = await Promise.all([fetchProgramas(), fetchEstaciones()])
       setProgramas(progs)
       setEstaciones(ests)
     } catch { mostrarToast('Error al cargar datos', 'error') }

@@ -26,18 +26,21 @@ Este documento resume los avances realizados en la sesión actual y establece lo
 - **Access Tokens:** Manejados exclusivamente en memoria dentro de React para prevenir ataques XSS.
 - **Persistencia:** El sistema intenta un refresh silencioso al cargar la aplicación para mantener la sesión.
 
-## 2. Diagnóstico del Error de Build
-- El error de compilación (`UNRESOLVED_ENTRY` / `rolldown`) persiste.
-- **Hallazgo Crítico:** Se detectó un import a mitad de archivo en `GestionGaleria.jsx` (línea 14). Los imports en ESM deben estar en el nivel superior. Es muy probable que este tipo de sintaxis esté rompiendo el nuevo motor de compilación `rolldown` de Vite 8.
+### Frontend: Estabilidad del Build (RESUELTO)
+- **Corrección de Sintaxis:** Se movieron los imports a la parte superior en `GestionGaleria.jsx` para cumplir con ESM.
+- **Corrección de Iconos:** Se arreglaron aliases de `lucide-react` incorrectos (`ImageIcon` -> `Image as ImageIcon`) que rompían el motor `rolldown`.
+- **Compatibilidad:** El proceso `npm run build` ahora completa con éxito en Vite 8 con Tailwind CSS activado.
+
+## 2. Diagnóstico del Error de Build (Resuelto)
+- El error `UNRESOLVED_ENTRY` era causado por:
+  1. Imports a mitad de archivo en componentes JSX.
+  2. Uso de iconos inexistentes en `lucide-react` (se usaba `ImageIcon` sin el alias `Image as ImageIcon`).
+  3. Exportaciones e importaciones de API con nombres inconsistentes (`getProgramas` vs `fetchProgramas`).
+- **Estado Actual:** Build exitoso en 1.1s.
 
 ## 3. Pendientes Críticos (Siguiente Sesión)
 
-### Estabilidad del Build (Prioridad 1)
-- [ ] Mover todos los imports a la parte superior en `GestionGaleria.jsx` y revisar otros componentes (`GestionPaginas.jsx`, `GestionUsuarios.jsx`) por patrones similares.
-- [ ] Restaurar el plugin de Tailwind CSS en `vite.config.js` una vez que el build base funcione.
-- [ ] Limpiar archivos temporales de debug (`debug_build.mjs`, `build_output.txt`).
-
-### Verificación de Funcionalidad (Prioridad 2)
+### Verificación de Funcionalidad (Prioridad 1)
 - [ ] Probar la creación de un usuario con rol limitado (ej. `editor_prensa`) y verificar que NO pueda acceder a Programación o Configuración.
 - [ ] Verificar que la importación de Excel realmente inserte en la tabla de MariaDB correctamente.
 
