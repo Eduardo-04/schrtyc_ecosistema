@@ -1,4 +1,7 @@
-const BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3005/api';
+const BASE = import.meta.env.VITE_API_URL ?? 
+  (typeof window !== 'undefined' && window.location.hostname !== 'localhost'
+    ? `${window.location.protocol}//${window.location.host}/api`
+    : 'http://localhost:3005/api');
 
 export const getUploadUrl = (path) => {
   if (!path) return '';

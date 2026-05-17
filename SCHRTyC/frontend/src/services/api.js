@@ -1,4 +1,7 @@
-const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3005/api'
+const BASE_URL = import.meta.env.VITE_API_URL ?? 
+  (typeof window !== 'undefined' && window.location.hostname !== 'localhost'
+    ? `${window.location.protocol}//${window.location.host}/api`
+    : 'http://localhost:3005/api')
 
 // Variable en memoria para el token (Seguridad)
 let accessToken = null
