@@ -234,7 +234,6 @@ async function seedDB(connection) {
         console.error(`Error seedeando ${item.table}:`, err.message);
       }
     }
-  }
 
   // Seed Usuario Admin Inicial
   try {
