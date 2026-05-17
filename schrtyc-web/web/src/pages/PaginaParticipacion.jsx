@@ -207,9 +207,9 @@ export default function PaginaParticipacion() {
   const tramites    = parseTramites(data?.tramites)
   const integrantes = parseIntegrantes(data?.integrantes)
 
-  const titulo        = data?.titulo          || 'Participación Ciudadana'
-  const heroBadge     = data?.herobadge       || 'Ciudadanía'
-  const heroDesc      = data?.herodescripcion || 'Mecanismos de participación y colaboración con el SCHRTyC.'
+  const titulo        = data?.titulo          || (cargando ? 'Cargando...' : '')
+  const heroBadge     = data?.herobadge       || ''
+  const heroDesc      = data?.herodescripcion || ''
   const seccionLabel  = data?.seccionlabel    || ''
   const seccionTitulo = data?.secciontitulo   || ''
   const contenido     = data?.contenido       || ''
@@ -313,33 +313,7 @@ export default function PaginaParticipacion() {
       {/* Integrantes siempre debajo de trámites */}
       <SeccionIntegrantes integrantes={integrantes} />
 
-      {tramites.length === 0 && (
-        <div className="bg-white py-14">
-          <div className="max-w-7xl mx-auto px-6">
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 24 }}>
-              {[
-                { icono: '📢', titulo: 'Buzón Ciudadano',           desc: 'Envía tus comentarios, sugerencias o quejas sobre nuestros servicios y contenidos.' },
-                { icono: '🎙️', titulo: 'Propuestas de Programación', desc: 'Propón temas, programas o contenidos que te gustaría ver o escuchar en nuestras estaciones.' },
-                { icono: '🤝', titulo: 'Convenios y Colaboraciones', desc: 'Conoce cómo puede tu organización colaborar con el SCHRTyC en proyectos comunicativos.' },
-              ].map(c => (
-                <div key={c.titulo} style={{ borderRadius: 14, border: '1px solid #f3f4f6', padding: 24 }}>
-                  <span style={{ fontSize: 28 }}>{c.icono}</span>
-                  <h3 style={{ fontWeight: 800, marginTop: 12, marginBottom: 8, color: '#611232' }}>{c.titulo}</h3>
-                  <p style={{ fontSize: 14, color: '#6b7280', lineHeight: 1.7 }}>{c.desc}</p>
-                </div>
-              ))}
-            </div>
-            <div style={{ backgroundColor: '#f8f9fa', borderRadius: 16, marginTop: 48, padding: 32, textAlign: 'center' }}>
-              <p style={{ fontSize: 36, marginBottom: 12 }}>📬</p>
-              <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 8, color: '#611232' }}>¿Tienes algo que decirnos?</h3>
-              <p style={{ fontSize: 14, color: '#6b7280', maxWidth: 480, margin: '0 auto' }}>
-                Comunícate con nosotros al conmutador (961) 61 705-00 Ext. 57000 o visítanos en
-                Libramiento Norte Poniente s/n, Colonia San Jorge, Tuxtla Gutiérrez, Chiapas.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Si no hay trámites ni integrantes, no mostrar el bloque estático anterior */}
     </>
   )
 }

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { getProgramacionHoy, getProgramas, getEstaciones } from '../services/api'
+import { getProgramacionHoy, getProgramas, getEstaciones, getUploadUrl } from '../services/api'
 import { estaEnVivo, esFuturo, getIniciales } from '../utils/date'
 import { detectarTipoMedia, getYoutubeThumbnail } from '../utils/media'
 
@@ -20,7 +20,7 @@ const alturaEmbed = (url) => {
 }
 
 const getCardImage = (prog) => {
-  if (prog.imagen) return { src: prog.imagen, tipo: 'poster' }
+  if (prog.imagen) return { src: getUploadUrl(prog.imagen), tipo: 'poster' }
   const yt = (prog.embeds || []).find(e => detectarTipoMedia(e.url) === 'youtube')
   if (yt) {
     const thumb = getYoutubeThumbnail(yt.url)
@@ -110,7 +110,7 @@ function ModalPrograma({ programa, onClose }) {
       <div className="bg-white rounded-2xl overflow-hidden max-w-lg w-full shadow-2xl"
         onClick={e => e.stopPropagation()}>
         {programa.imagen ? (
-          <img src={programa.imagen} alt={programa.nombre} className="w-full h-48 object-cover" />
+          <img src={getUploadUrl(programa.imagen)} alt={programa.nombre} className="w-full h-48 object-cover" />
         ) : (
           <div style={{ background: 'linear-gradient(135deg, #611232 0%, #A57F2C 100%)', height: '160px' }}
             className="flex flex-col items-center justify-center text-white p-6 gap-3">
@@ -576,7 +576,7 @@ export default function PaginaCanal10() {
               {catalogoTV.map(prog => (
                 <button key={prog.id} onClick={() => setModalCat(prog)} className="catalogo-item">
                   {prog.imagen ? (
-                    <img src={prog.imagen} alt={prog.nombre}
+                    <img src={getUploadUrl(prog.imagen)} alt={prog.nombre}
                       style={{ width: '100%', aspectRatio: '2/3', objectFit: 'cover', display: 'block', backgroundColor: '#f3f4f6' }}
                       loading="lazy" 
                       decoding="async"

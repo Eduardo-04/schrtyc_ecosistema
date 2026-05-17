@@ -146,7 +146,7 @@ function RenderMediaItem({ item }) {
 }
 
 function TramiteCard({ tramite }) {
-  const tienePortada = tramite.imagenportada && tramite.imagenportada.startsWith('http')
+  const tienePortada = !!tramite.imagenportada
 
   // Si tiene portada arranca cerrado, sino abierto
   const [open, setOpen] = useState(!tienePortada)
@@ -335,11 +335,11 @@ export default function PaginaCine() {
   })()
 
   const totalDocs     = mediaItems.filter(i => ['pdf', 'drive', 'link'].includes(i.tipo)).length
-  const heroBadge     = data?.herobadge       || 'SCHRTyC'
-  const heroDesc      = data?.herodescripcion || 'Información institucional de la sección.'
-  const seccionLabel  = data?.seccionlabel    || 'Contenido institucional'
-  const seccionTitulo = data?.secciontitulo   || (data?.titulo || 'Información')
-  const tituloHero    = data?.titulo           || 'Cargando...'
+  const heroBadge     = data?.herobadge       || ''
+  const heroDesc      = data?.herodescripcion || ''
+  const seccionLabel  = data?.seccionlabel    || ''
+  const seccionTitulo = data?.secciontitulo   || ''
+  const tituloHero    = data?.titulo           || (loading ? 'Cargando...' : '')
   const imagenPortada = data?.imagenportada || data?.imagen_portada || ''
 
   return (

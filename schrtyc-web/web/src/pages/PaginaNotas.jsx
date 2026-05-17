@@ -124,7 +124,7 @@ export default function PaginaNotas() {
         <div className="landscape-media">
           {n.imagen ? (
             <img
-              src={n.imagen}
+              src={getUploadUrl(n.imagen)}
               alt={n.titulo}
               className="radical-img"
               style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
@@ -326,7 +326,7 @@ export default function PaginaNotas() {
           <div className="featured-landscape-media">
             {destacada.imagen ? (
               <img
-                src={destacada.imagen}
+                src={getUploadUrl(destacada.imagen)}
                 alt={destacada.titulo}
                 className="card-img-dest"
                 style={{

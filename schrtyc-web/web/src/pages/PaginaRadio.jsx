@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import { getEstaciones, getProgramacionHoy, getProgramas } from '../services/api'
+import { getEstaciones, getProgramacionHoy, getProgramas, getUploadUrl } from '../services/api'
 import { estaEnVivo, esFuturo, getIniciales } from '../utils/date'
 import { esUrlValida, detectarTipoMedia, getYoutubeThumbnail, normalizarEmbedUrl } from '../utils/media'
 
@@ -24,7 +24,7 @@ const tipoLabelSpotify = (url) => {
 }
 
 const getCardImage = (prog) => {
-  if (prog.imagen) return prog.imagen
+  if (prog.imagen) return getUploadUrl(prog.imagen)
   const yt = (prog.embeds || []).find(e => detectarTipoMedia(e.url) === 'youtube')
   if (yt) return getYoutubeThumbnail(yt.url)
   return null
@@ -188,7 +188,7 @@ function ModalPrograma({ programa, onClose }) {
       <div className="bg-white rounded-2xl overflow-hidden max-w-lg w-full shadow-2xl"
         onClick={e => e.stopPropagation()}>
         {programa.imagen
-          ? <img src={programa.imagen} alt={programa.nombre} className="w-full h-48 object-cover" />
+          ? <img src={getUploadUrl(programa.imagen)} alt={programa.nombre} className="w-full h-48 object-cover" />
           : <div style={{ background: 'linear-gradient(135deg, #611232 0%, #A57F2C 100%)', height: '160px' }}
               className="flex flex-col items-center justify-center text-white p-6 gap-3">
               <div style={{ width: '56px', height: '56px', borderRadius: '14px', backgroundColor: 'rgba(255,255,255,0.15)', border: '2px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -423,7 +423,7 @@ function RadioPlayer({ radios, seleccionada, setSeleccionada }) {
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
             {actual?.imagen
-              ? <img src={actual.imagen} alt={actual.nombre}
+              ? <img src={getUploadUrl(actual.imagen)} alt={actual.nombre}
                   style={{ width: '56px', height: '56px', borderRadius: '14px', objectFit: 'cover', flexShrink: 0 }}
                   onError={e => e.target.style.display = 'none'} />
               : <div style={{ width: '56px', height: '56px', borderRadius: '14px', backgroundColor: 'rgba(255,255,255,0.08)', border: '2px solid rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>

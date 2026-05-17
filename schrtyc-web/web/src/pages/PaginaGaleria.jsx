@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getPaginas, getGaleria } from '../services/api'
+import { getPaginas, getGaleria, getUploadUrl } from '../services/api'
 
 // ── Componente de Tarjeta de Obra ──────────────────────────────────────────
 function ObraItem({ obra, onClick }) {
@@ -10,7 +10,7 @@ function ObraItem({ obra, onClick }) {
     >
       <div className="relative rounded-2xl overflow-hidden bg-gray-50 border border-gray-100 shadow-sm transition-all duration-500 group-hover:shadow-xl mb-4 flex items-center justify-center">
         <img
-          src={obra.imagen}
+          src={getUploadUrl(obra.imagen)}
           alt={obra.titulo}
           className="w-full h-auto block transition-transform duration-1000 group-hover:scale-110"
           loading="lazy"
@@ -54,9 +54,9 @@ function ModalObraFull({ obra, onClose }) {
 
       <div className="w-full md:w-3/5 h-64 md:h-full bg-neutral-900 flex items-center justify-center p-8 relative overflow-hidden">
         {/* Fondo decorativo difuminado */}
-        <img src={obra.imagen} className="absolute inset-0 w-full h-full object-cover blur-3xl opacity-20 scale-150" alt="" />
+        <img src={getUploadUrl(obra.imagen)} className="absolute inset-0 w-full h-full object-cover blur-3xl opacity-20 scale-150" alt="" />
         <img
-          src={obra.imagen}
+          src={getUploadUrl(obra.imagen)}
           alt={obra.titulo}
           className="relative max-w-full max-h-full object-contain drop-shadow-[0_35px_60px_rgba(0,0,0,0.6)]"
         />
@@ -196,7 +196,7 @@ export default function PaginaGaleria() {
             <div className="order-1 lg:order-2 relative px-4 py-4">
               <div className="absolute top-0 right-0 w-[90%] h-[90%] border-2 border-[#A57F2C] rounded-3xl translate-x-4 -translate-y-4 opacity-30"></div>
               <div className="relative rounded-3xl overflow-hidden shadow-2xl border-8 border-white bg-gray-50 flex items-center justify-center">
-                <img src={imagenPortada} alt="Galeria" className="w-full h-auto max-h-[500px] object-contain block bg-white" />
+                <img src={getUploadUrl(imagenPortada)} alt="Galeria" className="w-full h-auto max-h-[500px] object-contain block bg-white" />
               </div>
               <div className="absolute -bottom-2 right-10 bg-white px-4 py-2 rounded-xl shadow-lg border border-gray-50 flex items-center gap-3">
                 <div className="w-2 h-2 rounded-full bg-[#A57F2C] animate-pulse"></div>

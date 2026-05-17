@@ -552,7 +552,7 @@ export default function PaginaNotaDetalle() {
                     {soloImagenes.length === 1 && (
                       <div onClick={() => openLightbox(0)} style={{ borderRadius:'14px', overflow:'hidden',
                         boxShadow:'0 2px 12px rgba(0,0,0,.1)', cursor:'pointer' }}>
-                        <img src={soloImagenes[0]} alt="Galería"
+                        <img src={getUploadUrl(soloImagenes[0])} alt="Galería"
                           style={{ width:'100%', height:'420px', objectFit:'cover', display:'block', transition:'transform .4s' }}
                           onMouseEnter={e => e.target.style.transform='scale(1.02)'}
                           onMouseLeave={e => e.target.style.transform='scale(1)'}
@@ -567,7 +567,7 @@ export default function PaginaNotaDetalle() {
                     {soloImagenes.length === 3 && (
                       <div style={{ display:'grid', gap:'12px' }}>
                         <div onClick={() => openLightbox(0)} style={{ borderRadius:'14px', overflow:'hidden', height:'280px', boxShadow:'0 2px 8px rgba(0,0,0,.08)', cursor:'pointer' }}>
-                          <img src={soloImagenes[0]} alt="Imagen 1" style={{ width:'100%', height:'100%', objectFit:'cover', display:'block', transition:'transform .4s' }} onMouseEnter={e => e.target.style.transform='scale(1.02)'} onMouseLeave={e => e.target.style.transform='scale(1)'} onError={e => e.target.parentElement.style.display='none'} />
+                          <img src={getUploadUrl(soloImagenes[0])} alt="Imagen 1" style={{ width:'100%', height:'100%', objectFit:'cover', display:'block', transition:'transform .4s' }} onMouseEnter={e => e.target.style.transform='scale(1.02)'} onMouseLeave={e => e.target.style.transform='scale(1)'} onError={e => e.target.parentElement.style.display='none'} />
                         </div>
                         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px' }}>
                           {soloImagenes.slice(1).map((url, i) => <GaleriaImg key={i} src={url} alt={`Imagen ${i+2}`} onClick={() => openLightbox(i+1)} />)}
@@ -582,7 +582,7 @@ export default function PaginaNotaDetalle() {
                     {soloImagenes.length >= 5 && (
                       <div style={{ display:'grid', gap:'12px' }}>
                         <div onClick={() => openLightbox(0)} style={{ borderRadius:'14px', overflow:'hidden', height:'320px', boxShadow:'0 2px 8px rgba(0,0,0,.08)', cursor:'pointer' }}>
-                          <img src={soloImagenes[0]} alt="Imagen 1" style={{ width:'100%', height:'100%', objectFit:'cover', display:'block', transition:'transform .4s' }} onMouseEnter={e => e.target.style.transform='scale(1.02)'} onMouseLeave={e => e.target.style.transform='scale(1)'} onError={e => e.target.parentElement.style.display='none'} />
+                          <img src={getUploadUrl(soloImagenes[0])} alt="Imagen 1" style={{ width:'100%', height:'100%', objectFit:'cover', display:'block', transition:'transform .4s' }} onMouseEnter={e => e.target.style.transform='scale(1.02)'} onMouseLeave={e => e.target.style.transform='scale(1)'} onError={e => e.target.parentElement.style.display='none'} />
                         </div>
                         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(200px, 1fr))', gap:'12px' }}>
                           {soloImagenes.slice(1).map((url, i) => <GaleriaImg key={i} src={url} alt={`Imagen ${i+2}`} onClick={() => openLightbox(i+1)} />)}

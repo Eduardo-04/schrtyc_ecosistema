@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getPaginas } from '../services/api'
+import { getPaginas, getUploadUrl } from '../services/api'
 
 const parseTramites = (val) => {
   if (!val) return []
@@ -114,7 +114,7 @@ export default function PaginaEtica() {
                 
                 <div className="relative rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.15)] border-8 border-white bg-white group">
                   <img 
-                    src={imagenPortada} 
+                    src={getUploadUrl(imagenPortada)} 
                     alt={titulo} 
                     className="w-full h-auto min-h-[300px] max-h-[500px] object-contain block transition-transform duration-1000 group-hover:scale-110" 
                   />
@@ -144,7 +144,7 @@ export default function PaginaEtica() {
                   <div className="flex-1">
                     {item.imagenportada && (
                       <div className="w-full h-32 overflow-hidden rounded-xl mb-4 bg-gray-100 shadow-inner">
-                        <img src={item.imagenportada} className="w-full h-full object-cover" alt="" />
+                        <img src={getUploadUrl(item.imagenportada)} className="w-full h-full object-cover" alt="" />
                       </div>
                     )}
                     <h3 className="font-bold text-sm mb-1" style={{ color: '#611232' }}>{item.titulo}</h3>

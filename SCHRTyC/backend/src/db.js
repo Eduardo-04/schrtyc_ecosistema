@@ -136,6 +136,18 @@ async function initDB() {
       )
     `);
 
+    // Tabla Configuracion
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS configuracion (
+        id INT PRIMARY KEY,
+        identidad JSON,
+        contacto JSON,
+        redes JSON,
+        seo JSON,
+        sistema JSON
+      )
+    `);
+
     // Tabla Usuarios (RBAC)
     await connection.query(`
       CREATE TABLE IF NOT EXISTS usuarios (
