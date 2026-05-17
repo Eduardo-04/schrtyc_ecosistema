@@ -34,8 +34,9 @@ function ScrollToTop() {
 }
 
 export default function App() {
+  const base = window.location.pathname.startsWith('/nuevo') ? '/nuevo' : '/'
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={base}>
       <ScrollToTop />
       <div className="min-h-screen bg-[#f8f9fa] flex flex-col">
         <Header />
