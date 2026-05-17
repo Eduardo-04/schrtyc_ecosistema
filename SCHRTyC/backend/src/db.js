@@ -175,7 +175,11 @@ async function initDB() {
 
 async function seedDB(connection) {
   const dataDir = path.join(__dirname, 'data');
-  if (!fs.existsSync(dataDir)) return;
+  console.log('🔍 [SEED] Iniciando seedDB. Directorio de datos esperado:', dataDir);
+  if (!fs.existsSync(dataDir)) {
+    console.error('❌ [SEED] La carpeta de datos de semilla no existe en el contenedor:', dataDir);
+    return;
+  }
 
   const tablesToSeed = [
     { table: 'noticias', file: 'noticias_db.json' },
@@ -190,12 +194,16 @@ async function seedDB(connection) {
 
   for (const item of tablesToSeed) {
     const filePath = path.join(dataDir, item.file);
-    if (fs.existsSync(filePath)) {
-      try {
-        const [rows] = await connection.query(`SELECT COUNT(*) as count FROM ${item.table}`);
-        if (rows[0].count === 0) {
-          console.log(`Seedeando tabla ${item.table}...`);
-          const content = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    if (!fs.existsSync(filePath)) {
+      console.warn(`⚠️ [SEED] Archivo de semilla no encontrado para tabla ${item.table}: ${filePath}`);
+      continue;
+    }
+    try {
+      const [rows] = await connection.query(`SELECT COUNT(*) as count FROM ${item.table}`);
+      console.log(`ℹ️ [SEED] Tabla ${item.table} tiene actualmente ${rows[0].count} registros.`);
+      if (rows[0].count === 0) {
+        console.log(`🚀 [SEED] Seedeando tabla ${item.table}...`);
+        const content = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 
           if (item.isSingle) {
             await connection.query(`INSERT INTO ${item.table} (id, identidad, contacto, redes, seo, sistema) VALUES (?, ?, ?, ?, ?, ?)`, 
