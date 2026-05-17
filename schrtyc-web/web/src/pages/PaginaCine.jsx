@@ -351,15 +351,6 @@ export default function PaginaCine() {
     <>
       {/* ══ HERO — mismo tamaño compacto que PaginaEtica ══ */}
       <div style={{ backgroundColor: '#611232' }} className="relative text-white py-12 overflow-hidden">
-        {/* Patrón de puntos sutil */}
-        <svg className="absolute inset-0 opacity-[0.04] pointer-events-none" width="100%" height="100%">
-          <defs>
-            <pattern id="hero-dots" width="24" height="24" patternUnits="userSpaceOnUse">
-              <circle cx="3" cy="3" r="2.5" fill="currentColor" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#hero-dots)" />
-        </svg>
 
         <div className="relative z-10 max-w-7xl mx-auto px-6">
           <p className="text-xs tracking-widest uppercase opacity-60 mb-2">
