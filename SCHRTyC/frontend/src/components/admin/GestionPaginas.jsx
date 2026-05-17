@@ -3,10 +3,11 @@ import {
   FileText, Film, Users, Shield, Scale, Pencil, Clock,
   X, Check, RefreshCw, HardDrive, MonitorPlay,
   Image as ImageIcon, ExternalLink, LayoutTemplate,
-  Plus, Trash2, ChevronDown, ChevronUp, Settings2, ImagePlus, UserSquare2, Palette
+  Plus, Trash2, ChevronDown, ChevronUp, Settings2, ImagePlus, UserSquare2, Palette, Upload
 } from 'lucide-react'
 import { getPaginas, editarPagina, getUploadUrl } from '../../services/api'
 import ArchiveroInput from '../shared/ArchiveroInput'
+import ArchiveroModal from '../shared/ArchiveroModal'
 
 const PAGINAS_FIJAS = [
 
@@ -366,6 +367,26 @@ function ModalEditor({ pagina, schema, onClose, onSave }) {
   const [integrantes, setIntegrantes] = useState(() => parseIntegrantes(pagina?.integrantes))
   const [saving, setSaving] = useState(false)
   const [error,  setError]  = useState(null)
+  const [mostrarSubidaDoc, setMostrarSubidaDoc] = useState(false)
+
+  const handleDocSeleccionado = useCallback((ruta) => {
+    // Extraer el nombre de archivo limpio de la ruta como título sugerido
+    const nombreLimpio = decodeURIComponent(ruta.split('/').pop())
+      .replace(/^\d+-/, '') // quitar el timestamp
+      .replace(/-+/g, ' ') // reemplazar guiones por espacios
+      .replace(/\.[^/.]+$/, ''); // quitar extensión
+    
+    const lineaNueva = `${ruta} ${nombreLimpio}`;
+    setForm(f => {
+      const actual = f.multimedia || '';
+      const separador = actual.trim() ? '\n' : '';
+      return {
+        ...f,
+        multimedia: `${actual}${separador}${lineaNueva}`
+      };
+    });
+    setMostrarSubidaDoc(false);
+  }, []);
 
   const elementosPreview = useMemo(() => 
     (form.multimedia || '').split('\n').map(parseLineaMedia).filter(Boolean),
@@ -601,6 +622,14 @@ function ModalEditor({ pagina, schema, onClose, onSave }) {
                       <p className="text-xs text-gray-400 mt-0.5">PDFs, actas, leyes, videos, imágenes.</p>
                     </div>
                     <div className="flex gap-2">
+                      <button 
+                        type="button" 
+                        onClick={() => setMostrarSubidaDoc(true)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-[#611232] text-white hover:bg-[#801842] text-xs font-bold rounded-xl shadow-sm transition-all"
+                      >
+                        <Upload size={13} />
+                        Subir Documento
+                      </button>
                       {['transparencia', 'comite', 'general'].map(tipo => (
                         <button key={tipo} type="button" onClick={() => aplicarPlantilla(tipo)} title={`Plantilla ${tipo}`}
                           className="p-2 bg-gray-100 hover:bg-blue-100 hover:text-blue-700 text-gray-500 rounded-lg transition-colors">
@@ -664,6 +693,12 @@ function ModalEditor({ pagina, schema, onClose, onSave }) {
           </button>
         </div>
       </div>
+      {mostrarSubidaDoc && (
+        <ArchiveroModal 
+          onSelect={handleDocSeleccionado}
+          onCerrar={() => setMostrarSubidaDoc(false)}
+        />
+      )}
     </div>
   )
 }

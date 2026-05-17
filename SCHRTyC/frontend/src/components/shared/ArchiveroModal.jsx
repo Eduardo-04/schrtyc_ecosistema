@@ -1,6 +1,23 @@
 import { useState, useEffect, useRef } from 'react'
-import { X, Search, FileImage, RefreshCw, CheckCircle2, Upload, Loader2 } from 'lucide-react'
+import { X, Search, FileImage, RefreshCw, CheckCircle2, Upload, Loader2, FileText, File } from 'lucide-react'
 import { getArchivero, subirArchivo, getUploadUrl } from '../../services/api'
+
+const getDocumentIcon = (ruta) => {
+  const ext = ruta.split('.').pop().toLowerCase();
+  if (ext === 'pdf') {
+    return { icon: FileText, color: 'text-orange-500', bg: 'bg-orange-50', label: 'PDF' };
+  }
+  if (['doc', 'docx'].includes(ext)) {
+    return { icon: FileText, color: 'text-blue-500', bg: 'bg-blue-50', label: 'Word' };
+  }
+  if (['xls', 'xlsx', 'csv'].includes(ext)) {
+    return { icon: FileText, color: 'text-emerald-500', bg: 'bg-emerald-50', label: 'Excel' };
+  }
+  if (['ppt', 'pptx'].includes(ext)) {
+    return { icon: FileText, color: 'text-rose-500', bg: 'bg-rose-50', label: 'PPT' };
+  }
+  return { icon: File, color: 'text-slate-500', bg: 'bg-slate-50', label: 'Archivo' };
+};
 
 export default function ArchiveroModal({ onSelect, onCerrar }) {
   const [files, setFiles] = useState([])
@@ -30,8 +47,22 @@ export default function ArchiveroModal({ onSelect, onCerrar }) {
 
   const handleUpload = async (file) => {
     if (!file) return
-    if (!file.type.startsWith('image/')) {
-      alert('Solo se permiten imágenes')
+    
+    const allowedExtensions = /\.(jpg|jpeg|png|gif|webp|pdf|doc|docx|xls|xlsx|ppt|pptx|txt|csv)$/i;
+    const allowedMimeTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.ms-powerpoint',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      'text/plain',
+      'text/csv'
+    ];
+    
+    if (!file.type.startsWith('image/') && !allowedMimeTypes.includes(file.type) && !allowedExtensions.test(file.name)) {
+      alert('Tipo de archivo no permitido. Solo imágenes y documentos comunes (PDF, Word, Excel, PowerPoint, TXT, CSV)')
       return
     }
 
@@ -39,8 +70,6 @@ export default function ArchiveroModal({ onSelect, onCerrar }) {
     try {
       const nuevoArchivo = await subirArchivo(file)
       await cargar() // Recargar lista
-      // Opcional: seleccionar automáticamente el archivo recién subido
-      // onSelect(nuevoArchivo.ruta) 
     } catch (err) {
       alert('Error al subir el archivo: ' + err.message)
     } finally {
@@ -95,7 +124,7 @@ export default function ArchiveroModal({ onSelect, onCerrar }) {
           type="file" 
           ref={fileInputRef} 
           className="hidden" 
-          accept="image/*"
+          accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv"
           onChange={(e) => handleUpload(e.target.files[0])}
         />
 
@@ -113,7 +142,7 @@ export default function ArchiveroModal({ onSelect, onCerrar }) {
               className="flex items-center gap-3 px-6 py-3 bg-[#611232] text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-[#4a0d26] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-[#611232]/20"
             >
               {uploading ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}
-              {uploading ? 'Subiendo...' : 'Nueva Foto'}
+              {uploading ? 'Subiendo...' : 'Subir Archivo'}
             </button>
 
             <button onClick={onCerrar} className="p-3 hover:bg-gray-100 rounded-full transition-all text-gray-400">
@@ -168,12 +197,22 @@ export default function ArchiveroModal({ onSelect, onCerrar }) {
                   className="group flex flex-col gap-2 text-left hover:scale-105 transition-all"
                 >
                   <div className="aspect-square rounded-2xl overflow-hidden bg-gray-100 border border-gray-50 relative">
-                    <img 
-                      src={getUploadUrl(f.ruta)} 
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
-                      alt={f.nombre} 
-                      onError={(e) => { e.target.src = 'https://placehold.co/400x400/f3f4f6/611232?text=Error' }}
-                    />
+                    {/\.(jpg|jpeg|png|gif|webp)$/i.test(f.ruta) ? (
+                      <img 
+                        src={getUploadUrl(f.ruta)} 
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                        alt={f.nombre} 
+                        onError={(e) => { e.target.src = 'https://placehold.co/400x400/f3f4f6/611232?text=Error' }}
+                      />
+                    ) : (() => {
+                      const docMeta = getDocumentIcon(f.ruta);
+                      return (
+                        <div className={`w-full h-full flex flex-col items-center justify-center ${docMeta.bg} ${docMeta.color} p-4`}>
+                          <docMeta.icon size={36} strokeWidth={2} />
+                          <span className="text-[10px] font-black uppercase tracking-widest mt-2 px-2 py-0.5 rounded-full bg-white/60 shadow-sm border border-gray-100">{docMeta.label}</span>
+                        </div>
+                      );
+                    })()}
                     <div className="absolute inset-0 bg-[#611232]/0 group-hover:bg-[#611232]/20 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
                       <CheckCircle2 className="text-white drop-shadow-lg" size={32} />
                     </div>

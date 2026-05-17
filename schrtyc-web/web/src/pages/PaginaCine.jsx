@@ -59,22 +59,24 @@ const IconChevron = () => (
 function procesarMediaUrl(lineaRaw) {
   const linea = lineaRaw.trim()
   if (!linea) return null
-  if (linea.startsWith('##')) return { tipo: 'header', titulo: linea.replace('##', '').trim() }
+  if (linea.startsWith('##') || linea.startsWith('▶') || (!linea.startsWith('http') && !linea.includes('.') && !linea.startsWith('/uploads'))) {
+    return { tipo: 'header', titulo: linea.replace('##', '').replace('▶', '').trim() }
+  }
 
-  const partes = linea.split('|')
+  const partes = linea.includes('|') ? linea.split('|') : linea.split(' ')
   const url = partes[0].trim()
-  const tituloAdmin = partes.length > 1 ? partes[1].trim() : null
+  const tituloAdmin = partes.length > 1 ? (linea.includes('|') ? partes[1].trim() : partes.slice(1).join(' ').trim()) : null
   const u = url.toLowerCase()
 
   let nombreArchivo = 'Enlace adjunto'
   try {
-    const urlObj = new URL(url)
+    const urlObj = new URL(url.startsWith('/') ? `http://localhost${url}` : url)
     const pathParts = urlObj.pathname.split('/')
     const lastPart = pathParts[pathParts.length - 1]
     if (lastPart && !lastPart.includes('view') && !lastPart.includes('edit')) {
       nombreArchivo = decodeURIComponent(lastPart).replace(/[-_]/g, ' ').replace(/\.pdf$/i, '')
     } else if (u.includes('drive.google')) nombreArchivo = 'Documento en Google Drive'
-  } catch { /* url inválida */ }
+  } catch { /* ignore */ }
 
   const tituloFinal = tituloAdmin || nombreArchivo
 
@@ -83,12 +85,15 @@ function procesarMediaUrl(lineaRaw) {
       const parsed = new URL(url)
       const id = parsed.searchParams.get('v') || (parsed.hostname.includes('youtu.be') ? parsed.pathname.slice(1) : null)
       if (id) return { tipo: 'youtube', src: `https://www.youtube.com/embed/${id}?rel=0`, titulo: tituloFinal }
-    } catch { /* ignorar */ }
+    } catch { /* ignore */ }
   }
-  if (u.match(/\.(jpeg|jpg|gif|png|webp)(\?.*)?$/)) return { tipo: 'imagen', src: getUploadUrl(url), titulo: tituloFinal }
-  if (u.includes('.pdf') || u.includes('/pdf'))       return { tipo: 'pdf',    src: url, titulo: tituloFinal }
+
+  const uploadUrl = getUploadUrl(url)
+
+  if (u.match(/\.(jpeg|jpg|gif|png|webp)(\?.*)?$/)) return { tipo: 'imagen', src: uploadUrl, titulo: tituloFinal }
+  if (u.includes('.pdf') || u.includes('/pdf'))       return { tipo: 'pdf',    src: uploadUrl, titulo: tituloFinal }
   if (u.includes('drive.google.com'))                 return { tipo: 'drive',  src: url, titulo: tituloFinal }
-  return { tipo: 'link', src: url, titulo: tituloFinal }
+  return { tipo: 'link', src: uploadUrl, titulo: tituloFinal }
 }
 
 function RenderMediaItem({ item }) {

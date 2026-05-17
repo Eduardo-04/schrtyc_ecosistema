@@ -20,8 +20,8 @@ router.get('/', verificarToken, (req, res) => {
         if (stat && stat.isDirectory()) {
           results = results.concat(getFiles(filePath, path.join(prefix, file)));
         } else {
-          // Solo imágenes
-          if (/\.(jpg|jpeg|png|gif|webp)$/i.test(file)) {
+          // Imágenes y documentos comunes
+          if (/\.(jpg|jpeg|png|gif|webp|pdf|doc|docx|xls|xlsx|ppt|pptx|txt|csv)$/i.test(file)) {
             results.push({
               nombre: file,
               ruta: `/uploads/${path.join(prefix, file).replace(/\\/g, '/')}`,
@@ -63,10 +63,22 @@ const upload = multer({
   storage,
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
   fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) {
+    // Permitir imágenes y documentos comunes
+    const allowedMimeTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.ms-powerpoint',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      'text/plain',
+      'text/csv'
+    ];
+    if (file.mimetype.startsWith('image/') || allowedMimeTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error('Solo se permiten imágenes'));
+      cb(new Error('Tipo de archivo no permitido. Solo imágenes y documentos comunes (PDF, Word, Excel, PowerPoint, TXT, CSV)'));
     }
   }
 });

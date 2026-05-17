@@ -19,21 +19,23 @@ const ICONOS_TRAMITE = {
 function procesarMediaUrl(lineaRaw) {
   const linea = lineaRaw.trim()
   if (!linea) return null
-  if (linea.startsWith('▶')) return { tipo: 'header', titulo: linea.replace('▶', '').trim() }
-  const partes = linea.split(' ')
+  if (linea.startsWith('▶') || (!linea.startsWith('http') && !linea.includes('.') && !linea.startsWith('/uploads'))) {
+    return { tipo: 'header', titulo: linea.replace('▶', '').trim() }
+  }
+  const partes = linea.includes('|') ? linea.split('|') : linea.split(' ')
   const url = partes[0].trim()
-  const tituloAdmin = partes.length > 1 ? partes.slice(1).join(' ').trim() : null
+  const tituloAdmin = partes.length > 1 ? (linea.includes('|') ? partes[1].trim() : partes.slice(1).join(' ').trim()) : null
   const u = url.toLowerCase()
   let nombreArchivo = 'Enlace adjunto'
   try {
-    const urlObj = new URL(url)
+    const urlObj = new URL(url.startsWith('/') ? `http://localhost${url}` : url)
     const pathParts = urlObj.pathname.split('/')
     const lastPart = pathParts[pathParts.length - 1]
     if (lastPart && !lastPart.includes('view') && !lastPart.includes('edit'))
       nombreArchivo = decodeURIComponent(lastPart.replace(/-/g, ' ').replace(/\.pdf$/i, ''))
     else if (u.includes('drive.google')) nombreArchivo = 'Documento en Google Drive'
   } catch {}
-  return { tipo: 'link', src: url, titulo: tituloAdmin || nombreArchivo }
+  return { tipo: 'link', src: getUploadUrl(url), titulo: tituloAdmin || nombreArchivo }
 }
 
 export default function PaginaEtica() {

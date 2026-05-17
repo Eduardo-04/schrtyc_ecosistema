@@ -3,7 +3,7 @@ import { Image as ImageIcon, Upload, Loader2, Trash2 } from 'lucide-react'
 import ArchiveroModal from './ArchiveroModal'
 import { subirArchivo } from '../../services/api'
 
-const ArchiveroInput = memo(({ value, onChange, label, placeholder, name }) => {
+const ArchiveroInput = memo(({ value, onChange, label, placeholder, name, accept = "image/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv", buttonLabel = "Galería" }) => {
   const [showArchivero, setShowArchivero] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [dragActive, setDragActive] = useState(false)
@@ -65,7 +65,7 @@ const ArchiveroInput = memo(({ value, onChange, label, placeholder, name }) => {
           type="file" 
           ref={fileInputRef} 
           className="hidden" 
-          accept="image/*"
+          accept={accept}
           onChange={(e) => handleUpload(e.target.files[0])}
         />
 
@@ -95,7 +95,7 @@ const ArchiveroInput = memo(({ value, onChange, label, placeholder, name }) => {
           onClick={() => setShowArchivero(true)}
           className="px-6 py-3 bg-gray-50 border border-gray-100 rounded-2xl text-[10px] font-black text-[#611232] uppercase tracking-widest hover:bg-white hover:border-[#611232] transition-all whitespace-nowrap shadow-sm"
         >
-          Galería
+          {buttonLabel}
         </button>
       </div>
 
