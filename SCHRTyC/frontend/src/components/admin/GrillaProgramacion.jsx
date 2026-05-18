@@ -202,10 +202,11 @@ function ModalPrograma({ programa, estaciones, onGuardar, onCerrar }) {
                 value={form.estacion} 
                 onChange={e => {
                   const val = e.target.value;
+                  const stationObj = estaciones.find(s => s.nombre === val);
                   setForm(f => ({
                     ...f,
                     estacion: val,
-                    tipo: val.toLowerCase().includes('radio') ? 'Radio' : 'TV'
+                    tipo: stationObj ? stationObj.tipo : (val.toLowerCase().includes('radio') ? 'Radio' : 'TV')
                   }))
                 }} 
                 className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-xs font-black uppercase tracking-widest outline-none focus:bg-white"
