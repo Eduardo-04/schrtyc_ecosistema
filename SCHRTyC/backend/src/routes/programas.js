@@ -141,7 +141,12 @@ router.put('/:id', upload.single('imagen'), async (req, res) => {
       [resto.nombre, resto.conductor, resto.horario, resto.descripcion, resto.descripcionLarga, imagen, resto.tipo, resto.estacion, activo !== undefined ? (activo === 'true' || activo === true ? 1 : 0) : programaActual.activo, JSON.stringify(finalEmbeds), id]
     )
 
-    res.json({ ok: true, message: 'Programa actualizado' })
+    const [updatedRows] = await pool.query('SELECT * FROM programas WHERE id = ?', [id])
+    const updated = {
+      ...updatedRows[0],
+      embeds: parsearEmbeds(updatedRows[0].embeds)
+    }
+    res.json({ ok: true, data: updated })
   } catch (error) {
     console.error('Error al actualizar programa:', error)
     res.status(500).json({ ok: false, message: 'Error interno del servidor' })

@@ -72,7 +72,8 @@ router.put('/:id', async (req, res) => {
 
     if (result.affectedRows === 0) return res.status(404).json({ ok: false, message: 'Estación no encontrada' })
     
-    res.json({ ok: true, message: 'Estación actualizada' })
+    const [updatedRows] = await pool.query('SELECT * FROM estaciones WHERE id = ?', [id])
+    res.json({ ok: true, data: updatedRows[0] })
   } catch (error) {
     console.error('Error al actualizar estación:', error)
     res.status(500).json({ ok: false, message: 'Error interno del servidor' })
