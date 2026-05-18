@@ -83,6 +83,7 @@ function parsearParrilla(filas, estacion, tipoReal = 'TV') {
 router.use(verificarToken, verificarRol(['admin']))
 
 router.post('/preview', upload.single('archivo'), async (req, res) => {
+  try {
     const { estacion } = req.body
     if (!req.file) return res.status(400).json({ error: 'No se subió archivo' })
 
