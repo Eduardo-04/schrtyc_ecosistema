@@ -122,4 +122,26 @@ router.post('/upload', verificarToken, (req, res) => {
   });
 });
 
+// DELETE /api/archivero/:filename - Eliminar un archivo físico del servidor (requiere autenticación)
+router.delete('/:filename', verificarToken, (req, res) => {
+  try {
+    const { filename } = req.params;
+    
+    // Evitar ataques de path traversal (ej. ../../etc/passwd)
+    const safeFilename = path.basename(filename);
+    const filePath = path.join(UPLOADS_DIR, safeFilename);
+    
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ ok: false, message: 'Archivo no encontrado' });
+    }
+    
+    fs.unlinkSync(filePath);
+    console.log(`[DELETE ARCHIVO] Eliminado exitosamente: ${filePath}`);
+    res.json({ ok: true, message: 'Archivo eliminado exitosamente' });
+  } catch (error) {
+    console.error('Error al borrar archivo:', error);
+    res.status(500).json({ ok: false, message: 'Error interno al intentar eliminar el archivo' });
+  }
+});
+
 module.exports = router;

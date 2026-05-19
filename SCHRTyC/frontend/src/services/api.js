@@ -204,3 +204,5 @@ export const subirArchivo = async (file, oldPath = null) => {
   if (!json.ok) throw new Error(json.message)
   return json
 }
+
+export const eliminarArchivo = (filename) => request(`/archivero/${encodeURIComponent(filename)}`, { method: 'DELETE' })
