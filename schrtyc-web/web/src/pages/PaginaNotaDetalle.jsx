@@ -381,6 +381,58 @@ export default function PaginaNotaDetalle() {
       .finally(() => setLoading(false))
   }, [id])
 
+  useEffect(() => {
+    if (!noticia) return
+
+    // Actualiza el título del documento
+    document.title = `${noticia.titulo} | SCHRTyC`
+
+    // Función auxiliar para crear/actualizar meta tags
+    const updateMetaTag = (property, attrName, value) => {
+      let element = document.querySelector(`meta[${attrName}="${property}"]`)
+      if (!element) {
+        element = document.createElement('meta')
+        element.setAttribute(attrName, property)
+        document.head.appendChild(element)
+      }
+      element.setAttribute('content', value || '')
+    }
+
+    const shareUrl = window.location.href
+    let imageUrl = ''
+    if (noticia.imagen) {
+      const resolved = getUploadUrl(noticia.imagen)
+      imageUrl = resolved.startsWith('http') ? resolved : `${window.location.origin}${resolved}`
+    }
+
+    const cleanDesc = (noticia.sinopsis || noticia.descripcion || '')
+      .replace(/\[imagen:\d+\]/gi, '')
+      .slice(0, 150) + '...'
+
+    // Open Graph (Facebook, WhatsApp, Slack, etc.)
+    updateMetaTag('og:title', 'property', noticia.titulo)
+    updateMetaTag('og:description', 'property', cleanDesc)
+    updateMetaTag('og:type', 'property', 'article')
+    updateMetaTag('og:url', 'property', shareUrl)
+    if (imageUrl) {
+      updateMetaTag('og:image', 'property', imageUrl)
+      updateMetaTag('og:image:width', 'property', '1200')
+      updateMetaTag('og:image:height', 'property', '630')
+    }
+
+    // Twitter Cards (X)
+    updateMetaTag('twitter:card', 'name', 'summary_large_image')
+    updateMetaTag('twitter:title', 'name', noticia.titulo)
+    updateMetaTag('twitter:description', 'name', cleanDesc)
+    if (imageUrl) {
+      updateMetaTag('twitter:image', 'name', imageUrl)
+    }
+
+    return () => {
+      document.title = 'SCHRTyC | Sistema Chiapaneco de Radio, TV y Cine'
+    }
+  }, [noticia])
+
   if (loading) return (
     <div style={{ minHeight:'60vh', display:'flex', alignItems:'center', justifyContent:'center' }}>
       <style>{`@keyframes spin { to { transform:rotate(360deg) } }`}</style>

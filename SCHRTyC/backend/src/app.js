@@ -23,7 +23,9 @@ const app  = express()
 const PORT = process.env.PORT || 3001
 
 // ── Seguridad HTTP ───────────────────────────────────────────
-app.use(helmet())
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' }
+}))
 
 // CORS: whitelist configurable por variable de entorno
 const CORS_WHITELIST = (process.env.CORS_ORIGIN || '').split(',').map(s => s.trim()).filter(Boolean)

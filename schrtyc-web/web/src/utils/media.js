@@ -54,7 +54,12 @@ export const normalizarEmbedUrl = (url) => {
   }
   
   if (tipo === 'spotify') {
-    // Elimina el intl y parámetros extra
+    try {
+      const u = new URL(url.trim())
+      if (u.pathname.includes('/embed/')) return url
+      const match = u.pathname.match(/(track|album|playlist|episode|show)\/([a-zA-Z0-9]+)/)
+      if (match) return `https://open.spotify.com/embed/${match[1]}/${match[2]}?utm_source=generator`
+    } catch { /* noop */ }
     return url.replace(/\/intl-[a-z]+\//, '/').replace(/\?.*$/, '')
   }
   

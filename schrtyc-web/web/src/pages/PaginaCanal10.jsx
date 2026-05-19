@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { getProgramacionHoy, getProgramas, getEstaciones, getUploadUrl } from '../services/api'
 import { estaEnVivo, esFuturo, getIniciales } from '../utils/date'
-import { detectarTipoMedia, getYoutubeThumbnail } from '../utils/media'
+import { detectarTipoMedia, getYoutubeThumbnail, normalizarEmbedUrl } from '../utils/media'
 
 // ── Helpers Específicos ───────────────────────────────────────
 const colorEmbed = (url) => ({
@@ -170,6 +170,7 @@ function EmbedItem({ embed }) {
   const c       = colorEmbed(embed.url)
   const h       = alturaEmbed(embed.url)
   const esSpot  = tipo === 'spotify'
+  const urlNorm = normalizarEmbedUrl(embed.url)
 
   return (
     <div className="embed-card">
@@ -180,12 +181,23 @@ function EmbedItem({ embed }) {
         </span>
       </div>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <iframe 
-          src={embed.url} 
-          style={{ width: '100%', height: h ? `${h}px` : 'auto', aspectRatio: h ? 'auto' : '16/9', display: 'block', border: 'none', backgroundColor: '#000' }} 
-          allow="autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-          allowFullScreen title={embed.titulo || 'Embed'} 
-        />
+        {esSpot ? (
+          <div style={{ width: '100%', borderRadius: '12px', overflow: 'hidden', padding: '4px' }}>
+            <iframe 
+              src={urlNorm} 
+              style={{ width: '100%', height: '152px', display: 'block', border: 'none' }} 
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+              allowFullScreen title={embed.titulo || 'Spotify Embed'} 
+            />
+          </div>
+        ) : (
+          <iframe 
+            src={urlNorm} 
+            style={{ width: '100%', height: h ? `${h}px` : 'auto', aspectRatio: h ? 'auto' : '16/9', display: 'block', border: 'none', backgroundColor: '#000' }} 
+            allow="autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowFullScreen title={embed.titulo || 'Embed'} 
+          />
+        )}
       </div>
     </div>
   )
@@ -316,31 +328,34 @@ function ProgramacionAcordeon({ programas, onVerPrograma }) {
         className="accordion-header"
         style={{ background: abierto ? '#611232' : 'white' }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flex: 1, minWidth: 0 }}>
-          <div className="accordion-icon-box" style={{ backgroundColor: abierto ? 'rgba(255,255,255,0.15)' : '#f3f4f6' }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke={abierto ? 'white' : '#611232'} strokeWidth="2"
-              strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-              <line x1="16" y1="2" x2="16" y2="6"/>
-              <line x1="8" y1="2" x2="8" y2="6"/>
-              <line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 flex-1 min-w-0">
+          <div className="flex items-center gap-3">
+            <div className="accordion-icon-box" style={{ backgroundColor: abierto ? 'rgba(255,255,255,0.15)' : '#f3f4f6' }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke={abierto ? 'white' : '#611232'} strokeWidth="2"
+                strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+            </div>
+            <div style={{ textAlign: 'left', minWidth: 0 }}>
+              <p style={{ fontSize: '10px', fontWeight: '700', letterSpacing: '2px', textTransform: 'uppercase', color: abierto ? 'rgba(255,255,255,0.6)' : '#A57F2C', marginBottom: '2px' }}>
+                Hoy
+              </p>
+              <p style={{ fontSize: '16px', fontWeight: '800', color: abierto ? 'white' : '#611232', margin: 0 }}>
+                Programación Completa
+              </p>
+            </div>
           </div>
-          <div style={{ textAlign: 'left', minWidth: 0 }}>
-            <p style={{ fontSize: '10px', fontWeight: '700', letterSpacing: '2px', textTransform: 'uppercase', color: abierto ? 'rgba(255,255,255,0.6)' : '#A57F2C', marginBottom: '2px' }}>
-              Hoy
-            </p>
-            <p style={{ fontSize: '16px', fontWeight: '800', color: abierto ? 'white' : '#611232', margin: 0 }}>
-              Programación Completa
-            </p>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }} className="sm:ml-2">
             <span style={{
               fontSize: '12px', fontWeight: '700',
               backgroundColor: abierto ? 'rgba(255,255,255,0.18)' : '#f3f4f6',
               color: abierto ? 'white' : '#6b7280',
               padding: '3px 10px', borderRadius: '999px',
+              whiteSpace: 'nowrap'
             }}>
               {programas.length} programa{programas.length !== 1 ? 's' : ''}
             </span>
@@ -349,6 +364,7 @@ function ProgramacionAcordeon({ programas, onVerPrograma }) {
                 fontSize: '11px', fontWeight: '700',
                 backgroundColor: '#dc2626', color: 'white',
                 padding: '3px 10px', borderRadius: '999px',
+                whiteSpace: 'nowrap'
               }}>
                 🔴 Al aire
               </span>

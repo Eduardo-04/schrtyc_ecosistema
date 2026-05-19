@@ -3,7 +3,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install --omit=dev
 COPY . .
-RUN mkdir -p uploads && chown -R node:node /app
+RUN mkdir -p uploads && chown -R node:node uploads
 USER node
 EXPOSE 3001
 CMD ["npm", "start"]
