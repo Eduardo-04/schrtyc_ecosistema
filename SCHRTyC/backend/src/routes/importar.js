@@ -88,7 +88,7 @@ router.post('/preview', upload.single('archivo'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'No se subió archivo' })
 
     const [estRows] = await pool.query('SELECT tipo FROM estaciones WHERE nombre = ?', [estacion])
-    const tipoReal = estRows.length > 0 ? estRows[0].tipo : (estacion && estacion.toLowerCase().includes('radio') ? 'Radio' : 'TV')
+    const tipoReal = estRows.length > 0 ? estRows[0].tipo : (estacion && (estacion.toLowerCase().includes('radio') || estacion.toLowerCase().includes('tuxtlan')) ? 'Radio' : 'TV')
 
     const workbook = XLSX.read(req.file.buffer, { type: 'buffer' })
     const hoja     = workbook.Sheets[workbook.SheetNames[0]]
@@ -108,7 +108,7 @@ router.post('/guardar', upload.single('archivo'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'No se subió archivo' })
 
     const [estRows] = await pool.query('SELECT tipo FROM estaciones WHERE nombre = ?', [estacion])
-    const tipoReal = estRows.length > 0 ? estRows[0].tipo : (estacion && estacion.toLowerCase().includes('radio') ? 'Radio' : 'TV')
+    const tipoReal = estRows.length > 0 ? estRows[0].tipo : (estacion && (estacion.toLowerCase().includes('radio') || estacion.toLowerCase().includes('tuxtlan')) ? 'Radio' : 'TV')
 
     const workbook  = XLSX.read(req.file.buffer, { type: 'buffer' })
     const hoja      = workbook.Sheets[workbook.SheetNames[0]]

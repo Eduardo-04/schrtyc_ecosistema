@@ -33,8 +33,8 @@ router.post('/login', async (req, res) => {
     // Guardar Refresh Token en cookie segura
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: false, // Cambiar a true en producción con HTTPS
-      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production', // true en prod (HTTPS), false en dev
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 días
     })
 
@@ -62,8 +62,8 @@ router.post('/refresh', (req, res) => {
 
     res.cookie('refreshToken', newRefreshToken, {
       httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000
     })
 

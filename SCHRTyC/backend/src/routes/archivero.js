@@ -83,8 +83,8 @@ const upload = multer({
   }
 });
 
-// POST /api/archivero/upload - Subir un archivo (Temporalmente sin verificarToken para depurar)
-router.post('/upload', (req, res) => {
+// POST /api/archivero/upload - Subir un archivo (requiere autenticación)
+router.post('/upload', verificarToken, (req, res) => {
   console.log('--- Nueva petición de subida ---');
   
   upload.single('file')(req, res, (err) => {

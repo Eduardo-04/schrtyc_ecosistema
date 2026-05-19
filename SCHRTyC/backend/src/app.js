@@ -22,12 +22,34 @@ const usuariosRoutes     = require('./routes/usuarios')
 const app  = express()
 const PORT = process.env.PORT || 3001
 
-app.use(cors({
-  origin: true,
+// ── Seguridad HTTP ───────────────────────────────────────────
+app.use(helmet())
+
+// CORS: whitelist configurable por variable de entorno
+const CORS_WHITELIST = (process.env.CORS_ORIGIN || '').split(',').map(s => s.trim()).filter(Boolean)
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Permitir peticiones sin origin (curl, Postman, servidores) y localhost en desarrollo
+    if (!origin) return callback(null, true)
+    if (process.env.NODE_ENV !== 'production') return callback(null, true)
+    const permitidos = [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:5173',
+      ...CORS_WHITELIST
+    ]
+    if (permitidos.some(o => origin.startsWith(o))) {
+      callback(null, true)
+    } else {
+      callback(new Error(`CORS bloqueado para origin: ${origin}`))
+    }
+  },
   credentials: true
-}))
+}
+app.use(cors(corsOptions))
+app.use(express.json({ limit: '2mb' }))
+app.use(express.urlencoded({ extended: true, limit: '2mb' }))
 app.use(cookieParser())
-app.use(express.json())
 
 // Servir archivos de la carpeta uploads
 app.use('/uploads', express.static('uploads'))

@@ -87,15 +87,28 @@ function AudioWave({ playing }) {
   return (
     <div className="audio-wave-container">
       <svg viewBox="0 0 200 50" preserveAspectRatio="none" className="audio-wave-svg">
-        <path style={{ animation: 'wave 3s ease-in-out infinite', fill: '#A57F2C' }}
+        <defs>
+          <linearGradient id="waveGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#611232" stopOpacity="0.18" />
+            <stop offset="50%" stopColor="#A57F2C" stopOpacity="0.28" />
+            <stop offset="100%" stopColor="#611232" stopOpacity="0.18" />
+          </linearGradient>
+          <linearGradient id="waveGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#A57F2C" stopOpacity="0.12" />
+            <stop offset="50%" stopColor="#611232" stopOpacity="0.22" />
+            <stop offset="100%" stopColor="#A57F2C" stopOpacity="0.12" />
+          </linearGradient>
+          <linearGradient id="waveGrad3" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#611232" stopOpacity="0.08" />
+            <stop offset="50%" stopColor="#A57F2C" stopOpacity="0.18" />
+            <stop offset="100%" stopColor="#611232" stopOpacity="0.08" />
+          </linearGradient>
+        </defs>
+        <path className="wave-path-1" fill="url(#waveGrad1)"
           d="M0,20 C20,20 20,5 40,5 C60,5 60,35 80,35 C100,35 100,10 120,10 C140,10 140,30 160,30 C180,30 180,15 200,15 L200,50 L0,50 Z" />
-      </svg>
-      <svg viewBox="0 0 200 50" preserveAspectRatio="none" className="audio-wave-svg">
-        <path style={{ animation: 'wave2 4.5s ease-in-out infinite', fill: '#A57F2C', opacity: 0.6 }}
+        <path className="wave-path-2" fill="url(#waveGrad2)"
           d="M0,30 C20,30 20,15 40,15 C60,15 60,38 80,38 C100,38 100,12 120,12 C140,12 140,35 160,35 C180,35 180,22 200,22 L200,50 L0,50 Z" />
-      </svg>
-      <svg viewBox="0 0 200 50" preserveAspectRatio="none" className="audio-wave-svg">
-        <path style={{ animation: 'wave3 2.8s ease-in-out infinite', fill: '#611232', opacity: 0.5 }}
+        <path className="wave-path-3" fill="url(#waveGrad3)"
           d="M0,22 C20,22 20,38 40,38 C60,38 60,10 80,10 C100,10 100,30 120,30 C140,30 140,14 160,14 C180,14 180,36 200,36 L200,50 L0,50 Z" />
       </svg>
     </div>
@@ -385,7 +398,7 @@ function RadioPlayer({ radios, seleccionada, setSeleccionada }) {
   }
 
   if (!radios.length) return (
-    <div style={{ backgroundColor: '#1a1a1a', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.06)', padding: '40px', textAlign: 'center' }}>
+    <div style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)', padding: '40px', textAlign: 'center' }}>
       <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '14px' }}>No hay estaciones de radio configuradas.</p>
     </div>
   )
@@ -426,8 +439,48 @@ function RadioPlayer({ radios, seleccionada, setSeleccionada }) {
               ? <img src={getUploadUrl(actual.imagen)} alt={actual.nombre}
                   style={{ width: '56px', height: '56px', borderRadius: '14px', objectFit: 'cover', flexShrink: 0 }}
                   onError={e => e.target.style.display = 'none'} />
-              : <div style={{ width: '56px', height: '56px', borderRadius: '14px', backgroundColor: 'rgba(255,255,255,0.08)', border: '2px solid rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <span style={{ color: 'white', fontWeight: '800', fontSize: '18px' }}>{getIniciales(actual?.nombre, 'RC')}</span>
+              : <div style={{ 
+                  width: '56px', 
+                  height: '56px', 
+                  borderRadius: '14px', 
+                  backgroundColor: '#fff5f5', 
+                  border: '2px solid #feb2b2', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  flexShrink: 0
+                }}>
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    width="30" 
+                    height="30" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="#dc2626" 
+                    strokeWidth="2.1" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                  >
+                    {/* Diagonal Antenna */}
+                    <line x1="5" y1="9" x2="16" y2="2" />
+                    <circle cx="16" cy="2" r="1" fill="#dc2626" />
+                    
+                    {/* Top Handle */}
+                    <path d="M7 9V7a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2" />
+                    
+                    {/* Radio Body */}
+                    <rect x="3" y="9" width="18" height="12" rx="2" />
+                    
+                    {/* Speaker Grill */}
+                    <circle cx="8" cy="15" r="3" />
+                    <circle cx="8" cy="15" r="0.8" fill="#dc2626" />
+                    
+                    {/* Dial Screen */}
+                    <rect x="13" y="12" width="5" height="2.5" rx="0.5" />
+                    
+                    {/* Dial Knob */}
+                    <circle cx="15.5" cy="17.5" r="1" />
+                  </svg>
                 </div>
             }
             <div>
@@ -740,10 +793,10 @@ export default function PaginaRadio() {
       <div style={{ backgroundColor: '#A57F2C', height: '4px' }} />
 
       {/* Player */}
-      <div style={{ backgroundColor: '#111' }} className="py-14">
+      <div style={{ backgroundColor: '#f9fafb' }} className="py-14">
         <div className="max-w-7xl mx-auto px-6">
           <p className="text-xs tracking-widest uppercase mb-1" style={{ color: '#A57F2C' }}>En vivo</p>
-          <h2 className="text-2xl font-bold mb-8 text-white">Estaciones de Radio</h2>
+          <h2 className="text-2xl font-bold mb-8" style={{ color: '#611232' }}>Estaciones de Radio</h2>
           <RadioPlayer 
             radios={radios} 
             seleccionada={estacionSeleccionada}
@@ -754,10 +807,10 @@ export default function PaginaRadio() {
 
       {/* Al aire + Próximos */}
       {(programaEnVivo || proximos.length > 0) && (
-        <div style={{ backgroundColor: '#0f0f0f' }} className="pb-14">
+        <div style={{ backgroundColor: '#f9fafb' }} className="pb-14">
           <div className="max-w-7xl mx-auto px-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div style={{ backgroundColor: '#1a1a1a', borderRadius: '16px', border: programaEnVivo ? '1px solid rgba(165,127,44,0.3)' : '1px solid rgba(255,255,255,0.06)', padding: '20px', color: 'white' }}>
+              <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', border: programaEnVivo ? '1.5px solid #A57F2C' : '1.5px solid #e5e7eb', padding: '20px', color: '#333333', boxShadow: '0 8px 24px rgba(0,0,0,0.03)' }}>
                 <p style={{ fontSize: '10px', fontWeight: '700', letterSpacing: '2px', textTransform: 'uppercase', color: '#A57F2C', marginBottom: '12px' }}>Al aire ahora</p>
                 {programaEnVivo ? (
                   <>
@@ -765,22 +818,22 @@ export default function PaginaRadio() {
                       <span style={{ width: '8px', height: '8px', borderRadius: '999px', backgroundColor: '#f87171' }} className="animate-pulse" />
                       <span style={{ fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', color: '#A57F2C' }}>EN VIVO</span>
                     </div>
-                    <h3 style={{ fontSize: '17px', fontWeight: '800', marginBottom: '4px' }}>{programaEnVivo.nombre}</h3>
-                    <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>{programaEnVivo.conductor}</p>
-                    <p style={{ fontSize: '11px', fontFamily: 'monospace', color: 'rgba(255,255,255,0.3)' }}>{programaEnVivo.hora_inicio} – {programaEnVivo.hora_fin}</p>
+                    <h3 style={{ fontSize: '17px', fontWeight: '800', marginBottom: '4px', color: '#611232' }}>{programaEnVivo.nombre}</h3>
+                    <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '4px' }}>{programaEnVivo.conductor}</p>
+                    <p style={{ fontSize: '11px', fontFamily: 'monospace', color: '#9ca3af' }}>{programaEnVivo.hora_inicio} – {programaEnVivo.hora_fin}</p>
                   </>
                 ) : (
-                  <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}>Sin programa activo ahora</p>
+                  <p style={{ fontSize: '13px', color: '#9ca3af' }}>Sin programa activo ahora</p>
                 )}
               </div>
-              <div className="md:col-span-2" style={{ backgroundColor: '#1a1a1a', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.06)', padding: '20px', color: 'white' }}>
+              <div className="md:col-span-2" style={{ backgroundColor: '#ffffff', borderRadius: '16px', border: '1.5px solid #e5e7eb', padding: '20px', color: '#333333', boxShadow: '0 8px 24px rgba(0,0,0,0.03)' }}>
                 <p style={{ fontSize: '10px', fontWeight: '700', letterSpacing: '2px', textTransform: 'uppercase', color: '#A57F2C', marginBottom: '12px' }}>A continuación</p>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '12px' }}>
                   {proximos.map(p => (
-                    <div key={p.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '10px' }}>
-                      <p style={{ fontSize: '11px', fontFamily: 'monospace', color: 'rgba(255,255,255,0.3)', marginBottom: '2px' }}>{p.hora_inicio} – {p.hora_fin}</p>
-                      <p style={{ fontSize: '13px', fontWeight: '700' }}>{p.nombre}</p>
-                      {p.estacion && <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)' }}>{p.estacion}</p>}
+                    <div key={p.id} style={{ borderBottom: '1px solid #f3f4f6', paddingBottom: '10px' }}>
+                      <p style={{ fontSize: '11px', fontFamily: 'monospace', color: '#9ca3af', marginBottom: '2px' }}>{p.hora_inicio} – {p.hora_fin}</p>
+                      <p style={{ fontSize: '13px', fontWeight: '700', color: '#333333' }}>{p.nombre}</p>
+                      {p.estacion && <p style={{ fontSize: '11px', color: '#A57F2C', fontWeight: '600' }}>{p.estacion}</p>}
                     </div>
                   ))}
                   </div>

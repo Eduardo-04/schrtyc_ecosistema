@@ -346,10 +346,11 @@ export default function GestionProgramas() {
                        value={form.estacion} 
                        onChange={(e) => {
                          const val = e.target.value;
+                         const stationObj = estaciones.find(s => s.nombre === val);
                          setForm(f => ({ 
                            ...f, 
                            estacion: val,
-                           tipo: val.toLowerCase().includes('radio') ? 'Radio' : 'TV'
+                           tipo: stationObj ? stationObj.tipo : (val.toLowerCase().includes('radio') || val.toLowerCase().includes('tuxtlan') ? 'Radio' : 'TV')
                          }));
                        }} 
                        className="w-full px-6 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold outline-none"

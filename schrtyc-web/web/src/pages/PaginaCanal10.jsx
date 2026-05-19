@@ -56,9 +56,19 @@ function HLSPlayer({ streamUrl }) {
   useEffect(() => {
     const video = videoRef.current
     if (!video || !streamUrl) return
+    setError(false)
 
     if (video.canPlayType('application/vnd.apple.mpegurl')) {
       video.src = streamUrl
+    } else if (window.Hls) {
+      if (!window.Hls.isSupported()) { setError(true); return }
+      const hls = new window.Hls({ enableWorker: true, lowLatencyMode: true })
+      hlsRef.current = hls
+      hls.loadSource(streamUrl)
+      hls.attachMedia(video)
+      hls.on(window.Hls.Events.ERROR, (_, data) => {
+        if (data.fatal) { setError(true); hls.destroy() }
+      })
     } else {
       import('https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js')
         .then(({ default: Hls }) => {
@@ -471,10 +481,10 @@ export default function PaginaCanal10() {
       <div style={{ backgroundColor: '#A57F2C', height: '4px' }} />
 
       {/* Player + sidebar */}
-      <div style={{ backgroundColor: '#111' }} className="py-14">
+      <div style={{ backgroundColor: '#f9fafb' }} className="py-14">
         <div className="max-w-7xl mx-auto px-6">
           <p className="text-xs tracking-widest uppercase mb-1" style={{ color: '#A57F2C' }}>En vivo</p>
-          <h2 className="text-2xl font-bold mb-8 text-white">Señal en Vivo</h2>
+          <h2 className="text-2xl font-bold mb-8" style={{ color: '#611232' }}>Señal en Vivo</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             
@@ -496,14 +506,14 @@ export default function PaginaCanal10() {
                         <span className="w-2 h-2 rounded-full bg-red-400 animate-pulse" />
                         <span className="text-xs font-bold uppercase tracking-wide" style={{ color: '#A57F2C' }}>EN VIVO</span>
                       </div>
-                      <h3 className="text-lg font-bold mb-1 truncate">{programaActual.nombre}</h3>
-                      <p className="text-sm truncate" style={{ color: 'rgba(255,255,255,0.5)' }}>{programaActual.conductor}</p>
-                      <p className="text-xs mt-2 font-mono" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                      <h3 className="text-lg font-bold mb-1 truncate" style={{ color: '#611232' }}>{programaActual.nombre}</h3>
+                      <p className="text-sm truncate" style={{ color: '#6b7280' }}>{programaActual.conductor}</p>
+                      <p className="text-xs mt-2 font-mono" style={{ color: '#9ca3af' }}>
                         {programaActual.hora_inicio} – {programaActual.hora_fin}
                       </p>
                     </>
                   ) : (
-                    <p className="text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>Sin programa activo ahora</p>
+                    <p className="text-sm" style={{ color: '#9ca3af' }}>Sin programa activo ahora</p>
                   )}
                 </div>
 
@@ -513,16 +523,16 @@ export default function PaginaCanal10() {
                   
                   <div className="flex flex-col gap-3 flex-1 overflow-hidden">
                     {proximos.length === 0 ? (
-                      <p className="text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>Sin más programas hoy</p>
+                      <p className="text-sm" style={{ color: '#9ca3af' }}>Sin más programas hoy</p>
                     ) : (
                       proximos.map(p => (
-                        <div key={p.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }} className="pb-3 last:border-0 last:pb-0">
-                          <p className="text-xs font-mono mb-0.5" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                        <div key={p.id} style={{ borderBottom: '1px solid #f3f4f6' }} className="pb-3 last:border-0 last:pb-0">
+                          <p className="text-xs font-mono mb-0.5" style={{ color: '#9ca3af' }}>
                             {p.hora_inicio} – {p.hora_fin}
                           </p>
-                          <p className="text-sm font-semibold truncate">{p.nombre}</p>
+                          <p className="text-sm font-semibold truncate" style={{ color: '#333333' }}>{p.nombre}</p>
                           {p.conductor && (
-                            <p className="text-xs mt-0.5 truncate" style={{ color: 'rgba(255,255,255,0.3)' }}>{p.conductor}</p>
+                            <p className="text-xs mt-0.5 truncate" style={{ color: '#6b7280' }}>{p.conductor}</p>
                           )}
                         </div>
                       ))

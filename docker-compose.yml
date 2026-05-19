@@ -1,47 +1,59 @@
 version: '3.8'
 
+# ── Lee variables desde .env en esta misma carpeta ──────────
+# Copia .env.example → .env y configura tus valores reales
+
 services:
   db:
     image: mariadb:10.6
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: myrootpassword
-      MYSQL_DATABASE: schrtyc_db
-      MYSQL_USER: appuser
-      MYSQL_PASSWORD: apppassword
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
     volumes:
       - ./mysql_data:/var/lib/mysql
-    # No se expone puerto 3306 al host para evitar colisiones
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    # Puerto 3306 NO expuesto al host (solo accesible desde contenedores internos)
 
   api:
-    build: 
+    build:
       context: ./SCHRTyC/backend
     restart: unless-stopped
     ports:
       - "3005:3001"
     environment:
+      - NODE_ENV=${NODE_ENV:-production}
       - DB_HOST=db
-      - DB_USER=appuser
-      - DB_PASSWORD=apppassword
-      - DB_NAME=schrtyc_db
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
       - PORT=3001
-      - ADMIN_EMAIL=admin@example.com
-      - ADMIN_HASH=$$2b$$10$$EsCwRvexLPVTb4zkFMrp7ubb6F8PZrpW3aSHb2Tj40nICENT1Jd5q
-      - JWT_SECRET=supersecret
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_HASH=${ADMIN_HASH}
+      - JWT_SECRET=${JWT_SECRET}
+      - CORS_ORIGIN=${CORS_ORIGIN:-}
     volumes:
       - ./SCHRTyC/backend/uploads:/app/uploads
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   admin:
-    build: 
+    build:
       context: ./SCHRTyC/frontend
     restart: unless-stopped
     ports:
       - "3001:80"
 
   web:
-    build: 
+    build:
       context: ./schrtyc-web/web
     restart: unless-stopped
     ports:
@@ -54,3 +66,5 @@ services:
       - "8080:8080"
     depends_on:
       - db
+    # ADVERTENCIA: En producción, eliminar o restringir el acceso a Adminer
+    # con un firewall o reverse proxy con autenticación adicional.

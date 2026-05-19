@@ -72,8 +72,8 @@ function RadioCard({ e: est }) {
         )}
       </div>
       <div style={{ padding: '0 8px' }}>
-        <h3 style={{ margin: '0 0 4px', color: 'white', fontSize: '15px', fontWeight: '800', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{est.nombre}</h3>
-        <p style={{ margin: '0 0 14px', color: 'rgba(255,255,255,0.4)', fontSize: '12px', fontWeight: '600' }}>{est.ciudad || 'Chiapas'}</p>
+        <h3 style={{ margin: '0 0 4px', color: '#333333', fontSize: '15px', fontWeight: '800', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{est.nombre}</h3>
+        <p style={{ margin: '0 0 14px', color: '#6b7280', fontSize: '12px', fontWeight: '600' }}>{est.ciudad || 'Chiapas'}</p>
         <Bars color={est.activa ? 'var(--gold)' : 'rgba(165,127,44,0.2)'} n={18} />
       </div>
     </Link>
@@ -252,10 +252,10 @@ export default function PaginaInicio() {
           <div className="section-header">
             <div>
               <Eyebrow t="Radio Chiapas" />
-              <h2 style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: '900', color: 'white', margin: '0 0 12px' }}>Frecuencias Estatales</h2>
-              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '16px' }}>Sintoniza nuestras estaciones en vivo desde cualquier lugar.</p>
+              <h2 style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: '900', color: 'var(--brand)', margin: '0 0 12px' }}>Frecuencias Estatales</h2>
+              <p style={{ color: 'var(--text-muted)', fontSize: '16px' }}>Sintoniza nuestras estaciones en vivo desde cualquier lugar.</p>
             </div>
-            <Link to="/radio" className="btn-secondary" style={{ padding: '12px 24px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', fontSize: '14px' }}>
+            <Link to="/radio" className="btn-secondary" style={{ padding: '12px 24px', borderRadius: '12px', background: 'transparent', border: '1px solid rgba(97, 18, 50, 0.15)', color: 'var(--brand)', fontSize: '14px' }}>
               Ver todas <Arr />
             </Link>
           </div>
@@ -307,19 +307,19 @@ export default function PaginaInicio() {
                 <p style={{ fontSize: '12px', fontWeight: '700', color: 'var(--gold)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '12px' }}>Al aire</p>
                 {progTV ? (
                   <>
-                    <h3 style={{ fontSize: '28px', fontWeight: '900', color: 'white', margin: '0 0 8px', lineHeight: 1.1 }}>{progTV.nombre}</h3>
-                    {progTV.conductor && <p style={{ fontSize: '16px', color: 'rgba(255,255,255,0.6)', margin: '0 0 16px' }}>con {progTV.conductor}</p>}
+                    <h3 style={{ fontSize: '28px', fontWeight: '900', color: '#611232', margin: '0 0 8px', lineHeight: 1.1 }}>{progTV.nombre}</h3>
+                    {progTV.conductor && <p style={{ fontSize: '16px', color: '#6b7280', margin: '0 0 16px' }}>con {progTV.conductor}</p>}
                     <div className="tv-time-badge">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
                       {progTV.hora_inicio} — {progTV.hora_fin}
                     </div>
                   </>
                 ) : (
-                  <h3 style={{ fontSize: '24px', fontWeight: '800', color: 'rgba(255,255,255,0.3)', margin: 0 }}>Programación no disponible</h3>
+                  <h3 style={{ fontSize: '24px', fontWeight: '800', color: '#9ca3af', margin: 0 }}>Programación no disponible</h3>
                 )}
               </div>
 
-              <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, margin: '0 0 32px' }}>Disfruta de la mejor televisión pública de Chiapas con contenidos culturales y educativos.</p>
+              <p style={{ fontSize: '14px', color: '#4b5563', lineHeight: 1.7, margin: '0 0 32px' }}>Disfruta de la mejor televisión pública de Chiapas con contenidos culturales y educativos.</p>
 
               <Link to="/canal10" className="btn-primary" style={{ backgroundColor: 'var(--brand)', color: 'white', borderRadius: '16px', padding: '16px 32px', fontSize: '15px', justifyContent: 'center' }}>
                 Sintonizar ahora <Arr />

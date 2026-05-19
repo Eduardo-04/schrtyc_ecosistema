@@ -1,9 +1,9 @@
 FROM node:20-alpine
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm install --omit=dev
 COPY . .
-# Crear la carpeta de uploads si no existe para asegurar el volumen
-RUN mkdir -p uploads 
+RUN mkdir -p uploads && chown -R node:node /app
+USER node
 EXPOSE 3001
 CMD ["npm", "start"]

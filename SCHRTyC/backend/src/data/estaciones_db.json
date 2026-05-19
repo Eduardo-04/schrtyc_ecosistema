@@ -4,7 +4,7 @@
     "nombre": "Canal 10 TV",
     "tipo": "TV",
     "frecuencia": "",
-    "streamUrl": "https://5ca9af4645e15.streamlock.net/chiapas/videochiapas/playlist.m3u8",
+    "streamUrl": "https://5ca9af4645e15.streamlock.net:443/chiapas/videochiapas/playlist.m3u8",
     "activo": true
   },
   {

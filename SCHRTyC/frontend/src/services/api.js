@@ -15,8 +15,20 @@ export const getUploadUrl = (ruta) => {
   return `${apiBase}${ruta}`
 }
 
+let isRefreshing = false
+let refreshSubscribers = []
+
+const subscribeTokenRefresh = (cb) => {
+  refreshSubscribers.push(cb)
+}
+
+const onRefreshed = (token) => {
+  refreshSubscribers.forEach((cb) => cb(token))
+  refreshSubscribers = []
+}
+
 // ── Base Fetch Wrapper ────────────────────────────────────────
-const request = async (endpoint, options = {}) => {
+const request = async (endpoint, options = {}, _isRetry = false) => {
   const url = `${BASE_URL}${endpoint}`
   const headers = {
     'Content-Type': 'application/json',
@@ -38,7 +50,42 @@ const request = async (endpoint, options = {}) => {
   const json = await response.json()
   
   if (!response.ok) {
-    // Si el token expiró, AuthContext se encargará del refresh
+    // Si el token expiró y no es un reintento, intentamos el auto-refresh silencioso
+    if (json.code === 'TOKEN_EXPIRED' && !_isRetry && endpoint !== '/auth/refresh') {
+      try {
+        if (!isRefreshing) {
+          isRefreshing = true
+          // Realizar la petición de refresh (que envía la cookie HttpOnly)
+          const refreshRes = await authRefresh()
+          accessToken = refreshRes.token
+          isRefreshing = false
+          onRefreshed(refreshRes.token)
+        }
+
+        // Si ya hay un refresh en curso, esperamos a que termine
+        const nuevoToken = await new Promise((resolve) => {
+          subscribeTokenRefresh((token) => resolve(token))
+        })
+
+        // Reintentar la petición original con el nuevo token
+        return request(endpoint, {
+          ...options,
+          headers: {
+            ...options.headers,
+            'Authorization': `Bearer ${nuevoToken}`
+          }
+        }, true)
+      } catch (refreshErr) {
+        isRefreshing = false
+        refreshSubscribers = []
+        // Si el refresh también falla, propagamos el error de expiración original para desloguear
+        const error = new Error(json.message || 'Error en la petición')
+        error.status = response.status
+        error.code = json.code
+        throw error
+      }
+    }
+
     const error = new Error(json.message || 'Error en la petición')
     error.status = response.status
     error.code = json.code

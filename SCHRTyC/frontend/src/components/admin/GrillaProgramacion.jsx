@@ -206,7 +206,7 @@ function ModalPrograma({ programa, estaciones, onGuardar, onCerrar }) {
                   setForm(f => ({
                     ...f,
                     estacion: val,
-                    tipo: stationObj ? stationObj.tipo : (val.toLowerCase().includes('radio') ? 'Radio' : 'TV')
+                    tipo: stationObj ? stationObj.tipo : (val.toLowerCase().includes('radio') || val.toLowerCase().includes('tuxtlan') ? 'Radio' : 'TV')
                   }))
                 }} 
                 className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-xs font-black uppercase tracking-widest outline-none focus:bg-white"

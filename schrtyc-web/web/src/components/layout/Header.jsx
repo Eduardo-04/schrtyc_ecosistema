@@ -33,37 +33,59 @@ export default function Header() {
     }}>
 
       {/* ── Barra top ── */}
-      <div style={{ backgroundColor: '#2d2d2d', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-        <div className="max-w-7xl mx-auto px-4 py-2 flex flex-col md:flex-row items-center gap-2">
+      <div style={{ backgroundColor: '#333333', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+        <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-4">
           
-          {/* Left Corner: chiapas.gob.mx */}
-          <div className="w-full md:w-auto md:flex-1 flex justify-center md:justify-start">
+          {/* Left Corner: Escudo + chiapas.gob.mx */}
+          <div className="flex items-center gap-2.5">
             <a href="https://chiapas.gob.mx" target="_blank" rel="noreferrer"
-              style={{ display: 'flex', alignItems: 'center', gap: '2px', textDecoration: 'none' }}>
-              <span style={{ color: 'rgba(255,255,255,0.7)', fontWeight: '300', fontSize: '14px' }}>chiapas</span>
-              <span style={{ color: 'white', fontWeight: '700', fontSize: '14px' }}>.gob.mx</span>
+               style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+              <img 
+                src="http://radiotvycine.chiapas.gob.mx/assets/logo/escudo-icono.png" 
+                alt="Escudo de Chiapas" 
+                style={{ height: '30px', width: 'auto', display: 'block' }}
+              />
+            </a>
+            <a href="https://chiapas.gob.mx" target="_blank" rel="noreferrer"
+              style={{ display: 'flex', alignItems: 'center', gap: '1px', textDecoration: 'none' }}>
+              <span style={{ color: 'rgba(255,255,255,0.9)', fontWeight: '300', fontSize: '17.5px' }}>chiapas</span>
+              <span style={{ color: 'rgba(255,255,255,0.6)', fontWeight: '700', fontSize: '17.5px' }}>.gob.mx</span>
             </a>
           </div>
 
-          {/* Center: Nav Links */}
-          <nav className="w-full md:w-auto flex justify-center flex-wrap gap-1">
-            {topLinks.map(item => (
-              <a key={item.label} href={item.href} target="_blank" rel="noreferrer"
-                style={{
-                  fontSize: '13px', color: 'rgba(255,255,255,0.85)',
-                  textDecoration: 'none', fontWeight: '400',
-                  padding: '4px 10px', borderRadius: '6px',
-                  transition: 'background-color 0.2s',
-                }}
-                onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.12)'}
-                onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
-                {item.label}
-              </a>
-            ))}
-          </nav>
+          {/* Right Corner: Nav Links + Search Icon (Lupita) */}
+          <div className="flex items-center gap-3 flex-wrap justify-center md:justify-end">
+            <nav className="flex items-center flex-wrap gap-1">
+              {topLinks.map(item => (
+                <a key={item.label} href={item.href} target="_blank" rel="noreferrer"
+                  style={{
+                    fontSize: '15.5px', color: 'rgba(255,255,255,0.85)',
+                    textDecoration: 'none', fontWeight: '400',
+                    padding: '4px 10px', borderRadius: '6px',
+                    transition: 'background-color 0.2s',
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.12)'}
+                  onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+                  {item.label}
+                </a>
+              ))}
+            </nav>
 
-          {/* Right Corner: Empty space to balance the flex container and keep nav centered */}
-          <div className="hidden md:block md:flex-1"></div>
+            <a href="https://www.chiapas.gob.mx/busquedas/" target="_blank" rel="noreferrer"
+               aria-label="Buscar"
+               style={{
+                 display: 'flex', alignItems: 'center', justifyContent: 'center',
+                 padding: '6px 10px', borderRadius: '6px', textDecoration: 'none',
+                 color: 'rgba(255,255,255,0.85)', transition: 'background-color 0.2s',
+               }}
+               onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.12)'}
+               onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle' }}>
+                 <circle cx="11" cy="11" r="8"></circle>
+                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+               </svg>
+            </a>
+          </div>
           
         </div>
       </div>
