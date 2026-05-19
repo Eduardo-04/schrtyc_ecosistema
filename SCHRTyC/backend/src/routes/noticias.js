@@ -1,5 +1,5 @@
 const express = require('express')
-const router  = express.Router()
+const router = express.Router()
 const { verificarToken, verificarRol } = require('../middleware/auth')
 const { pool } = require('../db')
 
@@ -49,7 +49,7 @@ router.post('/', async (req, res) => {
     const { titulo, categoria, fecha, autor, publicada, destacada, descripcion, imagen, contenido, imagenes } = req.body
     if (!titulo || !categoria)
       return res.status(400).json({ ok: false, message: 'Título y categoría son requeridos' })
-    
+
     const id = req.body.id || Date.now()
     const finalFecha = (fecha ? fecha.split('T')[0] : new Date().toISOString().split('T')[0])
     const finalAutor = autor || 'Administrador'
@@ -92,16 +92,16 @@ router.put('/:id', async (req, res) => {
        imagenes = COALESCE(?, imagenes) 
        WHERE id = ?`,
       [
-        titulo, 
-        categoria, 
-        finalFecha, 
-        autor, 
-        publicada !== undefined ? (Boolean(publicada) ? 1 : 0) : null, 
-        destacada !== undefined ? (Boolean(destacada) ? 1 : 0) : null, 
-        descripcion, 
-        imagen, 
-        contenido, 
-        imagenes, 
+        titulo,
+        categoria,
+        finalFecha,
+        autor,
+        publicada !== undefined ? (Boolean(publicada) ? 1 : 0) : null,
+        destacada !== undefined ? (Boolean(destacada) ? 1 : 0) : null,
+        descripcion,
+        imagen,
+        contenido,
+        imagenes,
         id
       ]
     )
@@ -109,7 +109,7 @@ router.put('/:id', async (req, res) => {
     console.log(`[UPDATE NOTICIA] Result:`, result)
 
     if (result.affectedRows === 0) return res.status(404).json({ ok: false, message: 'Noticia no encontrada' })
-    
+
     res.json({ ok: true, message: 'Noticia actualizada' })
   } catch (error) {
     console.error('Error al actualizar noticia:', error)
@@ -122,11 +122,11 @@ router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params
     const [result] = await pool.query('DELETE FROM noticias WHERE id = ?', [id])
-    
+
     if (result.affectedRows === 0) {
       return res.status(404).json({ ok: false, message: 'Noticia no encontrada' })
     }
-    
+
     res.json({ ok: true, message: 'Noticia eliminada' })
   } catch (error) {
     console.error('Error al eliminar noticia:', error)
@@ -134,4 +134,4 @@ router.delete('/:id', async (req, res) => {
   }
 })
 
-module.exports = router
+module.exports = router
