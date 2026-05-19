@@ -131,7 +131,7 @@ const ModalGaleria = memo(({ item, onGuardar, onCerrar, tecnicas = [] }) => {
 
 
         <div className="px-8 py-6 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
-          <button onClick={onCerrar} className="px-8 py-3 rounded-2xl text-sm font-black text-gray-500 hover:bg-gray-200 transition-colors">Cancelar</button>
+          <button type="button" onClick={onCerrar} className="px-8 py-3 rounded-2xl text-sm font-black text-gray-500 hover:bg-gray-200 transition-colors">Cancelar</button>
           <button onClick={handleSubmit} disabled={loading}
             className="px-10 py-3 rounded-2xl bg-[#611232] text-white font-black text-sm shadow-xl shadow-[#611232]/20 hover:scale-105 transition-all flex items-center gap-2">
             {loading ? <RefreshCw size={18} className="animate-spin" /> : <Check size={18} />}
@@ -507,7 +507,7 @@ function ModalPaginaGaleria({ data, onGuardar, onCerrar }) {
         </form>
 
         <div className="px-10 py-8 border-t border-gray-100 bg-gray-50 flex justify-end gap-4">
-          <button onClick={onCerrar} className="px-10 py-4 rounded-2xl text-xs font-black uppercase tracking-widest text-gray-500 hover:bg-gray-200 transition-colors">Descartar</button>
+          <button type="button" onClick={onCerrar} className="px-10 py-4 rounded-2xl text-xs font-black uppercase tracking-widest text-gray-500 hover:bg-gray-200 transition-colors">Descartar</button>
           <button onClick={handleSubmit} disabled={loading}
             className="px-12 py-4 rounded-2xl bg-[#611232] text-white font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-[#611232]/20 hover:scale-105 transition-all flex items-center gap-3">
             {loading ? <RefreshCw size={18} className="animate-spin" /> : <Check size={18} />}

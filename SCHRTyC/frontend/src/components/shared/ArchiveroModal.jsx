@@ -137,6 +137,7 @@ export default function ArchiveroModal({ onSelect, onCerrar }) {
           
           <div className="flex items-center gap-4">
             <button 
+              type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
               className="flex items-center gap-3 px-6 py-3 bg-[#611232] text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-[#4a0d26] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-[#611232]/20"
@@ -145,7 +146,7 @@ export default function ArchiveroModal({ onSelect, onCerrar }) {
               {uploading ? 'Subiendo...' : 'Subir Archivo'}
             </button>
 
-            <button onClick={onCerrar} className="p-3 hover:bg-gray-100 rounded-full transition-all text-gray-400">
+            <button type="button" onClick={onCerrar} className="p-3 hover:bg-gray-100 rounded-full transition-all text-gray-400">
               <X size={24} />
             </button>
           </div>
@@ -181,7 +182,7 @@ export default function ArchiveroModal({ onSelect, onCerrar }) {
           ) : error ? (
             <div className="flex flex-col items-center justify-center h-64 gap-4 text-red-500">
               <p className="font-bold">⚠️ {error}</p>
-              <button onClick={cargar} className="px-6 py-2 bg-red-50 rounded-xl text-xs font-black uppercase tracking-widest">Reintentar</button>
+              <button type="button" onClick={cargar} className="px-6 py-2 bg-red-50 rounded-xl text-xs font-black uppercase tracking-widest">Reintentar</button>
             </div>
           ) : filtrados.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-64 text-gray-400">
@@ -192,6 +193,7 @@ export default function ArchiveroModal({ onSelect, onCerrar }) {
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
               {filtrados.map((f, i) => (
                 <button 
+                  type="button"
                   key={i}
                   onClick={() => onSelect(f.ruta)}
                   className="group flex flex-col gap-2 text-left hover:scale-105 transition-all"
@@ -233,6 +235,7 @@ export default function ArchiveroModal({ onSelect, onCerrar }) {
             {filtrados.length} archivos encontrados
           </p>
           <button 
+            type="button"
             onClick={cargar}
             className="flex items-center gap-2 text-[10px] font-black text-[#611232] uppercase tracking-widest hover:underline"
           >
