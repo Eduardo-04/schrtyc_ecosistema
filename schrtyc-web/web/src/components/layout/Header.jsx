@@ -56,20 +56,22 @@ export default function Header() {
 
           {/* Right Corner: Nav Links + Search Icon + Hamburger for top links */}
           <div className="flex items-center gap-1.5">
-            <a href="https://www.chiapas.gob.mx/busquedas/" target="_blank" rel="noreferrer"
-               aria-label="Buscar"
-               style={{
-                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                 padding: '6px', borderRadius: '6px', textDecoration: 'none',
-                 color: 'rgba(255,255,255,0.85)', transition: 'background-color 0.2s',
-               }}
-               onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.12)'}
-               onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
-               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle' }}>
-                 <circle cx="11" cy="11" r="8"></circle>
-                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-               </svg>
-            </a>
+            {/* Desktop Navigation Links */}
+            <nav className="hidden md:flex items-center gap-1">
+              {topLinks.map(item => (
+                <a key={item.label} href={item.href} target="_blank" rel="noreferrer"
+                  style={{
+                    fontSize: '14.5px', color: 'rgba(255,255,255,0.85)',
+                    textDecoration: 'none', fontWeight: '400',
+                    padding: '4px 10px', borderRadius: '6px',
+                    transition: 'background-color 0.2s',
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.12)'}
+                  onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+                  {item.label}
+                </a>
+              ))}
+            </nav>
 
             {/* Toggle button for governmental links on mobile */}
             <button
@@ -91,22 +93,21 @@ export default function Header() {
               </svg>
             </button>
 
-            {/* Desktop Navigation Links */}
-            <nav className="hidden md:flex items-center gap-1">
-              {topLinks.map(item => (
-                <a key={item.label} href={item.href} target="_blank" rel="noreferrer"
-                  style={{
-                    fontSize: '14.5px', color: 'rgba(255,255,255,0.85)',
-                    textDecoration: 'none', fontWeight: '400',
-                    padding: '4px 10px', borderRadius: '6px',
-                    transition: 'background-color 0.2s',
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.12)'}
-                  onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
-                  {item.label}
-                </a>
-              ))}
-            </nav>
+            {/* Magnifying Glass (Lupita) Search Icon */}
+            <a href="https://www.chiapas.gob.mx/busquedas/" target="_blank" rel="noreferrer"
+               aria-label="Buscar"
+               style={{
+                 display: 'flex', alignItems: 'center', justifyContent: 'center',
+                 padding: '6px', borderRadius: '6px', textDecoration: 'none',
+                 color: 'rgba(255,255,255,0.85)', transition: 'background-color 0.2s',
+               }}
+               onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.12)'}
+               onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle' }}>
+                 <circle cx="11" cy="11" r="8"></circle>
+                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+               </svg>
+            </a>
           </div>
           
           {/* Mobile Government Links Dropdown */}
