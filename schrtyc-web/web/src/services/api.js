@@ -66,4 +66,10 @@ export const getGaleria = async () => {
 export const getConfiguracion = async () => {
   const data = await fetcher(`${BASE}/configuracion`);
   return data ?? {};
+};
+
+export const getGaleriaAutores = async () => {
+  const data = await fetcher(`${BASE}/galeria/autores`);
+  if (!data) return [];
+  return Array.isArray(data) ? data : data.autores ?? data.data ?? [];
 };

@@ -86,6 +86,15 @@ async function initDB() {
       )
     `);
 
+    // Tabla Galeria Autores
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS galeria_autores (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        nombre VARCHAR(255) UNIQUE NOT NULL,
+        foto VARCHAR(255)
+      )
+    `);
+
     // Tabla Programas
     await connection.query(`
       CREATE TABLE IF NOT EXISTS programas (
@@ -133,9 +142,23 @@ async function initDB() {
         tramites JSON,
         integrantes JSON,
         galerias JSON,
+        cta_titulo VARCHAR(255),
+        cta_descripcion TEXT,
+        cta_link VARCHAR(255),
         ultimaactualizacion DATE
       )
     `);
+
+    // Columnas CTA para la tabla paginas (por si ya existe la tabla)
+    try {
+      await connection.query(`ALTER TABLE paginas ADD COLUMN IF NOT EXISTS cta_titulo VARCHAR(255)`);
+      await connection.query(`ALTER TABLE paginas ADD COLUMN IF NOT EXISTS cta_descripcion TEXT`);
+      await connection.query(`ALTER TABLE paginas ADD COLUMN IF NOT EXISTS cta_link VARCHAR(255)`);
+    } catch (e) {
+      try { await connection.query(`ALTER TABLE paginas ADD COLUMN cta_titulo VARCHAR(255)`); } catch (err) {}
+      try { await connection.query(`ALTER TABLE paginas ADD COLUMN cta_descripcion TEXT`); } catch (err) {}
+      try { await connection.query(`ALTER TABLE paginas ADD COLUMN cta_link VARCHAR(255)`); } catch (err) {}
+    }
 
     // Tabla Configuracion
     await connection.query(`
@@ -190,7 +213,8 @@ async function seedDB(connection) {
     { table: 'programacion', file: 'programacion_db.json' },
     { table: 'paginas', file: 'paginas_db.json', isObject: true },
     { table: 'configuracion', file: 'configuracion_db.json', isSingle: true },
-    { table: 'galeria_filtros', file: 'galeria_filtros.json', isSimpleArray: true }
+    { table: 'galeria_filtros', file: 'galeria_filtros.json', isSimpleArray: true },
+    { table: 'galeria_autores', file: 'galeria_autores.json' }
   ];
 
   for (const item of tablesToSeed) {
@@ -212,10 +236,12 @@ async function seedDB(connection) {
           } else if (item.isObject) {
             for (const slug in content) {
               const p = content[slug];
-              await connection.query(`INSERT INTO ${item.table} (slug, titulo, herobadge, herodescripcion, seccionlabel, secciontitulo, contenido, imagenportada, multimedia, tramites, integrantes, ultimaactualizacion) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+              await connection.query(`INSERT INTO ${item.table} (slug, titulo, herobadge, herodescripcion, seccionlabel, secciontitulo, contenido, imagenportada, multimedia, tramites, integrantes, galerias, cta_titulo, cta_descripcion, cta_link, ultimaactualizacion) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                 [slug, p.titulo, p.herobadge, p.herodescripcion, p.seccionlabel, p.secciontitulo, p.contenido, p.imagenportada, p.multimedia, 
                  typeof p.tramites === 'string' ? p.tramites : JSON.stringify(p.tramites), 
                  typeof p.integrantes === 'string' ? p.integrantes : JSON.stringify(p.integrantes), 
+                 typeof p.galerias === 'string' ? p.galerias : JSON.stringify(p.galerias || []),
+                 p.cta_titulo || null, p.cta_descripcion || null, p.cta_link || null,
                  p.ultimaactualizacion]);
             }
           } else if (item.isSimpleArray) {

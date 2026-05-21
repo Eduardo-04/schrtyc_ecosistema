@@ -179,6 +179,11 @@ export const getGaleriaFiltros = () => request('/galeria/filtros')
 export const crearGaleriaFiltro = (nombre) => request('/galeria/filtros', { method: 'POST', body: JSON.stringify({ nombre }) }).then(j => j.filtros)
 export const eliminarGaleriaFiltro = (nombre) => request(`/galeria/filtros/${nombre}`, { method: 'DELETE' }).then(j => j.filtros)
 
+export const getGaleriaAutores = () => request('/galeria/autores')
+export const crearGaleriaAutor = (datos) => request('/galeria/autores', { method: 'POST', body: JSON.stringify(datos) }).then(j => j.item)
+export const editarGaleriaAutor = (id, datos) => request(`/galeria/autores/${id}`, { method: 'PUT', body: JSON.stringify(datos) }).then(j => j.item)
+export const eliminarGaleriaAutor = (id) => request(`/galeria/autores/${id}`, { method: 'DELETE' })
+
 // ── Configuración ─────────────────────────────────────────────
 export const getConfiguracion = () => request('/configuracion').then(j => j.data)
 export const actualizarConfiguracion = (config) => request('/configuracion', { method: 'PUT', body: JSON.stringify(config) }).then(j => j.data)

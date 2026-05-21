@@ -25,8 +25,67 @@ router.get('/filtros', async (req, res) => {
   }
 });
 
+// GET /api/galeria/autores
+router.get('/autores', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM galeria_autores ORDER BY nombre ASC');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error al obtener autores:', error);
+    res.status(500).json({ ok: false, message: 'Error interno del servidor' });
+  }
+});
+
 // Rutas protegidas (Solo admin y editor_prensa pueden escribir)
 router.use(verificarToken, verificarRol(['admin', 'editor_prensa']));
+
+// POST /api/galeria/autores
+router.post('/autores', async (req, res) => {
+  try {
+    const { nombre, foto } = req.body;
+    if (!nombre) return res.status(400).json({ ok: false, mensaje: 'Nombre del autor requerido' });
+    
+    const [result] = await pool.query('INSERT INTO galeria_autores (nombre, foto) VALUES (?, ?)', [nombre, foto || '']);
+    res.json({ ok: true, item: { id: result.insertId, nombre, foto } });
+  } catch (error) {
+    console.error('Error al crear autor:', error);
+    res.status(500).json({ ok: false, message: 'Error interno del servidor' });
+  }
+});
+
+// PUT /api/galeria/autores/:id
+router.put('/autores/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nombre, foto } = req.body;
+    if (!nombre) return res.status(400).json({ ok: false, mensaje: 'Nombre del autor requerido' });
+    
+    const [result] = await pool.query(
+      'UPDATE galeria_autores SET nombre = ?, foto = ? WHERE id = ?',
+      [nombre, foto || '', id]
+    );
+    
+    if (result.affectedRows === 0) return res.status(404).json({ ok: false, mensaje: 'Autor no encontrado' });
+    res.json({ ok: true, item: { id: parseInt(id), nombre, foto } });
+  } catch (error) {
+    console.error('Error al actualizar autor:', error);
+    res.status(500).json({ ok: false, message: 'Error interno del servidor' });
+  }
+});
+
+// DELETE /api/galeria/autores/:id
+router.delete('/autores/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const [result] = await pool.query('DELETE FROM galeria_autores WHERE id = ?', [id]);
+    
+    if (result.affectedRows === 0) return res.status(404).json({ ok: false, mensaje: 'Autor no encontrado' });
+    res.json({ ok: true, mensaje: 'Autor eliminado con éxito' });
+  } catch (error) {
+    console.error('Error al eliminar autor:', error);
+    res.status(500).json({ ok: false, message: 'Error interno del servidor' });
+  }
+});
 
 // POST /api/galeria/filtros
 router.post('/filtros', async (req, res) => {

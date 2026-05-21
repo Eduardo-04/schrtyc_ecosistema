@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback, memo, useMemo } from 'react'
-import { Palette, Plus, Pencil, Trash2, Check, RefreshCw, X, Image as ImageIcon, Settings2, Filter, Hash } from 'lucide-react'
+import { Palette, Plus, Pencil, Trash2, Check, RefreshCw, X, Image as ImageIcon, Settings2, Filter, Hash, Users } from 'lucide-react'
 import ArchiveroInput from '../shared/ArchiveroInput'
 import { 
   getGaleria, crearGaleriaItem, editarGaleriaItem, eliminarGaleriaItem,
   getPaginas, editarPagina,
-  getGaleriaFiltros, crearGaleriaFiltro, eliminarGaleriaFiltro
+  getGaleriaFiltros, crearGaleriaFiltro, eliminarGaleriaFiltro,
+  getGaleriaAutores, crearGaleriaAutor, editarGaleriaAutor, eliminarGaleriaAutor
 } from '../../services/api'
 
 const FORM_VACIO = { 
@@ -13,8 +14,8 @@ const FORM_VACIO = {
 }
 
 // ── Modal para Añadir/Editar Obra ──────────────────────────────────────────
-const ModalGaleria = memo(({ item, onGuardar, onCerrar, tecnicas = [] }) => {
-  const [form, setForm] = useState(item || { ...FORM_VACIO, tecnica: tecnicas[0] || '' })
+const ModalGaleria = memo(({ item, onGuardar, onCerrar, tecnicas = [], autores = [] }) => {
+  const [form, setForm] = useState(item || { ...FORM_VACIO, tecnica: tecnicas[0] || '', autor: autores[0]?.nombre || '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -58,9 +59,19 @@ const ModalGaleria = memo(({ item, onGuardar, onCerrar, tecnicas = [] }) => {
             </div>
             
             <div>
-              <label className={labelClass}>Autor / Artista</label>
-              <input value={form.autor} onChange={e => setForm({ ...form, autor: e.target.value })}
-                className={inputClass} placeholder="Ej. Vincent van Gogh" />
+              <label className={labelClass}>Autor / Artista *</label>
+              <select 
+                value={form.autor} 
+                onChange={e => setForm({ ...form, autor: e.target.value })}
+                className={inputClass}
+                required
+              >
+                <option value="" disabled>Seleccionar artista...</option>
+                {autores.map(a => <option key={a.id} value={a.nombre}>{a.nombre}</option>)}
+              </select>
+              <p className="text-[10px] text-gray-400 mt-1.5 font-bold">
+                ¿No está en la lista? Cierra este modal y agrégalo en el botón "Artistas".
+              </p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -187,26 +198,180 @@ function ModalFiltros({ filtros, onCrear, onEliminar, onCerrar }) {
   )
 }
 
+// ── Modal para Gestionar Artistas ──────────────────────────────────────────
+function ModalAutores({ autores, onCrear, onEditar, onEliminar, onCerrar }) {
+  const [nombre, setNombre] = useState('')
+  const [foto, setFoto] = useState('')
+  const [editandoId, setEditandoId] = useState(null)
+
+  const handleGuardar = (e) => {
+    e.preventDefault()
+    if (!nombre.trim()) return
+    if (editandoId) {
+      onEditar(editandoId, { nombre: nombre.trim(), foto })
+      setEditandoId(null)
+    } else {
+      onCrear({ nombre: nombre.trim(), foto })
+    }
+    setNombre('')
+    setFoto('')
+  }
+
+  const handleEditarClick = (a) => {
+    setEditandoId(a.id)
+    setNombre(a.nombre)
+    setFoto(a.foto || '')
+  }
+
+  const handleCancelar = () => {
+    setEditandoId(null)
+    setNombre('')
+    setFoto('')
+  }
+
+  const labelClass = "block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1 ml-1"
+  const inputClass = "w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#611232] outline-none text-sm font-bold text-gray-700 transition-all"
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="px-8 py-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+          <div>
+            <h3 className="text-lg font-black text-[#611232]">Directorio de Artistas Oficiales</h3>
+            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Registra y edita los perfiles de los creadores</p>
+          </div>
+          <button onClick={onCerrar} className="p-2 text-gray-400 hover:text-gray-700 rounded-xl transition-colors"><X size={24} /></button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-8 grid grid-cols-1 md:grid-cols-2 gap-10">
+          {/* Formulario Izquierda */}
+          <div className="space-y-6">
+            <h4 className="text-sm font-black text-[#611232] uppercase tracking-wider border-b pb-2">
+              {editandoId ? 'Editar Perfil de Artista' : 'Registrar Nuevo Artista'}
+            </h4>
+            <form onSubmit={handleGuardar} className="space-y-6">
+              <div>
+                <label className={labelClass}>Nombre del Artista *</label>
+                <input 
+                  value={nombre} 
+                  onChange={e => setNombre(e.target.value)}
+                  className={inputClass}
+                  placeholder="Ej. Francisco Toledo"
+                  required
+                />
+              </div>
+
+              <div>
+                <ArchiveroInput 
+                  label="Foto de Perfil"
+                  value={foto}
+                  onChange={v => setFoto(v)}
+                  placeholder="URL o sube una imagen..."
+                />
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                {editandoId && (
+                  <button 
+                    type="button" 
+                    onClick={handleCancelar}
+                    className="flex-1 py-3 border border-gray-200 rounded-2xl text-xs font-black uppercase tracking-widest text-gray-500 hover:bg-gray-50 transition-all"
+                  >
+                    Cancelar
+                  </button>
+                )}
+                <button 
+                  type="submit"
+                  className="flex-1 py-3 bg-[#611232] text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-[1.02] transition-transform shadow-lg shadow-[#611232]/10"
+                >
+                  {editandoId ? 'Guardar Cambios' : 'Registrar Artista'}
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {/* Lista Derecha */}
+          <div className="flex flex-col space-y-4">
+            <h4 className="text-sm font-black text-[#611232] uppercase tracking-wider border-b pb-2 flex justify-between items-center">
+              <span>Artistas Registrados</span>
+              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-bold">{autores.length}</span>
+            </h4>
+            <div className="space-y-3 overflow-y-auto max-h-[50vh] pr-2 custom-scrollbar flex-1">
+              {autores.length === 0 ? (
+                <p className="text-xs text-gray-400 font-bold text-center py-10">No hay artistas registrados.</p>
+              ) : (
+                autores.map(a => (
+                  <div key={a.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl group hover:bg-gray-100/80 transition-colors border border-gray-100">
+                    <div className="flex items-center gap-3">
+                      {a.foto ? (
+                        <img 
+                          src={a.foto} 
+                          alt={a.nombre} 
+                          className="w-10 h-10 rounded-full object-cover border border-gray-200 bg-white"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-[#611232]/10 text-[#611232] flex items-center justify-center font-bold text-sm">
+                          {a.nombre.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <div>
+                        <p className="text-sm font-black text-gray-700 leading-tight">{a.nombre}</p>
+                        <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">
+                          {a.foto ? 'Con Foto' : 'Sin Foto (Usa obra de fallback)'}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button 
+                        onClick={() => handleEditarClick(a)}
+                        className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                        title="Editar artista"
+                      >
+                        <Pencil size={15} />
+                      </button>
+                      <button 
+                        onClick={() => onEliminar(a.id)}
+                        className="p-2 text-red-300 hover:text-red-500 transition-colors"
+                        title="Eliminar artista"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ── COMPONENTE PRINCIPAL ──────────────────────────────────────────────────
 export default function GestionGaleria() {
   const [items, setItems] = useState([])
   const [pageData, setPageData] = useState(null)
   const [tecnicas, setTecnicas] = useState([])
+  const [autores, setAutores] = useState([])
   const [loading, setLoading] = useState(true)
   const [modal, setModal] = useState(null)
   const [modalPagina, setModalPagina] = useState(false)
   const [modalFiltros, setModalFiltros] = useState(false)
+  const [modalAutores, setModalAutores] = useState(false)
 
   const cargar = async () => {
     setLoading(true)
     try {
-      const [galleryItems, allPages, filters] = await Promise.all([
+      const [galleryItems, allPages, filters, authors] = await Promise.all([
         getGaleria(),
         getPaginas(),
-        getGaleriaFiltros()
+        getGaleriaFiltros(),
+        getGaleriaAutores()
       ])
       setItems(galleryItems || [])
       setTecnicas(filters || [])
+      setAutores(authors || [])
       setPageData(allPages?.galeria || {
         titulo: 'Galería de Arte',
         herobadge: 'Cultura Chiapaneca',
@@ -214,7 +379,10 @@ export default function GestionGaleria() {
         seccionlabel: 'Exposiciones',
         secciontitulo: 'Acervo Artístico',
         contenido: '',
-        imagenportada: ''
+        imagenportada: '',
+        cta_titulo: '¿Eres creador chiapaneco?',
+        cta_descripcion: 'Somete tu obra y forma parte del acervo oficial.',
+        cta_link: '#'
       })
     } catch (err) {
       console.error(err)
@@ -255,6 +423,22 @@ export default function GestionGaleria() {
     cargar()
   }, [])
 
+  const handleCrearAutor = useCallback(async (datos) => {
+    await crearGaleriaAutor(datos)
+    cargar()
+  }, [])
+
+  const handleEditarAutor = useCallback(async (id, datos) => {
+    await editarGaleriaAutor(id, datos)
+    cargar()
+  }, [])
+
+  const handleEliminarAutor = useCallback(async (id) => {
+    if (!window.confirm('¿Eliminar este artista de la lista oficial? Las obras asociadas conservarán el nombre, pero no tendrán foto de perfil oficial.')) return
+    await eliminarGaleriaAutor(id)
+    cargar()
+  }, [])
+
   return (
     <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8">
       {/* 1. Encabezado de Gestión */}
@@ -267,6 +451,11 @@ export default function GestionGaleria() {
           <p className="text-gray-400 text-[10px] mt-1 font-black uppercase tracking-[0.2em]">Curaduría y Control Editorial</p>
         </div>
         <div className="flex flex-wrap gap-3">
+           <button onClick={() => setModalAutores(true)}
+            className="flex items-center gap-2 px-5 py-2.5 bg-gray-50 text-gray-500 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-gray-100 transition-all border border-gray-100"
+          >
+            <Users size={16} className="text-[#611232]" /> Artistas
+          </button>
            <button onClick={() => setModalFiltros(true)}
             className="flex items-center gap-2 px-5 py-2.5 bg-gray-50 text-gray-500 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-gray-100 transition-all border border-gray-100"
           >
@@ -396,6 +585,7 @@ export default function GestionGaleria() {
           onGuardar={handleGuardar}
           onCerrar={() => setModal(null)}
           tecnicas={tecnicas}
+          autores={autores}
         />
       )}
 
@@ -415,6 +605,16 @@ export default function GestionGaleria() {
           onCerrar={() => setModalFiltros(false)} 
         />
       )}
+
+      {modalAutores && (
+        <ModalAutores
+          autores={autores}
+          onCrear={handleCrearAutor}
+          onEditar={handleEditarAutor}
+          onEliminar={handleEliminarAutor}
+          onCerrar={() => setModalAutores(false)}
+        />
+      )}
     </div>
   )
 }
@@ -428,7 +628,10 @@ function ModalPaginaGaleria({ data, onGuardar, onCerrar }) {
     seccionlabel: 'Exposiciones',
     secciontitulo: 'Acervo Artístico',
     contenido: '',
-    imagenportada: ''
+    imagenportada: '',
+    cta_titulo: '¿Eres creador chiapaneco?',
+    cta_descripcion: 'Somete tu obra y forma parte del acervo oficial.',
+    cta_link: '#'
   })
   const [loading, setLoading] = useState(false)
 
@@ -503,6 +706,37 @@ function ModalPaginaGaleria({ data, onGuardar, onCerrar }) {
               )}
             </div>
 
+            <div className="p-8 bg-gray-50 rounded-[2.5rem] space-y-6 shadow-inner">
+              <p className="text-[11px] font-black text-[#611232] uppercase tracking-[0.3em] border-b border-gray-200 pb-3">Banner de Invitación (CTA)</p>
+              <div>
+                <label className={labelClass}>Título del Banner</label>
+                <input 
+                  value={form.cta_titulo || ''} 
+                  onChange={e => setForm({ ...form, cta_titulo: e.target.value })} 
+                  className={inputClass} 
+                  placeholder="Ej. ¿Eres creador chiapaneco?"
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Descripción del Banner</label>
+                <textarea 
+                  value={form.cta_descripcion || ''} 
+                  onChange={e => setForm({ ...form, cta_descripcion: e.target.value })} 
+                  rows={2} 
+                  className={`${inputClass} resize-none`} 
+                  placeholder="Ej. Somete tu obra y forma parte de..."
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Enlace del Botón</label>
+                <input 
+                  value={form.cta_link || ''} 
+                  onChange={e => setForm({ ...form, cta_link: e.target.value })} 
+                  className={inputClass} 
+                  placeholder="Ej. https://forms.gle/... o #"
+                />
+              </div>
+            </div>
           </div>
         </form>
 

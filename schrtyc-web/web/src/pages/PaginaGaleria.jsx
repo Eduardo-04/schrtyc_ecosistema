@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
-import { getPaginas, getGaleria, getUploadUrl } from '../services/api'
+import { useState, useEffect, useMemo } from 'react'
+import { getPaginas, getGaleria, getGaleriaAutores, getUploadUrl } from '../services/api'
 
 // ── Componente de Tarjeta de Obra ──────────────────────────────────────────
-function ObraItem({ obra, onClick }) {
+function ObraItem({ obra, onClick, onFiltrarAutor }) {
   return (
     <div 
       className="group cursor-pointer flex flex-col font-sans break-inside-avoid mb-12" 
@@ -30,7 +30,18 @@ function ObraItem({ obra, onClick }) {
         <h3 className="text-lg font-black leading-tight mb-1 group-hover:text-[#611232] transition-colors" style={{ color: '#611232' }}>
           {obra.titulo}
         </h3>
-        <p className="text-gray-500 text-sm font-medium mb-1">Por {obra.autor || 'Anónimo'}</p>
+        <p className="text-gray-500 text-sm font-medium mb-1">
+          Por{' '}
+          <span 
+            onClick={(e) => {
+              e.stopPropagation()
+              onFiltrarAutor(obra.autor)
+            }}
+            className="hover:text-[#611232] hover:underline cursor-pointer font-semibold"
+          >
+            {obra.autor || 'Anónimo'}
+          </span>
+        </p>
         <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#A57F2C' }}>
           {obra.año || 'Sin fecha'} • {obra.ciudad || 'Chiapas'}
         </p>
@@ -40,7 +51,7 @@ function ObraItem({ obra, onClick }) {
 }
 
 // ── Modal de Detalle (Pantalla Dividida) ──────────────────────────────────
-function ModalObraFull({ obra, onClose }) {
+function ModalObraFull({ obra, onClose, onFiltrarAutor }) {
   if (!obra) return null
 
   return (
@@ -72,7 +83,16 @@ function ModalObraFull({ obra, onClose }) {
             {obra.titulo}
           </h2>
           <p className="text-xl text-gray-500 font-semibold italic">
-            Por {obra.autor || 'Artista no especificado'}
+            Por{' '}
+            <span
+              onClick={() => {
+                onFiltrarAutor(obra.autor)
+                onClose()
+              }}
+              className="hover:text-[#611232] hover:underline cursor-pointer font-bold"
+            >
+              {obra.autor || 'Artista no especificado'}
+            </span>
           </p>
         </div>
 
@@ -123,18 +143,23 @@ function ModalObraFull({ obra, onClose }) {
 export default function PaginaGaleria() {
   const [data, setData] = useState(null)
   const [items, setItems] = useState([])
+  const [autores, setAutores] = useState([])
   const [loading, setLoading] = useState(true)
   const [filtroTecnica, setFiltroTecnica] = useState('Todas')
   const [obraSeleccionada, setObraSeleccionada] = useState(null)
+  const [pestanaActiva, setPestanaActiva] = useState('obras')
+  const [filtroAutor, setFiltroAutor] = useState(null)
 
   useEffect(() => {
     window.scrollTo(0, 0)
     Promise.all([
       getPaginas().then(res => res?.galeria),
-      getGaleria()
-    ]).then(([pageData, galleryItems]) => {
+      getGaleria(),
+      getGaleriaAutores()
+    ]).then(([pageData, galleryItems, authorsList]) => {
       setData(pageData)
       setItems(galleryItems || [])
+      setAutores(authorsList || [])
     }).catch(console.error)
       .finally(() => setLoading(false))
   }, [])
@@ -149,10 +174,31 @@ export default function PaginaGaleria() {
 
   const parrafos = contenido.split('\n\n').map(p => p.trim()).filter(Boolean)
   const tecnicas = ['Todas', ...new Set(items.map(o => o.tecnica).filter(Boolean))]
+
+  const artistas = useMemo(() => {
+    const grupos = {}
+    items.forEach(obra => {
+      const autorNorm = (obra.autor || 'Artista Anónimo').trim()
+      if (!grupos[autorNorm]) {
+        const perfilOficial = autores.find(a => a.nombre.trim().toLowerCase() === autorNorm.toLowerCase())
+        grupos[autorNorm] = {
+          nombre: autorNorm,
+          obras: [],
+          portada: perfilOficial?.foto ? perfilOficial.foto : obra.imagen
+        }
+      }
+      grupos[autorNorm].obras.push(obra)
+    })
+    return Object.values(grupos).sort((a, b) => a.nombre.localeCompare(b.nombre))
+  }, [items, autores])
   
-  const filtradas = items.filter(o => 
-    filtroTecnica === 'Todas' || o.tecnica === filtroTecnica
-  )
+  const filtradas = useMemo(() => {
+    return items.filter(o => {
+      const matchTecnica = filtroTecnica === 'Todas' || o.tecnica === filtroTecnica
+      const matchAutor = !filtroAutor || (o.autor && o.autor.trim() === filtroAutor)
+      return matchTecnica && matchAutor
+    })
+  }, [items, filtroTecnica, filtroAutor])
 
   if (loading) return (
     <div className="min-h-screen bg-white flex items-center justify-center">
@@ -162,7 +208,14 @@ export default function PaginaGaleria() {
 
   return (
     <div className="min-h-screen bg-white font-sans">
-      <ModalObraFull obra={obraSeleccionada} onClose={() => setObraSeleccionada(null)} />
+      <ModalObraFull 
+        obra={obraSeleccionada} 
+        onClose={() => setObraSeleccionada(null)} 
+        onFiltrarAutor={(autor) => {
+          setFiltroAutor(autor)
+          setPestanaActiva('obras')
+        }}
+      />
 
       {/* Header Institucional */}
       <div style={{ backgroundColor: '#611232' }} className="text-white py-12">
@@ -208,38 +261,175 @@ export default function PaginaGaleria() {
 
         {/* 2. Filtros y Galería */}
         <div className="border-t border-gray-100 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8">
-            <div>
-              <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Filtrar por Técnica</p>
-              <div className="flex flex-wrap gap-6">
-                {tecnicas.map(t => (
-                  <button 
-                    key={t} 
-                    onClick={() => setFiltroTecnica(t)}
-                    className={`text-sm font-bold uppercase tracking-widest transition-all pb-2 border-b-2 ${filtroTecnica === t ? 'text-[#611232] border-[#A57F2C]' : 'text-gray-300 border-transparent hover:text-gray-500'}`}
-                  >
-                    {t}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="text-right">
-              <span style={{ color: '#A57F2C' }} className="text-5xl font-black">{filtradas.length}</span>
-              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Obras en catálogo</p>
+          
+          {/* Selector de Pestañas (Tabs) Premium */}
+          <div className="flex justify-center mb-12">
+            <div className="inline-flex p-1.5 bg-gray-50 border border-gray-100 rounded-2xl shadow-inner">
+              <button
+                onClick={() => setPestanaActiva('obras')}
+                className={`px-8 py-3 rounded-xl font-bold uppercase tracking-wider text-xs transition-all duration-300 ${
+                  pestanaActiva === 'obras'
+                    ? 'bg-white text-[#611232] shadow-md border border-gray-100'
+                    : 'text-gray-400 hover:text-gray-600'
+                }`}
+              >
+                Obras (Catálogo)
+              </button>
+              <button
+                onClick={() => setPestanaActiva('artistas')}
+                className={`px-8 py-3 rounded-xl font-bold uppercase tracking-wider text-xs transition-all duration-300 ${
+                  pestanaActiva === 'artistas'
+                    ? 'bg-white text-[#611232] shadow-md border border-gray-100'
+                    : 'text-gray-400 hover:text-gray-600'
+                }`}
+              >
+                Artistas (Directorio)
+              </button>
             </div>
           </div>
 
-          {filtradas.length === 0 ? (
-            <div className="py-24 text-center text-gray-400 border-2 border-dashed border-gray-100 rounded-3xl">
-              <p className="text-lg font-bold">No se encontraron obras disponibles.</p>
-            </div>
+          {pestanaActiva === 'obras' ? (
+            <>
+              {/* Filtro de Autor Activo */}
+              {filtroAutor && (
+                <div className="mb-8 flex items-center justify-between p-4 bg-gray-50 border border-gray-100 rounded-2xl max-w-lg">
+                  <div className="flex items-center gap-3">
+                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Filtrado por:</span>
+                    <span className="bg-[#611232] text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-2">
+                      Artista: {filtroAutor}
+                      <button 
+                        onClick={() => setFiltroAutor(null)} 
+                        className="hover:text-red-300 font-bold ml-1 transition-colors font-sans"
+                        title="Quitar filtro"
+                      >
+                        ✕
+                      </button>
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => setFiltroAutor(null)}
+                    className="text-xs font-bold text-[#A57F2C] hover:underline"
+                  >
+                    Mostrar todo
+                  </button>
+                </div>
+              )}
+
+              {/* Filtros de Técnica */}
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8">
+                <div>
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Filtrar por Técnica</p>
+                  <div className="flex flex-wrap gap-6">
+                    {tecnicas.map(t => (
+                      <button 
+                        key={t} 
+                        onClick={() => setFiltroTecnica(t)}
+                        className={`text-sm font-bold uppercase tracking-widest transition-all pb-2 border-b-2 ${filtroTecnica === t ? 'text-[#611232] border-[#A57F2C]' : 'text-gray-300 border-transparent hover:text-gray-500'}`}
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span style={{ color: '#A57F2C' }} className="text-5xl font-black">{filtradas.length}</span>
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Obras en catálogo</p>
+                </div>
+              </div>
+
+              {filtradas.length === 0 ? (
+                <div className="py-24 text-center text-gray-400 border-2 border-dashed border-gray-100 rounded-3xl">
+                  <p className="text-lg font-bold">No se encontraron obras disponibles para los filtros seleccionados.</p>
+                </div>
+              ) : (
+                <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-8">
+                  {filtradas.map(obra => (
+                    <ObraItem 
+                      key={obra.id} 
+                      obra={obra} 
+                      onClick={() => setObraSeleccionada(obra)} 
+                      onFiltrarAutor={(autor) => {
+                        setFiltroAutor(autor)
+                        setPestanaActiva('obras')
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+            </>
           ) : (
-            <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-8">
-              {filtradas.map(obra => (
-                <ObraItem key={obra.id} obra={obra} onClick={() => setObraSeleccionada(obra)} />
-              ))}
-            </div>
+            // Directorio de Artistas
+            <>
+              <div className="flex justify-between items-end mb-16">
+                <div>
+                  <h2 className="text-2xl font-black text-[#611232]">Nuestros Creadores</h2>
+                  <p className="text-xs text-gray-400 mt-1 uppercase tracking-widest">Directorio de artistas en el acervo</p>
+                </div>
+                <div className="text-right">
+                  <span style={{ color: '#A57F2C' }} className="text-5xl font-black">{artistas.length}</span>
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Artistas registrados</p>
+                </div>
+              </div>
+
+              {artistas.length === 0 ? (
+                <div className="py-24 text-center text-gray-400 border-2 border-dashed border-gray-100 rounded-3xl">
+                  <p className="text-lg font-bold">No se encontraron artistas registrados.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                  {artistas.map(artista => (
+                    <div
+                      key={artista.nombre}
+                      onClick={() => {
+                        setFiltroAutor(artista.nombre)
+                        setPestanaActiva('obras')
+                      }}
+                      className="group cursor-pointer bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 overflow-hidden flex flex-col h-full font-sans animate-in fade-in slide-in-from-bottom-4 duration-300"
+                    >
+                      {/* Foto de Portada (primera obra) */}
+                      <div className="relative h-48 bg-gray-50 overflow-hidden flex items-center justify-center border-b border-gray-100">
+                        {artista.portada ? (
+                          <img
+                            src={getUploadUrl(artista.portada)}
+                            alt={artista.nombre}
+                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="text-[#611232] opacity-30 text-4xl">🎨</div>
+                        )}
+                        {/* Overlay gradiente */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+                        
+                        {/* Badge de cantidad de obras flotando */}
+                        <div className="absolute top-4 right-4">
+                          <span className="bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter text-[#611232] shadow-md border border-white">
+                            {artista.obras.length} {artista.obras.length === 1 ? 'obra' : 'obras'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Detalle */}
+                      <div className="p-6 flex flex-col flex-grow">
+                        <h3 className="text-xl font-black text-[#611232] leading-tight mb-2 group-hover:text-[#A57F2C] transition-colors">
+                          {artista.nombre}
+                        </h3>
+                        <p className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-6">
+                          Artista Chiapaneco
+                        </p>
+                        
+                        <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between text-xs font-bold text-[#A57F2C] uppercase tracking-widest group-hover:text-[#611232] transition-colors">
+                          <span>Ver Catálogo</span>
+                          <span className="transform translate-x-0 group-hover:translate-x-2 transition-transform duration-300">→</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
           )}
+
         </div>
       </main>
 
@@ -249,12 +439,14 @@ export default function PaginaGaleria() {
            <span className="text-[20vw] font-black text-white pointer-events-none select-none">ARTE</span>
         </div>
         <div className="max-w-2xl mx-auto px-6 relative z-10">
-          <h2 className="text-3xl md:text-4xl font-black text-white mb-6">¿Eres creador chiapaneco?</h2>
+          <h2 className="text-3xl md:text-4xl font-black text-white mb-6">
+            {data?.cta_titulo || '¿Eres creador chiapaneco?'}
+          </h2>
           <p className="text-white/70 mb-10 text-lg leading-relaxed">
-            Forma parte del acervo digital del Sistema Chiapaneco de Radio, Televisión y Cinematografía.
+            {data?.cta_descripcion || 'Forma parte del acervo digital del Sistema Chiapaneco de Radio, Televisión y Cinematografía.'}
           </p>
           <a
-            href="mailto:galeria@radiotvycine.chiapas.gob.mx"
+            href={data?.cta_link || 'mailto:galeria@radiotvycine.chiapas.gob.mx'}
             style={{ backgroundColor: '#A57F2C' }}
             className="inline-block text-white px-10 py-4 text-xs font-black tracking-[0.2em] uppercase rounded-full hover:scale-105 transition-transform shadow-xl"
           >

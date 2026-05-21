@@ -15,6 +15,9 @@ const CAMPOS_EDITABLES = [
   'tramites',
   'integrantes',
   'galerias',
+  'cta_titulo',
+  'cta_descripcion',
+  'cta_link',
 ];
 
 // GET /api/paginas
