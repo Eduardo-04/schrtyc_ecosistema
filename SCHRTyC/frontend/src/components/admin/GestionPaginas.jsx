@@ -3,7 +3,7 @@ import {
   FileText, Film, Users, Shield, Scale, Pencil, Clock,
   X, Check, RefreshCw, HardDrive, MonitorPlay,
   Image as ImageIcon, ExternalLink, LayoutTemplate,
-  Plus, Trash2, ChevronDown, ChevronUp, Settings2, ImagePlus, UserSquare2, Palette, Upload
+  Plus, Trash2, ChevronDown, ChevronUp, Settings2, ImagePlus, UserSquare2, Palette, Upload, Images, FolderOpen
 } from 'lucide-react'
 import { getPaginas, editarPagina, getUploadUrl } from '../../services/api'
 import ArchiveroInput from '../shared/ArchiveroInput'
@@ -77,6 +77,81 @@ const serializeTramites = (arr) => {
 
 const serializeIntegrantes = (arr) => {
   const limpio = arr.map(({ id, ...p }) => p).filter(p => typeof p.nombre === 'string' && p.nombre.trim())
+  return JSON.stringify(limpio, null, 2)
+}
+
+const seccionVacia = () => ({
+  id: 'sec-' + (Date.now() + Math.random()),
+  titulo: '',
+  galerias: []
+})
+
+const galeriaVacia = () => ({
+  id: 'gal-' + (Date.now() + Math.random()),
+  titulo: '', descripcion: '', portada: '', fotos: []
+})
+
+const parseGalerias = (str) => {
+  if (!str) return []
+  let parsed = []
+  if (Array.isArray(str)) {
+    parsed = str
+  } else if (typeof str === 'string' && str.trim()) {
+    try {
+      parsed = JSON.parse(str)
+    } catch {
+      return []
+    }
+  } else {
+    return []
+  }
+
+  if (!Array.isArray(parsed)) return []
+
+  const isOldFormat = parsed.length > 0 && !parsed[0].galerias
+  if (isOldFormat) {
+    return [
+      {
+        id: 'sec-default-' + Date.now(),
+        titulo: 'Locaciones',
+        galerias: parsed.map(g => ({
+          id: g.id || ('gal-' + (Date.now() + Math.random())),
+          titulo: g.titulo || '',
+          descripcion: g.descripcion || '',
+          portada: g.portada || '',
+          fotos: g.fotos || []
+        }))
+      }
+    ]
+  }
+
+  return parsed.map(sec => ({
+    id: sec.id || ('sec-' + (Date.now() + Math.random())),
+    titulo: sec.titulo || '',
+    galerias: Array.isArray(sec.galerias) ? sec.galerias.map(g => ({
+      id: g.id || ('gal-' + (Date.now() + Math.random())),
+      titulo: g.titulo || '',
+      descripcion: g.descripcion || '',
+      portada: g.portada || '',
+      fotos: g.fotos || []
+    })) : []
+  }))
+}
+
+const serializeGalerias = (arr) => {
+  const limpio = arr
+    .map(sec => ({
+      titulo: sec.titulo || '',
+      galerias: (sec.galerias || [])
+        .map(g => ({
+          titulo: g.titulo || '',
+          descripcion: g.descripcion || '',
+          portada: g.portada || '',
+          fotos: g.fotos || []
+        }))
+        .filter(g => typeof g.titulo === 'string' && (g.titulo.trim() || g.fotos.length > 0))
+    }))
+    .filter(sec => typeof sec.titulo === 'string' && (sec.titulo.trim() || sec.galerias.length > 0))
   return JSON.stringify(limpio, null, 2)
 }
 
@@ -350,6 +425,165 @@ const IntegranteEditor = memo(({ integrante, index, onChange, onRemove }) => {
   )
 })
 
+const SeccionEditor = memo(({ seccion, index, onChange, onRemove }) => {
+  const [expanded, setExpanded] = useState(true)
+
+  const upd = (campo, valor) => {
+    onChange(index, { ...seccion, [campo]: valor })
+  }
+
+  const handleGaleriaChange = (gIdx, val) => {
+    const newGalerias = seccion.galerias.map((g, idx) => idx === gIdx ? val : g)
+    upd('galerias', newGalerias)
+  }
+
+  const handleGaleriaRemove = (gIdx) => {
+    const newGalerias = seccion.galerias.filter((_, idx) => idx !== gIdx)
+    upd('galerias', newGalerias)
+  }
+
+  const agregarGaleria = () => {
+    const newGalerias = [...(seccion.galerias || []), galeriaVacia()]
+    upd('galerias', newGalerias)
+  }
+
+  return (
+    <div className="border-2 border-indigo-100 rounded-2xl overflow-hidden bg-indigo-50/10 mb-4">
+      <div className="flex items-center gap-3 px-4 py-3 bg-indigo-50 border-b border-indigo-100">
+        <FolderOpen className="text-indigo-600 shrink-0" size={18} />
+        <div className="flex-1 min-w-0 flex items-center gap-2">
+          <input 
+            value={seccion.titulo} 
+            onChange={e => upd('titulo', e.target.value)}
+            className="bg-transparent border-b border-transparent hover:border-indigo-400 focus:border-indigo-600 focus:bg-white text-sm font-extrabold text-gray-800 outline-none px-2 py-0.5 rounded transition-all flex-1"
+            placeholder="Nombre de la Sección (ej. Locación)" 
+          />
+          <span className="text-xs text-indigo-500 font-bold bg-indigo-100 px-2 py-0.5 rounded-full shrink-0">
+            {(seccion.galerias || []).length} galerías
+          </span>
+        </div>
+        <button type="button" onClick={() => setExpanded(e => !e)} className="p-1 text-indigo-600 hover:text-indigo-800 rounded-lg transition-colors">
+          {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        </button>
+        <button type="button" onClick={() => onRemove(index)} className="p-1 text-indigo-400 hover:text-red-500 rounded-lg transition-colors">
+          <Trash2 size={16} />
+        </button>
+      </div>
+
+      {expanded && (
+        <div className="p-4 space-y-4">
+          <div className="flex items-center justify-between">
+            <h4 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Galerías de esta sección</h4>
+            <button type="button" onClick={agregarGaleria}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 text-white text-xs font-bold rounded-xl hover:bg-indigo-700 transition-colors shadow-sm">
+              <Plus size={13} /> Añadir Galería
+            </button>
+          </div>
+
+          {(seccion.galerias || []).length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-8 text-center bg-white rounded-xl border border-dashed border-gray-200">
+              <Images className="text-gray-300 mb-2" size={24} />
+              <p className="font-bold text-xs text-gray-400">No hay galerías en esta sección</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {(seccion.galerias || []).map((g, i) => (
+                <GaleriaMiniEditor 
+                  key={g.id} 
+                  galeria={g} 
+                  index={i}
+                  onChange={handleGaleriaChange}
+                  onRemove={handleGaleriaRemove} 
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+})
+
+const GaleriaMiniEditor = memo(({ galeria, index, onChange, onRemove }) => {
+  const [expanded, setExpanded] = useState(true)
+  const upd = (campo, valor) => onChange(index, { ...galeria, [campo]: valor })
+  const updFotos = (v) => {
+    if (!v) return;
+    const actual = galeria.fotos || []
+    onChange(index, { ...galeria, fotos: [...actual, v] })
+  }
+  const removeFoto = (i) => {
+    onChange(index, { ...galeria, fotos: (galeria.fotos || []).filter((_, idx) => idx !== i) })
+  }
+
+  return (
+    <div className="border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm">
+      <div className="flex items-center gap-3 px-3 py-2 bg-gray-50 border-b border-gray-100">
+        <div className="w-6 h-6 rounded bg-indigo-50 flex items-center justify-center text-xs font-extrabold text-indigo-600 shrink-0">
+          <Images size={12} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-xs font-bold text-gray-700 truncate">{galeria.titulo || `Galería ${index + 1}`}</p>
+          <p className="text-[10px] text-gray-400 font-medium">{(galeria.fotos || []).length} fotos</p>
+        </div>
+        <button type="button" onClick={() => setExpanded(e => !e)} className="p-1 text-gray-400 hover:text-gray-700 rounded transition-colors">
+          {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+        </button>
+        <button type="button" onClick={() => onRemove(index)} className="p-1 text-gray-400 hover:text-red-500 rounded transition-colors">
+          <Trash2 size={14} />
+        </button>
+      </div>
+
+      {expanded && (
+        <div className="p-3 space-y-3">
+          <div>
+            <label className="block text-[10px] font-bold text-gray-500 mb-1 uppercase tracking-wider">Nombre de la Galería</label>
+            <input 
+              value={galeria.titulo} 
+              onChange={e => upd('titulo', e.target.value)}
+              className="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-200 focus:border-indigo-500 outline-none"
+              placeholder="Ej. Cañón del Sumidero" 
+            />
+          </div>
+          <div>
+            <label className="block text-[10px] font-bold text-gray-500 mb-1 uppercase tracking-wider">Descripción / Bio (opcional)</label>
+            <textarea 
+              value={galeria.descripcion} 
+              onChange={e => upd('descripcion', e.target.value)} 
+              rows={2}
+              className="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-200 focus:border-indigo-500 outline-none resize-none leading-relaxed"
+              placeholder="Breve descripción..." 
+            />
+          </div>
+
+          <div className="bg-slate-50 rounded-lg p-3 border border-slate-100">
+            <label className="block text-[10px] font-bold text-slate-600 mb-2 uppercase tracking-widest flex items-center gap-1.5">
+              <Images size={12} /> Carrusel de Imágenes
+            </label>
+            
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 mb-2">
+              {(galeria.fotos || []).map((f, i) => (
+                <div key={i} className="relative aspect-square rounded-lg border border-gray-200 overflow-hidden group bg-white">
+                  <img src={getUploadUrl(f)} alt="" className="w-full h-full object-cover" />
+                  <button type="button" onClick={() => removeFoto(i)}
+                    className="absolute top-0.5 right-0.5 p-0.5 bg-white/95 text-red-500 hover:bg-red-500 hover:text-white rounded shadow-sm opacity-0 group-hover:opacity-100 transition-all">
+                    <Trash2 size={12} />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <div className="bg-white rounded-lg p-2 border border-gray-200 border-dashed">
+              <label className="block text-[9px] font-bold text-gray-400 mb-1 uppercase">Añadir foto al carrusel</label>
+              <ImageUrlInput value="" onChange={updFotos} placeholder="Pega URL o usa botón Archivero..." />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+})
+
 // ── ModalEditor ──
 function ModalEditor({ pagina, schema, onClose, onSave }) {
   const [tab, setTab] = useState('general')
@@ -365,6 +599,7 @@ function ModalEditor({ pagina, schema, onClose, onSave }) {
   })
   const [tramites,    setTramites]    = useState(() => parseTramites(pagina?.tramites))
   const [integrantes, setIntegrantes] = useState(() => parseIntegrantes(pagina?.integrantes))
+  const [galerias,    setGalerias]    = useState(() => parseGalerias(pagina?.galerias))
   const [saving, setSaving] = useState(false)
   const [error,  setError]  = useState(null)
   const [mostrarSubidaDoc, setMostrarSubidaDoc] = useState(false)
@@ -422,6 +657,7 @@ function ModalEditor({ pagina, schema, onClose, onSave }) {
         ...form,
         tramites:    serializeTramites(tramites),
         integrantes: serializeIntegrantes(integrantes),
+        galerias:    serializeGalerias(galerias),
       })
       onClose()
     } catch (err) {
@@ -437,6 +673,7 @@ function ModalEditor({ pagina, schema, onClose, onSave }) {
     { id: 'general',     label: 'General',     icon: Settings2 },
     { id: 'tramites',    label: 'Trámites',     icon: FileText },
     ...(esParticipacion ? [{ id: 'integrantes', label: 'Integrantes', icon: UserSquare2 }] : []),
+    { id: 'galerias',    label: 'Galerías',     icon: Images },
     { id: 'multimedia',  label: 'Documentos',   icon: HardDrive },
   ]
 
@@ -471,6 +708,8 @@ function ModalEditor({ pagina, schema, onClose, onSave }) {
                 <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded-full bg-[#611232] text-white">{tramites.length}</span>}
               {t.id === 'integrantes' && integrantes.length > 0 &&
                 <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded-full bg-emerald-600 text-white">{integrantes.length}</span>}
+              {t.id === 'galerias' && galerias.length > 0 &&
+                <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded-full bg-indigo-600 text-white">{galerias.length}</span>}
             </button>
           ))}
         </div>
@@ -606,6 +845,37 @@ function ModalEditor({ pagina, schema, onClose, onSave }) {
                       <IntegranteEditor key={p.id} integrante={p} index={i}
                         onChange={handleIntegranteChange}
                         onRemove={handleIntegranteRemove} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* TAB GALERIAS */}
+            {tab === 'galerias' && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div>
+                    <h3 className="text-sm font-extrabold text-gray-800">Secciones de Galerías</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">Agrupa tus locaciones o álbumes de fotos en secciones con título personalizado.</p>
+                  </div>
+                  <button type="button" onClick={() => setGalerias(g => [...g, seccionVacia()])}
+                    className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded-xl hover:bg-indigo-700 transition-colors shadow-sm">
+                    <Plus size={16} /> Crear Sección
+                  </button>
+                </div>
+                {galerias.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-16 text-center bg-white rounded-2xl border border-dashed border-gray-200">
+                    <Images className="text-gray-300 mb-3" size={36} />
+                    <p className="font-bold text-sm text-gray-500">No hay secciones configuradas</p>
+                    <p className="text-xs text-gray-400 mt-1 max-w-xs">Añade secciones (ej. "Locación", "Cine Chiapas") para agrupar tus álbumes de fotos.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {galerias.map((s, i) => (
+                      <SeccionEditor key={s.id} seccion={s} index={i}
+                        onChange={(idx, val) => setGalerias(arr => arr.map((x, _i) => _i === idx ? val : x))}
+                        onRemove={(idx) => setGalerias(arr => arr.filter((_, _i) => _i !== idx))} />
                     ))}
                   </div>
                 )}
@@ -794,6 +1064,7 @@ export default function GestionPaginas({ slugEspecifico = null }) {
 
             const numTramites = getNum(data?.tramites)
             const numIntegrantes = getNum(data?.integrantes)
+            const numGalerias = getNum(data?.galerias)
             const tienePortada = !!data?.imagenportada?.trim?.()
 
             return (
@@ -824,6 +1095,11 @@ export default function GestionPaginas({ slugEspecifico = null }) {
                     {schema.slug === 'participacion' && numIntegrantes > 0 && (
                       <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100">
                         {numIntegrantes} integrantes
+                      </span>
+                    )}
+                    {numGalerias > 0 && (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-100">
+                        {numGalerias} galerías
                       </span>
                     )}
                     {tienePortada && (

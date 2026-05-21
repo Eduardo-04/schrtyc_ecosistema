@@ -132,6 +132,7 @@ async function initDB() {
         multimedia TEXT,
         tramites JSON,
         integrantes JSON,
+        galerias JSON,
         ultimaactualizacion DATE
       )
     `);

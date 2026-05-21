@@ -299,6 +299,33 @@ function TramiteCard({ tramite }) {
   )
 }
 
+const parseSecciones = (val) => {
+  if (!val) return []
+  let arr = []
+  if (Array.isArray(val)) {
+    arr = val
+  } else if (typeof val === 'string' && val.trim()) {
+    try { arr = JSON.parse(val) } catch { return [] }
+  } else {
+    return []
+  }
+
+  if (!Array.isArray(arr)) return []
+
+  const isOldFormat = arr.length > 0 && !arr[0].galerias
+  if (isOldFormat) {
+    return [
+      {
+        id: 'sec-default',
+        titulo: 'Locaciones',
+        galerias: arr
+      }
+    ]
+  }
+
+  return arr
+}
+
 function Skeleton({ lines = 3 }) {
   return (
     <div className="animate-pulse space-y-3">
@@ -338,6 +365,45 @@ export default function PaginaCine() {
     }
     return []
   })()
+
+  const [lightbox, setLightbox] = useState({ isOpen: false, photos: [], index: 0 })
+
+  const openLightbox = (photos, index) => {
+    setLightbox({ isOpen: true, photos, index })
+  }
+
+  const closeLightbox = () => {
+    setLightbox({ isOpen: false, photos: [], index: 0 })
+  }
+
+  const prevPhoto = (e) => {
+    e?.stopPropagation()
+    setLightbox(prev => ({
+      ...prev,
+      index: prev.index === 0 ? prev.photos.length - 1 : prev.index - 1
+    }))
+  }
+
+  const nextPhoto = (e) => {
+    e?.stopPropagation()
+    setLightbox(prev => ({
+      ...prev,
+      index: prev.index === prev.photos.length - 1 ? 0 : prev.index + 1
+    }))
+  }
+
+  useEffect(() => {
+    if (!lightbox.isOpen) return
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') closeLightbox()
+      if (e.key === 'ArrowLeft') prevPhoto()
+      if (e.key === 'ArrowRight') nextPhoto()
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [lightbox.isOpen])
+
+  const secciones = parseSecciones(data?.galerias)
 
   const totalDocs     = mediaItems.filter(i => ['pdf', 'drive', 'link'].includes(i.tipo)).length
   const heroBadge     = data?.herobadge       || ''
@@ -518,8 +584,163 @@ export default function PaginaCine() {
             </div>
           )}
 
+          {/* ── 4. GALERÍAS POR SECCIONES ── */}
+          {secciones.length > 0 && (
+            <div className="mt-16 space-y-16">
+              {secciones.map((seccion, secIdx) => {
+                const tieneGalerias = seccion.galerias && seccion.galerias.length > 0
+                if (!tieneGalerias) return null
+
+                return (
+                  <div key={secIdx} className="space-y-8">
+                    {/* Header de la Sección */}
+                    <div className="flex items-center gap-4">
+                      <div className="w-2 h-8 rounded-full bg-[#A57F2C]" />
+                      <h2 className="text-2xl font-black text-gray-900 capitalize tracking-tight">
+                        {seccion.titulo || 'Locaciones'}
+                      </h2>
+                      <div className="h-px flex-1 bg-gradient-to-r from-gray-200 to-transparent" />
+                    </div>
+
+                    {/* Lista de Galerías en esta sección */}
+                    <div className="grid grid-cols-1 gap-12">
+                      {seccion.galerias.map((galeria, galIdx) => {
+                        const fotos = galeria.fotos || []
+                        return (
+                          <div key={galIdx} className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden p-6 md:p-8 flex flex-col gap-6">
+                            
+                            {/* Info de la Galería */}
+                            <div>
+                              <div className="flex items-center gap-2 mb-2">
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#611232] bg-[#611232]/10 px-2 py-0.5 rounded">
+                                  Galería
+                                </span>
+                                <span className="text-xs font-bold text-gray-400">
+                                  {fotos.length} fotos
+                                </span>
+                              </div>
+                              <h3 className="text-xl font-bold text-gray-900 leading-tight">
+                                {galeria.titulo || `Galería ${galIdx + 1}`}
+                              </h3>
+                              {galeria.descripcion && (
+                                <p className="text-sm text-gray-600 leading-relaxed mt-2 max-w-3xl">
+                                  {galeria.descripcion}
+                                </p>
+                              )}
+                            </div>
+
+                            {/* Carrusel/Slide de fotos */}
+                            {fotos.length === 0 ? (
+                              <div className="min-h-[150px] flex items-center justify-center bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                                <p className="text-sm font-bold text-gray-400">Sin imágenes en esta galería</p>
+                              </div>
+                            ) : (
+                              <div className="relative group/carousel">
+                                <div className="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollBehavior: 'smooth' }}>
+                                  {fotos.map((foto, i) => (
+                                    <div 
+                                      key={i} 
+                                      className="shrink-0 w-64 md:w-80 snap-center rounded-2xl overflow-hidden shadow-sm border border-gray-100 group relative cursor-pointer"
+                                      onClick={() => openLightbox(fotos, i)}
+                                    >
+                                      <img 
+                                        src={getUploadUrl(foto)} 
+                                        alt={`Foto ${i+1}`} 
+                                        className="w-full h-48 md:h-64 object-cover transition-transform duration-500 group-hover:scale-105" 
+                                      />
+                                      {/* Hover Overlay with Zoom Icon */}
+                                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                        <div className="bg-white/20 backdrop-blur-md p-3 rounded-full border border-white/30 text-white transform scale-75 group-hover:scale-100 transition-all duration-300">
+                                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                            <circle cx="11" cy="11" r="8" />
+                                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                                            <line x1="11" y1="8" x2="11" y2="14" />
+                                            <line x1="8" y1="11" x2="14" y2="11" />
+                                          </svg>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                                
+                                {/* Info text */}
+                                <p className="text-[10px] text-gray-400 font-medium tracking-wide mt-2 text-right">
+                                  ↔ Desplázate horizontalmente para ver más • Haz clic para ampliar
+                                </p>
+                              </div>
+                            )}
+
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+
         </div>
       </div>
+
+      {/* Lightbox Modal */}
+      {lightbox.isOpen && lightbox.photos.length > 0 && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 transition-all duration-300"
+          onClick={closeLightbox}
+        >
+          {/* Close button */}
+          <button 
+            type="button"
+            className="absolute top-6 right-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-3 rounded-full transition-all"
+            onClick={closeLightbox}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+
+          {/* Left Navigation Arrow */}
+          {lightbox.photos.length > 1 && (
+            <button 
+              type="button"
+              className="absolute left-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-4 rounded-full transition-all"
+              onClick={prevPhoto}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+          )}
+
+          {/* Image Viewer */}
+          <div className="max-w-4xl max-h-[80vh] flex flex-col items-center justify-center" onClick={e => e.stopPropagation()}>
+            <img 
+              src={getUploadUrl(lightbox.photos[lightbox.index])} 
+              alt={`Imagen ${lightbox.index + 1}`}
+              className="max-w-full max-h-[75vh] object-contain rounded-xl shadow-2xl border-4 border-white/10" 
+            />
+            {/* Index counter */}
+            <p className="text-white/60 text-xs font-bold mt-4 tracking-widest uppercase">
+              Foto {lightbox.index + 1} de {lightbox.photos.length}
+            </p>
+          </div>
+
+          {/* Right Navigation Arrow */}
+          {lightbox.photos.length > 1 && (
+            <button 
+              type="button"
+              className="absolute right-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-4 rounded-full transition-all"
+              onClick={nextPhoto}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </button>
+          )}
+        </div>
+      )}
     </>
   )
 }

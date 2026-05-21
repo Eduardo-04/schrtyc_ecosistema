@@ -14,6 +14,7 @@ const CAMPOS_EDITABLES = [
   'multimedia',
   'tramites',
   'integrantes',
+  'galerias',
 ];
 
 // GET /api/paginas
@@ -25,7 +26,8 @@ router.get('/', async (req, res) => {
       db[row.slug] = {
         ...row,
         tramites: typeof row.tramites === 'string' ? JSON.parse(row.tramites) : row.tramites,
-        integrantes: typeof row.integrantes === 'string' ? JSON.parse(row.integrantes) : row.integrantes
+        integrantes: typeof row.integrantes === 'string' ? JSON.parse(row.integrantes) : row.integrantes,
+        galerias: typeof row.galerias === 'string' ? JSON.parse(row.galerias) : row.galerias
       };
     });
     res.json(db);
@@ -44,7 +46,8 @@ router.get('/:slug', async (req, res) => {
     const pagina = {
       ...rows[0],
       tramites: typeof rows[0].tramites === 'string' ? JSON.parse(rows[0].tramites) : rows[0].tramites,
-      integrantes: typeof rows[0].integrantes === 'string' ? JSON.parse(rows[0].integrantes) : rows[0].integrantes
+      integrantes: typeof rows[0].integrantes === 'string' ? JSON.parse(rows[0].integrantes) : rows[0].integrantes,
+      galerias: typeof rows[0].galerias === 'string' ? JSON.parse(rows[0].galerias) : rows[0].galerias
     };
     res.json(pagina);
   } catch (error) {
@@ -71,7 +74,7 @@ router.put('/:slug', verificarToken, verificarRol(['admin', 'editor_inst']), asy
       if (req.body[campo] !== undefined) {
         updates.push(`${campo} = ?`);
         let val = req.body[campo];
-        if (campo === 'tramites' || campo === 'integrantes') {
+        if (campo === 'tramites' || campo === 'integrantes' || campo === 'galerias') {
           val = typeof val === 'object' ? JSON.stringify(val) : val;
         }
         params.push(val);
@@ -90,7 +93,8 @@ router.put('/:slug', verificarToken, verificarRol(['admin', 'editor_inst']), asy
     const finalPagina = {
       ...updatedRows[0],
       tramites: typeof updatedRows[0].tramites === 'string' ? JSON.parse(updatedRows[0].tramites) : updatedRows[0].tramites,
-      integrantes: typeof updatedRows[0].integrantes === 'string' ? JSON.parse(updatedRows[0].integrantes) : updatedRows[0].integrantes
+      integrantes: typeof updatedRows[0].integrantes === 'string' ? JSON.parse(updatedRows[0].integrantes) : updatedRows[0].integrantes,
+      galerias: typeof updatedRows[0].galerias === 'string' ? JSON.parse(updatedRows[0].galerias) : updatedRows[0].galerias
     };
 
     res.json({ ok: true, mensaje: 'Página actualizada con éxito', pagina: finalPagina });
