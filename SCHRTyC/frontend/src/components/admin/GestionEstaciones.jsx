@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
-import { Radio, Tv, Plus, Pencil, Trash2, Loader2, AlertCircle, Check, X, Wifi, WifiOff, Globe, Signal } from 'lucide-react'
-import { fetchEstaciones, crearEstacion, editarEstacion, eliminarEstacion } from '../../services/api'
+import { useState, useEffect, useRef } from 'react'
+import { Radio, Tv, Plus, Pencil, Trash2, Loader2, AlertCircle, Check, X, Wifi, WifiOff, Globe, Signal, ImagePlus } from 'lucide-react'
+import { fetchEstacionesTodas, crearEstacion, editarEstacion, eliminarEstacion, subirArchivo, getUploadUrl } from '../../services/api'
 
 const TIPOS = ['TV', 'Radio']
-const FORM_VACIO = { nombre: '', tipo: 'Radio', streamUrl: '', activo: true }
+const FORM_VACIO = { nombre: '', tipo: 'Radio', streamUrl: '', activo: true, imagen: '' }
 
 export default function GestionEstaciones() {
   const [estaciones, setEstaciones]   = useState([])
@@ -15,9 +15,12 @@ export default function GestionEstaciones() {
   const [guardando, setGuardando]     = useState(false)
   const [confirmEliminar, setConfirmEliminar] = useState(null)
   const [toast, setToast]             = useState(null)
+  const [imgFile, setImgFile]         = useState(null)   // File object pendiente de subir
+  const [imgPreview, setImgPreview]   = useState(null)   // URL local para preview
+  const fileInputRef                  = useRef(null)
 
   useEffect(() => {
-    fetchEstaciones()
+    fetchEstacionesTodas()
       .then(setEstaciones)
       .catch(() => setError('No se pudieron cargar las estaciones'))
       .finally(() => setCargando(false))
@@ -31,12 +34,16 @@ export default function GestionEstaciones() {
   const abrirCrear = () => {
     setEditando(null)
     setForm(FORM_VACIO)
+    setImgFile(null)
+    setImgPreview(null)
     setModalAbierto(true)
   }
 
   const abrirEditar = (est) => {
     setEditando(est)
     setForm({ ...est })
+    setImgFile(null)
+    setImgPreview(est.imagen ? getUploadUrl(est.imagen) : null)
     setModalAbierto(true)
   }
 
@@ -44,6 +51,8 @@ export default function GestionEstaciones() {
     setModalAbierto(false)
     setEditando(null)
     setForm(FORM_VACIO)
+    setImgFile(null)
+    setImgPreview(null)
   }
 
   const handleChange = (e) => {
@@ -51,17 +60,32 @@ export default function GestionEstaciones() {
     setForm(f => ({ ...f, [name]: type === 'checkbox' ? checked : value }))
   }
 
+  const handleImageSelect = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setImgFile(file)
+    setImgPreview(URL.createObjectURL(file))
+  }
+
   const handleGuardar = async (e) => {
     e.preventDefault()
     if (!form.nombre.trim()) return
     setGuardando(true)
     try {
+      // Subir imagen si hay un archivo nuevo seleccionado
+      let imagenFinal = form.imagen || ''
+      if (imgFile) {
+        const res = await subirArchivo(imgFile)
+        imagenFinal = res.ruta
+      }
+      const datos = { ...form, imagen: imagenFinal }
+
       if (editando) {
-        const actualizada = await editarEstacion(editando.id, form)
+        const actualizada = await editarEstacion(editando.id, datos)
         setEstaciones(es => es.map(e => e.id === actualizada.id ? actualizada : e))
         mostrarToast('Estación actualizada')
       } else {
-        const nueva = await crearEstacion(form)
+        const nueva = await crearEstacion(datos)
         setEstaciones(es => [...es, nueva])
         mostrarToast('Estación creada')
       }
@@ -140,8 +164,17 @@ export default function GestionEstaciones() {
                <div className={`absolute top-0 right-0 w-24 h-24 ${est.tipo === 'TV' ? 'bg-[#611232]' : 'bg-[#A57F2C]'} opacity-[0.03] rounded-bl-[100%]`}></div>
                
                <div className="flex items-start justify-between mb-8">
-                  <div className={`w-14 h-14 ${est.tipo === 'TV' ? 'bg-[#611232]' : 'bg-[#A57F2C]'} rounded-[1.2rem] flex items-center justify-center shadow-lg`}>
-                    {est.tipo === 'TV' ? <Tv size={24} className="text-white"/> : <Radio size={24} className="text-white"/>}
+                  {/* Logo o icono de la estación */}
+                  <div className={`w-14 h-14 rounded-[1.2rem] overflow-hidden flex items-center justify-center shadow-lg flex-shrink-0 ${
+                    est.imagen ? 'bg-gray-50 border border-gray-100' : (est.tipo === 'TV' ? 'bg-[#611232]' : 'bg-[#A57F2C]')
+                  }`}>
+                    {est.imagen
+                      ? <img src={getUploadUrl(est.imagen)} alt={est.nombre} className="w-full h-full object-cover" onError={e => { e.target.style.display='none'; e.target.nextSibling.style.display='flex' }} />
+                      : null
+                    }
+                    <span style={{ display: est.imagen ? 'none' : 'flex' }} className="w-full h-full items-center justify-center">
+                      {est.tipo === 'TV' ? <Tv size={24} className="text-white"/> : <Radio size={24} className="text-white"/>}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                      <div className={`w-2 h-2 rounded-full ${est.activo ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]' : 'bg-gray-300'}`}></div>
@@ -183,6 +216,53 @@ export default function GestionEstaciones() {
             </div>
 
             <form onSubmit={handleGuardar} className="p-10 space-y-8">
+
+              {/* Logo de la estación */}
+              <div className="space-y-2">
+                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Logo de la Estación</label>
+                <div className="flex items-center gap-5">
+                  {/* Preview / placeholder */}
+                  <div
+                    className={`w-20 h-20 rounded-[1.2rem] overflow-hidden flex-shrink-0 flex items-center justify-center border-2 ${
+                      imgPreview ? 'border-[#611232]/20 bg-gray-50' : 'border-dashed border-gray-200 bg-gray-50'
+                    }`}
+                  >
+                    {imgPreview
+                      ? <img src={imgPreview} alt="preview" className="w-full h-full object-cover" />
+                      : <span className="text-3xl select-none">📻</span>
+                    }
+                  </div>
+                  {/* Botón de selección */}
+                  <div className="flex flex-col gap-2 flex-1">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="flex items-center gap-2 px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl text-xs font-black text-gray-500 uppercase tracking-widest hover:bg-[#611232] hover:text-white hover:border-[#611232] transition-all"
+                    >
+                      <ImagePlus size={16} />
+                      {imgPreview ? 'Cambiar logo' : 'Subir logo'}
+                    </button>
+                    {imgPreview && (
+                      <button
+                        type="button"
+                        onClick={() => { setImgFile(null); setImgPreview(null); setForm(f => ({ ...f, imagen: '' })) }}
+                        className="text-[10px] font-bold text-red-400 hover:text-red-600 text-left pl-1 transition-colors"
+                      >
+                        × Quitar logo
+                      </button>
+                    )}
+                    <p className="text-[10px] text-gray-300 font-medium pl-1">PNG, JPG o WEBP · Máx 10 MB</p>
+                  </div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageSelect}
+                  />
+                </div>
+              </div>
+
               <div className="space-y-1">
                 <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Nombre Identificador *</label>
                 <input name="nombre" value={form.nombre} onChange={handleChange} required

@@ -41,7 +41,7 @@ const MENU_MODULES = [
   }
 ]
 
-export default function Sidebar({ seccionActiva, onNavegar, onCerrarSesion }) {
+export default function Sidebar({ seccionActiva, onNavegar, onCerrarSesion, isOpen, onClose }) {
   const { usuario } = useAuth()
 
   // Filtrar módulos y sus items por rol del usuario
@@ -51,17 +51,35 @@ export default function Sidebar({ seccionActiva, onNavegar, onCerrarSesion }) {
   })).filter(modulo => modulo.items.length > 0)
 
   return (
-    <aside className="w-64 bg-[#611232] text-white flex flex-col shadow-xl h-screen overflow-hidden">
-      {/* Logo */}
+    <aside className={`
+      fixed inset-y-0 left-0 z-50 w-72
+      md:relative md:w-64 md:translate-x-0 md:z-auto
+      bg-[#611232] text-white flex flex-col shadow-xl h-screen overflow-hidden
+      transition-transform duration-300 ease-in-out
+      ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+    `}>
+      {/* Logo + botón cerrar en móvil */}
       <div className="p-5 border-b border-white/10 flex-shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#A57F2C] rounded-lg flex items-center justify-center font-bold text-sm">
-            SC
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#A57F2C] rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0">
+              SC
+            </div>
+            <div>
+              <p className="font-bold text-sm leading-tight tracking-wide">SCHRTyC</p>
+              <p className="text-xs text-white/60 leading-tight mt-0.5">Gestor de Contenido</p>
+            </div>
           </div>
-          <div>
-            <p className="font-bold text-sm leading-tight tracking-wide">SCHRTyC</p>
-            <p className="text-xs text-white/60 leading-tight mt-0.5">Gestor de Contenido</p>
-          </div>
+          {/* Botón X solo visible en móvil */}
+          <button
+            onClick={onClose}
+            className="md:hidden p-1.5 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors flex-shrink-0"
+            aria-label="Cerrar menú"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+            </svg>
+          </button>
         </div>
       </div>
 
@@ -92,9 +110,9 @@ export default function Sidebar({ seccionActiva, onNavegar, onCerrarSesion }) {
         ))}
       </nav>
 
-      {/* Perfil Mini (Solo informativo) */}
+      {/* Perfil Mini */}
       <div className="p-4 bg-black/10 mx-4 mb-2 rounded-xl flex items-center gap-3 border border-white/5">
-        <div className="w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-[10px] font-bold text-emerald-400">
+        <div className="w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-[10px] font-bold text-emerald-400 flex-shrink-0">
           {usuario?.nombre?.charAt(0) || 'U'}
         </div>
         <div className="min-w-0">

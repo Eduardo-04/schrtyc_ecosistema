@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import {
   ArrowLeft, Plus, Pencil, Trash2, Image as ImageIcon, Loader2,
-  AlertCircle, X, Check, Eye, EyeOff, ChevronDown, Link, Globe, Play, User, Clock, Search, RefreshCw
+  AlertCircle, X, Check, Eye, EyeOff, ChevronDown, Link, Globe, Play, User, Clock, Search, RefreshCw, ImagePlus
 } from 'lucide-react'
 import {
   fetchProgramas,
@@ -9,7 +9,8 @@ import {
   crearProgramaCatalogo,
   editarProgramaCatalogo,
   eliminarProgramaCatalogo,
-  getUploadUrl
+  getUploadUrl,
+  subirArchivo
 } from '../../services/api'
 import ArchiveroInput from '../shared/ArchiveroInput'
 
@@ -20,7 +21,7 @@ const FORM_VACIO = {
   imagen: '', tipo: 'TV', estacion: '',
   activo: true, embeds: []
 }
-const EMBED_VACIO = { titulo: '', url: '' }
+const EMBED_VACIO = { titulo: '', url: '', descripcion: '', imagen: '' }
 
 // ── Utilidades ────────────────────────────────────────────────
 const esUrlValida = (url = '') => {
@@ -91,6 +92,7 @@ export default function GestionProgramas() {
   const [guardando, setGuardando]             = useState(false)
   const [confirmEliminar, setConfirmEliminar] = useState(null)
   const [toast, setToast]                     = useState(null)
+  const embedFileRefs                         = useRef({})
 
   const cargar = useCallback(async () => {
     setCargando(true)
@@ -152,13 +154,25 @@ export default function GestionProgramas() {
     if (!form.nombre.trim()) return
     setGuardando(true)
     try {
-      const datos = {
-        ...form,
-        embeds: (form.embeds || []).map(em => ({
-          titulo: em.titulo,
-          url: normalizarEmbed(em.url)
-        }))
-      }
+      // Subir imágenes de embeds pendientes
+      const embedsFinales = await Promise.all(
+        (form.embeds || []).map(async (em, i) => {
+          let imagenFinal = em.imagen || ''
+          const file = embedFileRefs.current[i]
+          if (file) {
+            const res = await subirArchivo(file)
+            imagenFinal = res.ruta
+          }
+          return {
+            titulo:      em.titulo,
+            url:         normalizarEmbed(em.url),
+            descripcion: em.descripcion || '',
+            imagen:      imagenFinal,
+          }
+        })
+      )
+      embedFileRefs.current = {}
+      const datos = { ...form, embeds: embedsFinales }
       if (programaActivo === 'nuevo') {
         const nuevo = await crearProgramaCatalogo(datos)
         setProgramas(ps => [...ps, nuevo])
@@ -393,13 +407,68 @@ export default function GestionProgramas() {
                      <button type="button" onClick={agregarEmbed} className="text-[10px] font-black text-[#611232] uppercase hover:underline">+ Agregar</button>
                   </div>
                   <div className="space-y-4">
-                     {form.embeds.map((em, i) => (
-                        <div key={i} className="p-6 bg-gray-50 rounded-[2rem] border border-gray-50 space-y-4 relative">
+                     {form.embeds.map((em, i) => {
+                       const previewImg = em.imagen ? getUploadUrl(em.imagen) : null
+                       return (
+                        <div key={i} className="p-6 bg-gray-50 rounded-[2rem] border border-gray-100 space-y-3 relative">
                            <button type="button" onClick={() => eliminarEmbed(i)} className="absolute top-4 right-4 text-gray-300 hover:text-red-500"><X size={16} /></button>
-                           <input value={em.titulo} onChange={e => actualizarEmbed(i, 'titulo', e.target.value)} placeholder="Título del video/audio" className="w-full px-4 py-2 bg-white border border-gray-100 rounded-xl text-xs font-bold outline-none" />
-                           <input value={em.url} onChange={e => actualizarEmbed(i, 'url', e.target.value)} placeholder="URL (YouTube, Spotify...)" className="w-full px-4 py-2 bg-white border border-gray-100 rounded-xl text-[10px] font-mono outline-none" />
+
+                           {/* Título */}
+                           <input value={em.titulo} onChange={e => actualizarEmbed(i, 'titulo', e.target.value)} placeholder="Título (ej: Entrevista con invitado)" className="w-full px-4 py-2 bg-white border border-gray-100 rounded-xl text-xs font-bold outline-none" />
+
+                           {/* URL — YouTube, Spotify, Facebook */}
+                           <input value={em.url} onChange={e => actualizarEmbed(i, 'url', e.target.value)} placeholder="URL (YouTube, Spotify, Facebook...)" className="w-full px-4 py-2 bg-white border border-gray-100 rounded-xl text-[10px] font-mono outline-none" />
+
+                           {/* Descripción del invitado / contenido */}
+                           <textarea
+                             value={em.descripcion || ''}
+                             onChange={e => actualizarEmbed(i, 'descripcion', e.target.value)}
+                             placeholder="Descripción o bio del invitado (opcional)"
+                             rows={2}
+                             className="w-full px-4 py-2 bg-white border border-gray-100 rounded-xl text-xs font-medium outline-none resize-none"
+                           />
+
+                           {/* Foto del invitado */}
+                           <div className="flex items-center gap-3">
+                             <div className={`w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center border-2 ${
+                               previewImg ? 'border-[#611232]/20 bg-gray-50' : 'border-dashed border-gray-200 bg-white'
+                             }`}>
+                               {previewImg
+                                 ? <img src={previewImg} alt="guest" className="w-full h-full object-cover" />
+                                 : <User size={18} className="text-gray-300" />
+                               }
+                             </div>
+                             <div className="flex flex-col gap-1">
+                               <button
+                                 type="button"
+                                 onClick={() => { const inp = document.getElementById(`embed-img-${i}`); inp?.click() }}
+                                 className="flex items-center gap-1 px-3 py-1.5 bg-white border border-gray-100 rounded-lg text-[10px] font-black text-gray-500 uppercase tracking-widest hover:bg-[#611232] hover:text-white hover:border-[#611232] transition-all"
+                               >
+                                 <ImagePlus size={12} />
+                                 {previewImg ? 'Cambiar foto' : 'Foto invitado'}
+                               </button>
+                               {previewImg && (
+                                 <button type="button" onClick={() => { actualizarEmbed(i, 'imagen', ''); delete embedFileRefs.current[i] }} className="text-[9px] font-bold text-red-400 hover:text-red-600 pl-1">
+                                   × Quitar foto
+                                 </button>
+                               )}
+                             </div>
+                             <input
+                               id={`embed-img-${i}`}
+                               type="file"
+                               accept="image/*"
+                               className="hidden"
+                               onChange={e => {
+                                 const file = e.target.files?.[0]
+                                 if (!file) return
+                                 embedFileRefs.current[i] = file
+                                 actualizarEmbed(i, 'imagen', URL.createObjectURL(file))
+                               }}
+                             />
+                           </div>
                         </div>
-                     ))}
+                       )
+                     })}
                   </div>
                </div>
             </div>

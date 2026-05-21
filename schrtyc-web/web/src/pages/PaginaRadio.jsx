@@ -4,12 +4,16 @@ import { estaEnVivo, esFuturo, getIniciales } from '../utils/date'
 import { esUrlValida, detectarTipoMedia, getYoutubeThumbnail, normalizarEmbedUrl } from '../utils/media'
 
 // ── Helpers Específicos ───────────────────────────────────────
+// Detecta si una URL es un widget embebido de CentovaCast (no un stream directo)
+const esWidgetCentovacast = (url) =>
+  typeof url === 'string' && url.includes('/cp/widgets/player/single')
+
 const colorEmbed = (url) => ({
-  youtube:    { bg: '#FF0000', label: 'YT' },
-  facebook:   { bg: '#1877F2', label: 'FB' },
+  youtube: { bg: '#FF0000', label: 'YT' },
+  facebook: { bg: '#1877F2', label: 'FB' },
   soundcloud: { bg: '#FF5500', label: 'SC' },
-  spotify:    { bg: '#1DB954', label: 'SP' },
-  generic:    { bg: '#611232', label: 'EM' },
+  spotify: { bg: '#1DB954', label: 'SP' },
+  generic: { bg: '#611232', label: 'EM' },
 }[detectarTipoMedia(url)])
 
 const alturaEmbed = (url) => {
@@ -117,7 +121,7 @@ function AudioWave({ playing }) {
 
 // ── Spotify Card ──────────────────────────────────────────────
 function SpotifyCard({ embed }) {
-  const url   = normalizarEmbedUrl(embed.url)
+  const url = normalizarEmbedUrl(embed.url)
   const label = tipoLabelSpotify(embed.url)
 
   const abrir = (e) => {
@@ -135,7 +139,7 @@ function SpotifyCard({ embed }) {
       className="spotify-card"
     >
       <svg width="36" height="36" viewBox="0 0 24 24" fill="#1DB954" style={{ flexShrink: 0 }}>
-        <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+        <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
       </svg>
       <div style={{ flex: 1, minWidth: 0 }}>
         <p style={{ color: '#1DB954', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', margin: '0 0 3px' }}>
@@ -147,9 +151,9 @@ function SpotifyCard({ embed }) {
         <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', margin: '2px 0 0' }}>
           Toca para abrir en Spotify
         </p>
-        </div>
+      </div>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1DB954" strokeWidth="2" style={{ flexShrink: 0 }}>
-        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/>
+        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" />
       </svg>
     </div>
   )
@@ -157,71 +161,135 @@ function SpotifyCard({ embed }) {
 
 // ── EmbedItem ─────────────────────────────────────────────────
 function EmbedItem({ embed }) {
+  const [verImagen, setVerImagen] = useState(false)
   if (!esUrlValida(embed.url)) return null
 
-  const tipo    = detectarTipoMedia(embed.url)
-  const c       = colorEmbed(embed.url)
+  const tipo = detectarTipoMedia(embed.url)
+  const c = colorEmbed(embed.url)
   const urlNorm = normalizarEmbedUrl(embed.url)
-  const altura  = alturaEmbed(embed.url)
+  const altura = alturaEmbed(embed.url)
   const esSpotify = tipo === 'spotify'
+  const esFacebook = tipo === 'facebook'
+  const tieneInvitado = !!(embed.imagen || embed.descripcion)
 
   return (
-    <div className="embed-card">
-      <div className="embed-header" style={{ backgroundColor: '#f9f9f9', borderBottom: '1px solid #f0f0f0' }}>
+    <>
+      <div className="embed-card">
+        <div className="embed-header" style={{ backgroundColor: '#f9f9f9', borderBottom: '1px solid #f0f0f0' }}>
         <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: c.bg, flexShrink: 0 }} />
         <span style={{ fontSize: '11px', fontWeight: '700', color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {embed.titulo || (esSpotify ? 'Audio / Podcast' : 'Video / YouTube')}
+          {embed.titulo || (esSpotify ? 'Audio / Podcast' : esFacebook ? 'Video en Facebook' : 'Video')}
         </span>
       </div>
-      
+
+      {/* Foto + descripción del invitado */}
+      {tieneInvitado && (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '32px 24px', borderBottom: '1px solid #f0f0f0', backgroundColor: '#fafafa', textAlign: 'center' }}>
+          {embed.imagen && (
+            <div style={{ position: 'relative', marginBottom: '20px' }}>
+              <img
+                src={getUploadUrl(embed.imagen)}
+                alt={embed.titulo || 'Invitado'}
+                style={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover', border: '4px solid white', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.15)', cursor: 'zoom-in', transition: 'transform 0.2s' }}
+                onClick={() => setVerImagen(true)}
+                onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
+                onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                onError={e => e.target.style.display = 'none'}
+              />
+              <div style={{ position: 'absolute', bottom: '-12px', left: '50%', transform: 'translateX(-50%)', backgroundColor: '#A57F2C', color: 'white', fontSize: '11px', fontWeight: 'bold', padding: '6px 16px', borderRadius: '20px', letterSpacing: '1px', textTransform: 'uppercase', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', whiteSpace: 'nowrap', pointerEvents: 'none' }}>
+                 Invitado Especial
+              </div>
+            </div>
+          )}
+          {embed.descripcion && (
+            <div style={{ maxWidth: '450px', marginTop: embed.imagen ? '12px' : '0' }}>
+               <p style={{ fontSize: '15px', color: '#374151', lineHeight: 1.7, margin: 0, fontStyle: 'italic', fontWeight: '500' }}>"{embed.descripcion}"</p>
+            </div>
+          )}
+        </div>
+      )}
+
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        {esSpotify ? (
+        {esFacebook ? (
+          /* Facebook bloquea iframes externos — mostramos botón de enlace directo */
+          <a
+            href={embed.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+              backgroundColor: '#1877F2', color: 'white', textDecoration: 'none',
+              fontSize: '13px', fontWeight: '700', padding: '16px 14px',
+              borderRadius: '0 0 12px 12px', transition: 'background-color 0.2s',
+            }}
+            onMouseEnter={e => e.currentTarget.style.backgroundColor = '#1557c0'}
+            onMouseLeave={e => e.currentTarget.style.backgroundColor = '#1877F2'}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            </svg>
+            Ver en Facebook
+          </a>
+        ) : esSpotify ? (
           <div style={{ width: '100%', borderRadius: '12px', overflow: 'hidden', padding: '4px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <iframe 
-              src={urlNorm} 
+            <iframe
+              src={urlNorm}
               style={{ width: '100%', height: '152px', display: 'block', border: 'none' }}
               allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-              allowFullScreen title={embed.titulo || 'Spotify Embed'} 
+              allowFullScreen title={embed.titulo || 'Spotify Embed'}
             />
-            <a 
-              href={embed.url} 
-              target="_blank" 
+            <a
+              href={embed.url}
+              target="_blank"
               rel="noopener noreferrer"
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                backgroundColor: '#1DB954',
-                color: 'white',
-                textDecoration: 'none',
-                fontSize: '12px',
-                fontWeight: '700',
-                padding: '10px 14px',
-                borderRadius: '8px',
-                textAlign: 'center',
-                transition: 'background-color 0.2s',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                backgroundColor: '#1DB954', color: 'white', textDecoration: 'none',
+                fontSize: '12px', fontWeight: '700', padding: '10px 14px',
+                borderRadius: '8px', textAlign: 'center', transition: 'background-color 0.2s',
                 boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
               }}
               onMouseEnter={e => e.currentTarget.style.backgroundColor = '#1ed760'}
               onMouseLeave={e => e.currentTarget.style.backgroundColor = '#1DB954'}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
               </svg>
               Abrir directamente en Spotify
             </a>
           </div>
         ) : (
-          <iframe 
-            src={urlNorm} 
+          <iframe
+            src={urlNorm}
             style={{ width: '100%', height: altura ? `${altura}px` : 'auto', aspectRatio: altura ? 'auto' : '16/9', display: 'block', border: 'none', backgroundColor: '#000' }}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen title={embed.titulo || 'Embed'} 
+            allowFullScreen title={embed.titulo || 'Embed'}
           />
         )}
       </div>
     </div>
+
+      {/* Lightbox de la foto del invitado */}
+      {verImagen && (
+        <div 
+          style={{ position: 'fixed', inset: 0, zIndex: 99999, backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(5px)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'zoom-out' }}
+          onClick={(e) => { e.stopPropagation(); setVerImagen(false); }}
+        >
+          <img 
+            src={getUploadUrl(embed.imagen)} 
+            alt="Invitado Completo" 
+            style={{ maxWidth: '90%', maxHeight: '90%', objectFit: 'contain', borderRadius: '12px', boxShadow: '0 20px 50px rgba(0,0,0,0.5)', cursor: 'default' }} 
+            onClick={(e) => e.stopPropagation()}
+          />
+          <button 
+            onClick={(e) => { e.stopPropagation(); setVerImagen(false); }}
+            style={{ position: 'absolute', top: '20px', right: '30px', background: 'transparent', border: 'none', color: 'white', fontSize: '40px', cursor: 'pointer' }}
+          >
+            &times;
+          </button>
+        </div>
+      )}
+    </>
   )
 }
 
@@ -237,13 +305,13 @@ function ModalPrograma({ programa, onClose }) {
         {programa.imagen
           ? <img src={getUploadUrl(programa.imagen)} alt={programa.nombre} className="w-full h-48 object-cover" />
           : <div style={{ background: 'linear-gradient(135deg, #611232 0%, #A57F2C 100%)', height: '160px' }}
-              className="flex flex-col items-center justify-center text-white p-6 gap-3">
-              <div style={{ width: '56px', height: '56px', borderRadius: '14px', backgroundColor: 'rgba(255,255,255,0.15)', border: '2px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span style={{ color: 'white', fontWeight: '800', fontSize: '18px' }}>{getIniciales(programa.nombre)}</span>
-              </div>
-              <p className="font-bold text-lg text-center">{programa.nombre}</p>
-              {vivo && <span className="text-xs bg-red-500 px-3 py-1 rounded-full animate-pulse">EN VIVO AHORA</span>}
+            className="flex flex-col items-center justify-center text-white p-6 gap-3">
+            <div style={{ width: '56px', height: '56px', borderRadius: '14px', backgroundColor: 'rgba(255,255,255,0.15)', border: '2px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ color: 'white', fontWeight: '800', fontSize: '18px' }}>{getIniciales(programa.nombre)}</span>
             </div>
+            <p className="font-bold text-lg text-center">{programa.nombre}</p>
+            {vivo && <span className="text-xs bg-red-500 px-3 py-1 rounded-full animate-pulse">EN VIVO AHORA</span>}
+          </div>
         }
         <div className="p-6">
           <div className="flex items-start justify-between mb-3">
@@ -260,10 +328,10 @@ function ModalPrograma({ programa, onClose }) {
           )}
           {programa.youtube_url && (
             <div className="rounded-xl overflow-hidden mb-4 bg-black" style={{ aspectRatio: '16/9' }}>
-              <iframe 
+              <iframe
                 src={programa.youtube_url.replace('watch?v=', 'embed/')}
-                className="w-full h-full" 
-                allowFullScreen 
+                className="w-full h-full"
+                allowFullScreen
                 title={programa.nombre}
                 loading="lazy"
               />
@@ -286,14 +354,14 @@ function ModalPrograma({ programa, onClose }) {
 // ── Modal Catálogo ────────────────────────────────────────────
 function ModalCatalogo({ prog, onClose }) {
   if (!prog) return null
-  const embeds    = (prog.embeds || []).filter(e => e.url)
-  const imgSrc    = getCardImage(prog)
+  const embeds = (prog.embeds || []).filter(e => e.url)
+  const imgSrc = getCardImage(prog)
   const tieneDesc = !!(prog.descripcionLarga || prog.descripcion)
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-container" onClick={e => e.stopPropagation()}>
-        
+
         <div className="modal-hero">
           {/* Background Blurred Image */}
           <div className="modal-hero-bg">
@@ -306,7 +374,7 @@ function ModalCatalogo({ prog, onClose }) {
           </div>
 
           <button className="modal-close-btn" onClick={onClose} aria-label="Cerrar">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12" /></svg>
           </button>
 
           {/* Poster Image (Intelligent Layout) */}
@@ -323,17 +391,17 @@ function ModalCatalogo({ prog, onClose }) {
               <span className="modal-badge" style={{ backgroundColor: 'rgba(255,255,255,0.15)', marginBottom: 0 }}>{prog.estacion}</span>
             </div>
             <h2 style={{ fontSize: 'clamp(24px, 4vw, 32px)', fontWeight: '900', lineHeight: 1.1, margin: 0 }}>{prog.nombre}</h2>
-            
+
             <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '16px', marginTop: '16px', opacity: 0.9 }}>
               {prog.conductor && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
                   <span style={{ fontSize: '14px', fontWeight: '600' }}>{prog.conductor}</span>
                 </div>
               )}
               {prog.horario && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
                   <span style={{ fontSize: '14px', fontWeight: '800', color: '#f0c060' }}>{prog.horario}</span>
                 </div>
               )}
@@ -352,7 +420,7 @@ function ModalCatalogo({ prog, onClose }) {
           {embeds.filter(e => detectarTipoMedia(e.url) === 'spotify').length > 0 && (
             <div style={{ marginBottom: '32px' }}>
               <p style={{ fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', color: '#1DB954', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.5 17.3c-.2.3-.5.4-.8.2-2.5-1.5-5.6-1.8-9.3-.9-.3.1-.6-.1-.7-.4s.1-.6.4-.7c4.1-1 7.6-.6 10.4 1.1.2.2.3.5.1.8l-.1-.1zm1.5-3.3c-.3.4-.8.5-1.2.3-2.8-1.7-7.2-2.2-10.5-1.2-.5.1-1-.2-1.1-.7-.1-.5.2-1 .7-1.1 3.9-1.2 8.7-.6 12 1.4.3.3.4.9.1 1.3zM19 10.3C15.2 8.1 8.8 7.8 5.1 9c-.6.2-1.2-.2-1.4-.8-.2-.6.2-1.2.8-1.4 4.3-1.3 11.4-1 15.8 1.6.5.3.7 1 .4 1.5-.3.5-1 .7-1.5.4z"/></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.5 17.3c-.2.3-.5.4-.8.2-2.5-1.5-5.6-1.8-9.3-.9-.3.1-.6-.1-.7-.4s.1-.6.4-.7c4.1-1 7.6-.6 10.4 1.1.2.2.3.5.1.8l-.1-.1zm1.5-3.3c-.3.4-.8.5-1.2.3-2.8-1.7-7.2-2.2-10.5-1.2-.5.1-1-.2-1.1-.7-.1-.5.2-1 .7-1.1 3.9-1.2 8.7-.6 12 1.4.3.3.4.9.1 1.3zM19 10.3C15.2 8.1 8.8 7.8 5.1 9c-.6.2-1.2-.2-1.4-.8-.2-.6.2-1.2.8-1.4 4.3-1.3 11.4-1 15.8 1.6.5.3.7 1 .4 1.5-.3.5-1 .7-1.5.4z" /></svg>
                 Podcast y Episodios
               </p>
               <div className="modal-embed-grid">
@@ -367,7 +435,7 @@ function ModalCatalogo({ prog, onClose }) {
           {embeds.filter(e => detectarTipoMedia(e.url) !== 'spotify').length > 0 && (
             <div style={{ marginBottom: '24px' }}>
               <p style={{ fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', color: '#ef4444', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 4-8 4z"/></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 4-8 4z" /></svg>
                 Contenido en Video
               </p>
               <div className={`modal-embed-grid ${embeds.filter(e => detectarTipoMedia(e.url) !== 'spotify').length >= 2 ? 'columns-2' : ''}`}>
@@ -397,9 +465,11 @@ function ModalCatalogo({ prog, onClose }) {
 
 // ── Radio Player ──────────────────────────────────────────────
 function RadioPlayer({ radios, seleccionada, setSeleccionada }) {
-  const [playing, setPlaying]           = useState(false)
-  const [error, setError]               = useState(false)
+  const [playing, setPlaying] = useState(false)
+  const [error, setError] = useState(false)
   const audioRef = useRef(null)
+
+  const esWidget = esWidgetCentovacast(seleccionada?.streamUrl)
 
   useEffect(() => {
     if (!seleccionada) return
@@ -409,8 +479,9 @@ function RadioPlayer({ radios, seleccionada, setSeleccionada }) {
     if (audio) audio.pause()
   }, [seleccionada?.id])
 
+  // Toggle solo aplica a streams directos (no widgets iframe)
   const toggle = async () => {
-    if (!seleccionada?.streamUrl || !seleccionada?.activo) return
+    if (!seleccionada?.streamUrl || !seleccionada?.activo || esWidget) return
     if (playing) {
       audioRef.current?.pause()
       setPlaying(false)
@@ -437,18 +508,20 @@ function RadioPlayer({ radios, seleccionada, setSeleccionada }) {
     </div>
   )
 
-  const actual          = seleccionada || radios[0]
-  const secundarias     = radios.filter(r => r.id !== actual?.id)
+  const actual = seleccionada || radios[0]
+  const actualEsWidget = esWidgetCentovacast(actual?.streamUrl)
+  const secundarias = radios.filter(r => r.id !== actual?.id)
   const puedeReproducir = actual?.activo && actual?.streamUrl
 
   return (
     <div className="radio-player-container">
+      {/* Audio oculto — solo se usa para streams directos */}
       <audio
         ref={audioRef}
         preload="none"
         style={{ display: 'none' }}
         onPause={() => setPlaying(false)}
-        onPlay={()  => setPlaying(true)}
+        onPlay={() => setPlaying(true)}
         onError={(e) => {
           if (!e.target.src || e.target.src === window.location.href) return
           setPlaying(false)
@@ -471,58 +544,47 @@ function RadioPlayer({ radios, seleccionada, setSeleccionada }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
             {actual?.imagen
               ? <img src={getUploadUrl(actual.imagen)} alt={actual.nombre}
-                  style={{ width: '56px', height: '56px', borderRadius: '14px', objectFit: 'cover', flexShrink: 0 }}
-                  onError={e => e.target.style.display = 'none'} />
-              : <div style={{ 
-                  width: '56px', 
-                  height: '56px', 
-                  borderRadius: '14px', 
-                  backgroundColor: '#fff5f5', 
-                  border: '2px solid #feb2b2', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center', 
-                  flexShrink: 0
-                }}>
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    width="30" 
-                    height="30" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="#dc2626" 
-                    strokeWidth="2.1" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round"
-                  >
-                    {/* Diagonal Antenna */}
-                    <line x1="5" y1="9" x2="16" y2="2" />
-                    <circle cx="16" cy="2" r="1" fill="#dc2626" />
-                    
-                    {/* Top Handle */}
-                    <path d="M7 9V7a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2" />
-                    
-                    {/* Radio Body */}
-                    <rect x="3" y="9" width="18" height="12" rx="2" />
-                    
-                    {/* Speaker Grill */}
-                    <circle cx="8" cy="15" r="3" />
-                    <circle cx="8" cy="15" r="0.8" fill="#dc2626" />
-                    
-                    {/* Dial Screen */}
-                    <rect x="13" y="12" width="5" height="2.5" rx="0.5" />
-                    
-                    {/* Dial Knob */}
-                    <circle cx="15.5" cy="17.5" r="1" />
-                  </svg>
-                </div>
+                style={{ width: '56px', height: '56px', borderRadius: '14px', objectFit: 'cover', flexShrink: 0 }}
+                onError={e => e.target.style.display = 'none'} />
+              : <div style={{
+                width: '56px',
+                height: '56px',
+                borderRadius: '14px',
+                backgroundColor: '#fff5f5',
+                border: '2px solid #feb2b2',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0
+              }}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="30"
+                  height="30"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#dc2626"
+                  strokeWidth="2.1"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="5" y1="9" x2="16" y2="2" />
+                  <circle cx="16" cy="2" r="1" fill="#dc2626" />
+                  <path d="M7 9V7a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2" />
+                  <rect x="3" y="9" width="18" height="12" rx="2" />
+                  <circle cx="8" cy="15" r="3" />
+                  <circle cx="8" cy="15" r="0.8" fill="#dc2626" />
+                  <rect x="13" y="12" width="5" height="2.5" rx="0.5" />
+                  <circle cx="15.5" cy="17.5" r="1" />
+                </svg>
+              </div>
             }
             <div>
               <p style={{ fontSize: '11px', fontWeight: '700', letterSpacing: '2px', textTransform: 'uppercase', color: actual?.activo ? '#A57F2C' : 'rgba(255,255,255,0.28)', marginBottom: '4px' }}>
                 {actual?.activo ? 'En vivo' : 'Offline'}
               </p>
               <h3 style={{ fontSize: '22px', fontWeight: '800', margin: 0, lineHeight: 1.1 }}>{actual?.nombre}</h3>
-                </div>
+            </div>
           </div>
           {actual?.descripcion && (
             <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, marginBottom: '20px' }}>
@@ -531,31 +593,51 @@ function RadioPlayer({ radios, seleccionada, setSeleccionada }) {
           )}
         </div>
 
-        {error && (
-          <p style={{ position: 'relative', zIndex: 1, fontSize: '12px', color: '#A57F2C', backgroundColor: 'rgba(165,127,44,0.1)', border: '1px solid rgba(165,127,44,0.25)', borderRadius: '10px', padding: '10px 14px', marginBottom: '16px' }}>
-            ⚠️ No se pudo conectar al stream. Puede que el servidor esté caído o el formato no sea compatible.
-          </p>
+        {/* ── Widget CentovaCast (iframe embebido) ── */}
+        {puedeReproducir && actualEsWidget && (
+          <div style={{ position: 'relative', zIndex: 1, borderRadius: '12px', overflow: 'hidden', backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <iframe
+              key={actual.id}
+              src={actual.streamUrl}
+              height="110"
+              width="100%"
+              scrolling="no"
+              style={{ display: 'block', border: 'none' }}
+              title={actual.nombre}
+              allow="autoplay"
+            />
+          </div>
         )}
 
-        {puedeReproducir ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', position: 'relative', zIndex: 1 }}>
-            <button onClick={toggle} className={`play-toggle-btn ${playing ? 'playing' : 'paused'}`}>
-              {playing ? <IconPause /> : <IconPlay />}
-            </button>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <p style={{ fontWeight: '700', fontSize: '15px', margin: 0 }}>
-                {playing ? 'Reproduciendo ahora' : 'Listo para escuchar'}
+        {/* ── Stream directo: botón play/pause + error ── */}
+        {!actualEsWidget && (
+          <>
+            {error && (
+              <p style={{ position: 'relative', zIndex: 1, fontSize: '12px', color: '#A57F2C', backgroundColor: 'rgba(165,127,44,0.1)', border: '1px solid rgba(165,127,44,0.25)', borderRadius: '10px', padding: '10px 14px', marginBottom: '16px' }}>
+                ⚠️ No se pudo conectar al stream. Puede que el servidor esté caído o el formato no sea compatible.
               </p>
-              {playing
-                ? <SoundBars playing={playing} />
-                : <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.38)', margin: 0 }}>{actual.nombre}</p>
-              }
-            </div>
-          </div>
-        ) : (
-          <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.32)', position: 'relative', zIndex: 1 }}>
-            {!actual?.activo ? 'Estación inactiva' : 'Sin URL de stream configurada'}
-          </p>
+            )}
+            {puedeReproducir ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', position: 'relative', zIndex: 1 }}>
+                <button onClick={toggle} className={`play-toggle-btn ${playing ? 'playing' : 'paused'}`}>
+                  {playing ? <IconPause /> : <IconPlay />}
+                </button>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <p style={{ fontWeight: '700', fontSize: '15px', margin: 0 }}>
+                    {playing ? 'Reproduciendo ahora' : 'Listo para escuchar'}
+                  </p>
+                  {playing
+                    ? <SoundBars playing={playing} />
+                    : <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.38)', margin: 0 }}>{actual.nombre}</p>
+                  }
+                </div>
+              </div>
+            ) : (
+              <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.32)', position: 'relative', zIndex: 1 }}>
+                {!actual?.activo ? 'Estación inactiva' : 'Sin URL de stream configurada'}
+              </p>
+            )}
+          </>
         )}
       </div>
 
@@ -568,7 +650,7 @@ function RadioPlayer({ radios, seleccionada, setSeleccionada }) {
           {secundarias.length === 0 ? (
             <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.2)' }}>Solo hay una estación configurada.</p>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <div className="station-scroll-list">
               {secundarias.map((e, i) => (
                 <button key={e.id} onClick={() => setSeleccionada(e)} className="station-btn">
                   <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.28)', fontVariantNumeric: 'tabular-nums' }}>
@@ -595,7 +677,7 @@ function RadioPlayer({ radios, seleccionada, setSeleccionada }) {
 
 // ── Acordeón Programación ─────────────────────────────────────
 function ProgramacionAcordeon({ programas, estaciones = [], onVerPrograma, estacionFiltroInicial }) {
-  const [abierto, setAbierto]         = useState(false)
+  const [abierto, setAbierto] = useState(false)
   const [estacionFiltro, setEstacion] = useState('Todas')
 
   // ✅ Sincronizar el filtro cuando cambia la estación en el reproductor
@@ -624,9 +706,9 @@ function ProgramacionAcordeon({ programas, estaciones = [], onVerPrograma, estac
     estacionFiltro === "Todas"
       ? programas
       : programas.filter(
-          (p) =>
-            normalizarTexto(p.estacion) === normalizarTexto(estacionFiltro)
-        );
+        (p) =>
+          normalizarTexto(p.estacion) === normalizarTexto(estacionFiltro)
+      );
 
   const programaEnVivo = programas.find(p => estaEnVivo(p.hora_inicio, p.hora_fin))
 
@@ -644,10 +726,10 @@ function ProgramacionAcordeon({ programas, estaciones = [], onVerPrograma, estac
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
                 stroke={abierto ? 'white' : '#611232'} strokeWidth="2"
                 strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                <line x1="16" y1="2" x2="16" y2="6"/>
-                <line x1="8" y1="2" x2="8" y2="6"/>
-                <line x1="3" y1="10" x2="21" y2="10"/>
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
               </svg>
             </div>
 
@@ -772,10 +854,10 @@ function ProgramacionAcordeon({ programas, estaciones = [], onVerPrograma, estac
 // ── Página Principal ──────────────────────────────────────────
 export default function PaginaRadio() {
   const [estaciones, setEstaciones] = useState([])
-  const [programas, setProgramas]   = useState([])
-  const [catalogo, setCatalogo]     = useState([])
-  const [modal, setModal]           = useState(null)
-  const [modalCat, setModalCat]     = useState(null)
+  const [programas, setProgramas] = useState([])
+  const [catalogo, setCatalogo] = useState([])
+  const [modal, setModal] = useState(null)
+  const [modalCat, setModalCat] = useState(null)
   const [estacionSeleccionada, setEstacionSeleccionada] = useState(null)
 
   useEffect(() => {
@@ -785,7 +867,7 @@ export default function PaginaRadio() {
   }, [])
 
   const radios = estaciones.filter(e => e.tipo === 'Radio')
-  
+
   useEffect(() => {
     if (!estacionSeleccionada && radios.length > 0) {
       setEstacionSeleccionada(radios.find(r => r.activo && r.streamUrl) || radios[0])
@@ -794,9 +876,9 @@ export default function PaginaRadio() {
 
   const programasRadioTodos = programas.filter(p => p.tipo === 'Radio')
   const programasEstacionActual = programasRadioTodos.filter(p => !estacionSeleccionada || p.estacion === estacionSeleccionada.nombre)
-  
+
   const programaEnVivo = programasEstacionActual.find(p => estaEnVivo(p.hora_inicio, p.hora_fin))
-  
+
   const proximos = programasEstacionActual
     .filter(p => esFuturo(p.hora_inicio))
     .sort((a, b) => {
@@ -805,21 +887,21 @@ export default function PaginaRadio() {
       return (hA * 60 + mA) - (hB * 60 + mB)
     })
     .slice(0, 4)
-    
+
   const catalogoRadio = catalogo.filter(p => p.tipo === 'Radio' && p.activo !== false)
 
   return (
     <>
-      <ModalPrograma programa={modal}  onClose={() => setModal(null)} />
-      <ModalCatalogo prog={modalCat}   onClose={() => setModalCat(null)} />
+      <ModalPrograma programa={modal} onClose={() => setModal(null)} />
+      <ModalCatalogo prog={modalCat} onClose={() => setModalCat(null)} />
 
       {/* Hero */}
       <div style={{ backgroundColor: '#611232' }} className="text-white py-12">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between flex-wrap gap-4">
           <div>
             <p className="text-xs tracking-widest uppercase opacity-60 mb-2">Transmisiones</p>
-            <h1 className="text-3xl font-bold">Radio Chiapas</h1>
-            <p className="opacity-70 text-sm mt-2">Frecuencias FM con cobertura en la geografía estatal.</p>
+            <h1 className="text-3xl font-bold">Radio</h1>
+            <p className="opacity-70 text-sm mt-2">Frecuencias radiofonicas del SCHRTyC</p>
           </div>
           {programaEnVivo && (
             <span className="text-sm bg-red-600 text-white px-4 py-2 rounded-full animate-pulse font-semibold">
@@ -835,10 +917,10 @@ export default function PaginaRadio() {
         <div className="max-w-7xl mx-auto px-6">
           <p className="text-xs tracking-widest uppercase mb-1" style={{ color: '#A57F2C' }}>En vivo</p>
           <h2 className="text-2xl font-bold mb-8" style={{ color: '#611232' }}>Estaciones de Radio</h2>
-          <RadioPlayer 
-            radios={radios} 
+          <RadioPlayer
+            radios={radios}
             seleccionada={estacionSeleccionada}
-            setSeleccionada={setEstacionSeleccionada} 
+            setSeleccionada={setEstacionSeleccionada}
           />
         </div>
       </div>
@@ -874,7 +956,7 @@ export default function PaginaRadio() {
                       {p.estacion && <p style={{ fontSize: '11px', color: '#A57F2C', fontWeight: '600' }}>{p.estacion}</p>}
                     </div>
                   ))}
-                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -918,30 +1000,46 @@ export default function PaginaRadio() {
               <p style={{ fontSize: '13px', color: '#9ca3af' }}>Los programas aparecerán aquí cuando se agreguen desde el gestor de contenido.</p>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '20px' }}>
+            <div className="catalogo-grid">
               {catalogoRadio.map(prog => {
-                const imgSrc    = getCardImage(prog)
+                const imgSrc = getCardImage(prog)
                 const embedsAct = (prog.embeds || []).filter(e => esUrlValida(e.url))
                 return (
-                  <button key={prog.id} onClick={() => setModalCat(prog)}
-                    style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', borderRadius: '14px', overflow: 'hidden', textAlign: 'left', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', transition: 'transform 0.2s, box-shadow 0.2s' }}
-                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 28px rgba(0,0,0,0.12)' }}
-                    onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)' }}>
-                    <div style={{ position: 'relative', width: '100%', aspectRatio: '2/3', overflow: 'hidden', backgroundColor: '#f3f4f6' }}>
-                      {imgSrc
-                        ? <img src={imgSrc} alt={prog.nombre}
-                            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                            loading="lazy" 
+                  <button
+                    key={prog.id}
+                    onClick={() => setModalCat(prog)}
+                    className="catalogo-item"
+                  >
+                    {/* Imagen inteligente: fondo borroso + imagen completa */}
+                    <div className="catalogo-item-img">
+                      {imgSrc ? (
+                        <>
+                          <img
+                            src={imgSrc}
+                            alt=""
+                            aria-hidden="true"
+                            className="catalogo-item-img-bg"
+                          />
+                          <img
+                            src={imgSrc}
+                            alt={prog.nombre}
+                            loading="lazy"
                             decoding="async"
-                            onError={e => e.target.style.display = 'none'} />
-                        : <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, #611232, #8a1a46)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <div style={{ width: '56px', height: '56px', borderRadius: '14px', backgroundColor: 'rgba(255,255,255,0.12)', border: '2px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                              <span style={{ color: 'white', fontWeight: '800', fontSize: '18px' }}>{getIniciales(prog.nombre, 'P')}</span>
-                            </div>
+                            className="catalogo-item-img-main"
+                            onError={e => e.target.style.display = 'none'}
+                          />
+                          <div className="catalogo-item-overlay" />
+                        </>
+                      ) : (
+                        <div className="catalogo-item-img-placeholder">
+                          <div style={{ width: '48px', height: '48px', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.15)', border: '2px solid rgba(255,255,255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <span style={{ color: 'white', fontWeight: '800', fontSize: '16px' }}>{getIniciales(prog.nombre, 'P')}</span>
                           </div>
-                      }
+                        </div>
+                      )}
+                      {/* Badges de plataformas */}
                       {embedsAct.length > 0 && (
-                        <div style={{ position: 'absolute', bottom: '8px', left: '8px', display: 'flex', gap: '4px' }}>
+                        <div className="catalogo-item-badges">
                           {embedsAct.slice(0, 3).map((em, i) => {
                             const c = colorEmbed(em.url)
                             return <span key={i} style={{ backgroundColor: c.bg, color: '#fff', fontSize: '9px', padding: '2px 6px', borderRadius: '4px', fontWeight: '700' }}>{c.label}</span>
@@ -952,10 +1050,11 @@ export default function PaginaRadio() {
                         </div>
                       )}
                     </div>
-                    <div style={{ padding: '12px', backgroundColor: 'white', borderTop: '1px solid #f0f0f0' }}>
-                      <p style={{ fontWeight: '700', fontSize: '13px', color: '#1f2937', margin: '0 0 3px', lineHeight: '1.3', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{prog.nombre}</p>
-                      {prog.conductor && <p style={{ fontSize: '11px', color: '#9ca3af', margin: '0 0 2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{prog.conductor}</p>}
-                      {prog.horario   && <p style={{ fontSize: '11px', color: '#A57F2C', margin: 0, fontWeight: '600' }}>{prog.horario}</p>}
+                    {/* Info */}
+                    <div className="catalogo-item-info">
+                      <p className="catalogo-item-title">{prog.nombre}</p>
+                      {prog.conductor && <p className="catalogo-item-sub">{prog.conductor}</p>}
+                      {prog.horario && <p className="catalogo-item-horario">{prog.horario}</p>}
                     </div>
                   </button>
                 )

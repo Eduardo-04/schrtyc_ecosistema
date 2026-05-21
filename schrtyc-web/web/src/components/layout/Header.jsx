@@ -2,22 +2,22 @@ import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
 const navLinks = [
-  { label: 'Inicio',                  href: '/' },
-  { label: 'Radio Chiapas',           href: '/radio' },
-  { label: 'Canal 10.1',              href: '/canal10' },
-  { label: 'Cine',                    href: '/cine' },
-  { label: 'Galería de Arte',         href: '/galeria' },
-  { label: 'Notas',                   href: '/notas' },
+  { label: 'Inicio', href: '/' },
+  { label: 'Radio', href: '/radio' },
+  { label: 'Canal 10.1', href: '/canal10' },
+  { label: 'Cine', href: '/cine' },
+  { label: 'Galería de Arte', href: '/galeria' },
+  { label: 'Notas', href: '/notas' },
   { label: 'Participación Ciudadana', href: '/participacion' },
-  { label: 'Transparencia',           href: '/transparencia' },
-  { label: 'Avisos de Privacidad',    href: '/privacidad' },
-  { label: 'Comité de Ética',         href: '/etica' },
+  { label: 'Transparencia', href: '/transparencia' },
+  { label: 'Avisos de Privacidad', href: '/privacidad' },
+  { label: 'Comité de Ética', href: '/etica' },
 ]
 
 const topLinks = [
-  { label: 'Participa',     href: 'https://www.chiapas.gob.mx/participa/' },
-  { label: 'Trámites',      href: 'https://www.chiapas.gob.mx/tramites/' },
-  { label: 'Gobierno',      href: 'https://www.chiapas.gob.mx/tramites/' },
+  { label: 'Participa', href: 'https://www.chiapas.gob.mx/participa/' },
+  { label: 'Trámites', href: 'https://www.chiapas.gob.mx/tramites/' },
+  { label: 'Gobierno', href: 'https://www.chiapas.gob.mx/tramites/' },
   { label: 'Transparencia', href: 'https://chiapas.gob.mx' },
 ]
 
@@ -36,14 +36,14 @@ export default function Header() {
       {/* ── Barra top ── */}
       <div style={{ backgroundColor: '#333333', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
         <div className="max-w-7xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-y-2">
-          
+
           {/* Left Corner: Escudo + chiapas.gob.mx */}
           <div className="flex items-center gap-2.5">
             <a href="https://chiapas.gob.mx" target="_blank" rel="noreferrer"
-               style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-              <img 
-                src="http://radiotvycine.chiapas.gob.mx/assets/logo/escudo-icono.png" 
-                alt="Escudo de Chiapas" 
+              style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+              <img
+                src="http://radiotvycine.chiapas.gob.mx/assets/logo/escudo-icono.png"
+                alt="Escudo de Chiapas"
                 style={{ height: '26px', width: 'auto', display: 'block' }}
               />
             </a>
@@ -95,21 +95,21 @@ export default function Header() {
 
             {/* Magnifying Glass (Lupita) Search Icon */}
             <a href="https://www.chiapas.gob.mx/busquedas/" target="_blank" rel="noreferrer"
-               aria-label="Buscar"
-               style={{
-                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                 padding: '6px', borderRadius: '6px', textDecoration: 'none',
-                 color: 'rgba(255,255,255,0.85)', transition: 'background-color 0.2s',
-               }}
-               onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.12)'}
-               onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
-               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle' }}>
-                 <circle cx="11" cy="11" r="8"></circle>
-                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-               </svg>
+              aria-label="Buscar"
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                padding: '6px', borderRadius: '6px', textDecoration: 'none',
+                color: 'rgba(255,255,255,0.85)', transition: 'background-color 0.2s',
+              }}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.12)'}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle' }}>
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
             </a>
           </div>
-          
+
           {/* Mobile Government Links Dropdown */}
           {topMenuAbierto && (
             <div className="w-full md:hidden flex flex-col gap-0.5 pt-2 pb-1 border-t border-white/10" style={{ boxSizing: 'border-box' }}>
@@ -130,7 +130,7 @@ export default function Header() {
               ))}
             </div>
           )}
-          
+
         </div>
       </div>
 
@@ -220,8 +220,8 @@ export default function Header() {
                 transition: 'all 0.3s ease',
                 transform: menuAbierto
                   ? i === 0 ? 'rotate(45deg) translate(5px, 5px)'
-                  : i === 2 ? 'rotate(-45deg) translate(5px, -5px)'
-                  : 'none'
+                    : i === 2 ? 'rotate(-45deg) translate(5px, -5px)'
+                      : 'none'
                   : 'none',
               }} />
             ))}

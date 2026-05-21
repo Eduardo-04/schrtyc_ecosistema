@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Sidebar            from './components/admin/Sidebar'
 import Header             from './components/admin/Header'
 import Dashboard          from './components/admin/Dashboard'
@@ -16,6 +16,7 @@ import { useAuth }        from './context/AuthContext'
 export default function App() {
   const { usuario, loading, logout } = useAuth()
   const [seccionActiva, setSeccionActiva] = useState('dashboard')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const renderSeccion = () => {
     // Protección por rol en el renderizado
@@ -48,15 +49,34 @@ export default function App() {
 
   if (!usuario) return <Login />
 
+  const handleNavegar = (id) => {
+    setSeccionActiva(id)
+    setSidebarOpen(false) // Cierra sidebar en móvil al navegar
+  }
+
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-gray-50">
+      {/* Overlay oscuro para móvil cuando sidebar está abierto */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       <Sidebar
         seccionActiva={seccionActiva}
-        onNavegar={setSeccionActiva}
+        onNavegar={handleNavegar}
         onCerrarSesion={logout}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
       />
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-        <Header usuario={usuario} onCerrarSesion={logout} />
+        <Header
+          usuario={usuario}
+          onCerrarSesion={logout}
+          onToggleSidebar={() => setSidebarOpen(prev => !prev)}
+        />
         <main className="flex-1 overflow-y-auto">
           {renderSeccion()}
         </main>

@@ -133,6 +133,7 @@ export const fetchProgramacion = (filtros = {}) => {
   return request(`/programacion${params ? `?${params}` : ''}`).then(j => j.data)
 }
 export const fetchEstaciones = () => request('/estaciones').then(j => j.data)
+export const fetchEstacionesTodas = () => request('/estaciones/todas').then(j => j.data)
 export const fetchProgramas = (filtros = {}) => {
   const params = new URLSearchParams(filtros).toString()
   return request(`/programas${params ? `?${params}` : ''}`).then(j => j.data)

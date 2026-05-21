@@ -166,20 +166,51 @@ function ModalPrograma({ programa, onClose }) {
 
 // ── EmbedItem ─────────────────────────────────────────────────
 function EmbedItem({ embed }) {
+  const [verImagen, setVerImagen] = useState(false)
   const tipo    = detectarTipoMedia(embed.url)
   const c       = colorEmbed(embed.url)
   const h       = alturaEmbed(embed.url)
   const esSpot  = tipo === 'spotify'
   const urlNorm = normalizarEmbedUrl(embed.url)
+  const tieneInvitado = !!(embed.imagen || embed.descripcion)
 
   return (
-    <div className="embed-card">
-      <div className="embed-header" style={{ backgroundColor: '#f9f9f9', borderBottom: '1px solid #f0f0f0' }}>
+    <>
+      <div className="embed-card">
+        <div className="embed-header" style={{ backgroundColor: '#f9f9f9', borderBottom: '1px solid #f0f0f0' }}>
         <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: c, flexShrink: 0 }} />
         <span style={{ fontSize: '11px', fontWeight: '700', color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {embed.titulo || (esSpot ? 'Audio / Podcast' : 'Video / Contenido')}
         </span>
       </div>
+
+      {/* Foto + descripción del invitado */}
+      {tieneInvitado && (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '32px 24px', borderBottom: '1px solid #f0f0f0', backgroundColor: '#fafafa', textAlign: 'center' }}>
+          {embed.imagen && (
+            <div style={{ position: 'relative', marginBottom: '20px' }}>
+              <img
+                src={getUploadUrl(embed.imagen)}
+                alt={embed.titulo || 'Invitado'}
+                style={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover', border: '4px solid white', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.15)', cursor: 'zoom-in', transition: 'transform 0.2s' }}
+                onClick={() => setVerImagen(true)}
+                onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
+                onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                onError={e => e.target.style.display = 'none'}
+              />
+              <div style={{ position: 'absolute', bottom: '-12px', left: '50%', transform: 'translateX(-50%)', backgroundColor: '#A57F2C', color: 'white', fontSize: '11px', fontWeight: 'bold', padding: '6px 16px', borderRadius: '20px', letterSpacing: '1px', textTransform: 'uppercase', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', whiteSpace: 'nowrap', pointerEvents: 'none' }}>
+                 Invitado Especial
+              </div>
+            </div>
+          )}
+          {embed.descripcion && (
+            <div style={{ maxWidth: '450px', marginTop: embed.imagen ? '12px' : '0' }}>
+               <p style={{ fontSize: '15px', color: '#374151', lineHeight: 1.7, margin: 0, fontStyle: 'italic', fontWeight: '500' }}>"{embed.descripcion}"</p>
+            </div>
+          )}
+        </div>
+      )}
+
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {esSpot ? (
           <div style={{ width: '100%', borderRadius: '12px', overflow: 'hidden', padding: '4px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -228,6 +259,28 @@ function EmbedItem({ embed }) {
         )}
       </div>
     </div>
+
+      {/* Lightbox de la foto del invitado */}
+      {verImagen && (
+        <div 
+          style={{ position: 'fixed', inset: 0, zIndex: 99999, backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(5px)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'zoom-out' }}
+          onClick={(e) => { e.stopPropagation(); setVerImagen(false); }}
+        >
+          <img 
+            src={getUploadUrl(embed.imagen)} 
+            alt="Invitado Completo" 
+            style={{ maxWidth: '90%', maxHeight: '90%', objectFit: 'contain', borderRadius: '12px', boxShadow: '0 20px 50px rgba(0,0,0,0.5)', cursor: 'default' }} 
+            onClick={(e) => e.stopPropagation()}
+          />
+          <button 
+            onClick={(e) => { e.stopPropagation(); setVerImagen(false); }}
+            style={{ position: 'absolute', top: '20px', right: '30px', background: 'transparent', border: 'none', color: 'white', fontSize: '40px', cursor: 'pointer' }}
+          >
+            &times;
+          </button>
+        </div>
+      )}
+    </>
   )
 }
 
