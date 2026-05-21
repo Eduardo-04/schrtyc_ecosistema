@@ -148,7 +148,7 @@ function ContenidoRenderer({ texto, imagenesGaleria, onImageClick }) {
     const partes = texto.split(regex);
     
     return (
-      <div className="nota-content-html">
+      <div className="nota-content-html" style={{ overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
         <style>{`
           .nota-content-html p { font-size: 16px; color: #374151; line-height: 1.9; margin: 0 0 22px; }
           .nota-content-html a { color: #611232; text-decoration: underline; font-weight: 600; }
