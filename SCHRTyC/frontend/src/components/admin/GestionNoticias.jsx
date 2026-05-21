@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo, memo } from 'react'
 import { Newspaper, Plus, Pencil, Trash2, Check, RefreshCw, Search, Star, X, Image as ImageIcon, ChevronRight, LayoutGrid, List, FileText, User, Calendar, ExternalLink } from 'lucide-react'
+import ReactQuill from 'react-quill-new'
+import 'react-quill-new/dist/quill.snow.css'
 import { getNoticias, crearNoticia, editarNoticia, eliminarNoticia, getUploadUrl } from '../../services/api'
 import ArchiveroInput from '../shared/ArchiveroInput'
 import ArchiveroModal from '../shared/ArchiveroModal'
@@ -11,6 +13,18 @@ const FORM_VACIO = {
   categoria: 'General', descripcion: '', contenido: '',
   imagen: '', imagenes: '',
   autor: 'Administrador', publicada: false, destacada: false
+}
+
+const QUILL_MODULES = {
+  toolbar: [
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+    [{ 'indent': '-1'}, { 'indent': '+1' }],
+    [{ 'size': ['small', false, 'large', 'huge'] }],
+    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+    [{ 'align': '' }, { 'align': 'center' }, { 'align': 'right' }, { 'align': 'justify' }],
+    ['clean']
+  ]
 }
 
 const isVideoUrl = (url) => {
@@ -84,17 +98,21 @@ const ModalNoticia = memo(({ noticia, onGuardar, onCerrar }) => {
     }
   }
 
+  const quillRef = useRef(null)
+
   const insertarTagImagen = (n) => {
-    const textarea = contenidoRef.current
-    if (!textarea) return
-    const start = textarea.selectionStart
-    const tag   = `\n\n[imagen:${n}]\n\n`
-    const nuevo = form.contenido.slice(0, start) + tag + form.contenido.slice(textarea.selectionEnd)
-    set('contenido', nuevo)
-    setTimeout(() => {
-      textarea.focus()
-      textarea.setSelectionRange(start + tag.length, start + tag.length)
-    }, 0)
+    const quill = quillRef.current?.getEditor()
+    if (quill) {
+      // ReactQuill a veces pierde el foco al hacer click en el botón, intentamos recuperar la selección
+      let range = quill.getSelection(true)
+      const index = range ? range.index : quill.getLength()
+      quill.insertText(index, `\n[imagen:${n}]\n`)
+      quill.setSelection(index + `\n[imagen:${n}]\n`.length)
+      set('contenido', quill.root.innerHTML)
+    } else {
+      const tag = `<p><br></p><p>[imagen:${n}]</p><p><br></p>`
+      set('contenido', (form.contenido || '') + tag)
+    }
   }
 
   return (
@@ -276,12 +294,21 @@ const ModalNoticia = memo(({ noticia, onGuardar, onCerrar }) => {
                   </div>
                 )}
 
-                <textarea 
-                  ref={contenidoRef}
-                  value={form.contenido} onChange={e => set('contenido', e.target.value)} rows={20}
-                  className="w-full px-8 py-8 bg-gray-50 border border-gray-100 rounded-[2.5rem] text-sm leading-relaxed focus:bg-white focus:border-[#611232] outline-none transition-all resize-none shadow-inner"
-                  placeholder="Escribe el contenido aquí. Usa doble enter para nuevos párrafos..."
-                />
+                <div className="bg-white rounded-[2.5rem] border border-gray-100 overflow-hidden shadow-inner pb-[60px]">
+                  <style>{`
+                    .ql-toolbar.ql-snow { border: none !important; border-bottom: 1px solid #f3f4f6 !important; background: #fafafa; padding: 12px 24px; }
+                    .ql-container.ql-snow { border: none !important; }
+                    .ql-editor { padding: 24px 32px; font-size: 14px; line-height: 1.8; min-height: 350px; }
+                  `}</style>
+                  <ReactQuill 
+                    ref={quillRef}
+                    theme="snow"
+                    value={form.contenido || ''} 
+                    onChange={v => set('contenido', v)} 
+                    modules={QUILL_MODULES}
+                    placeholder="Escribe el contenido aquí. Usa las herramientas para dar formato..."
+                  />
+                </div>
               </div>
             )}
           </div>

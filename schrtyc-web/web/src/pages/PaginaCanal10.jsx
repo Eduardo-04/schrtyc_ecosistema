@@ -117,47 +117,59 @@ function ModalPrograma({ programa, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4"
       style={{ backgroundColor: 'rgba(0,0,0,0.8)' }} onClick={onClose}>
-      <div className="bg-white rounded-2xl overflow-hidden max-w-lg w-full shadow-2xl"
+      <div className="bg-white rounded-2xl overflow-hidden w-full max-w-3xl shadow-2xl flex flex-col md:flex-row"
         onClick={e => e.stopPropagation()}>
+        
+        {/* Imagen Izquierda */}
         {programa.imagen ? (
-          <img src={getUploadUrl(programa.imagen)} alt={programa.nombre} className="w-full h-48 object-cover" />
+          <img src={getUploadUrl(programa.imagen)} alt={programa.nombre} className="w-full md:w-2/5 h-56 md:h-auto object-cover" />
         ) : (
-          <div style={{ background: 'linear-gradient(135deg, #611232 0%, #A57F2C 100%)', height: '160px' }}
-            className="flex flex-col items-center justify-center text-white p-6 gap-3">
+          <div style={{ background: 'linear-gradient(135deg, #611232 0%, #A57F2C 100%)' }}
+            className="w-full md:w-2/5 h-56 md:h-auto flex flex-col items-center justify-center text-white p-6 gap-3 shrink-0">
             <div style={{ width: '56px', height: '56px', borderRadius: '14px', backgroundColor: 'rgba(255,255,255,0.15)', border: '2px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <span style={{ color: 'white', fontWeight: '800', fontSize: '18px' }}>{getIniciales(programa.nombre)}</span>
             </div>
-            <p className="font-bold text-lg text-center">{programa.nombre}</p>
-            {vivo && <span className="text-xs bg-red-500 px-3 py-1 rounded-full animate-pulse">EN VIVO AHORA</span>}
+            {vivo && <span className="text-xs bg-red-500 px-3 py-1 rounded-full animate-pulse mt-2">EN VIVO AHORA</span>}
           </div>
         )}
-        <div className="p-6">
-          <div className="flex items-start justify-between mb-3">
+
+        {/* Contenido Derecha */}
+        <div className="p-8 md:w-3/5 flex flex-col">
+          <div className="flex items-start justify-between mb-4">
             <div>
-              <h3 className="text-xl font-bold" style={{ color: '#611232' }}>{programa.nombre}</h3>
-              <p className="text-sm text-gray-500">{programa.conductor}</p>
+              <span className="text-xs px-3 py-1 rounded-full font-semibold inline-block mb-2"
+                style={{ backgroundColor: '#f8f9fa', color: '#611232' }}>
+                {programa.estacion}
+              </span>
+              <h3 className="text-2xl font-bold leading-tight" style={{ color: '#1f2937' }}>{programa.nombre}</h3>
             </div>
-            <span className="text-xs font-mono text-gray-400 flex-shrink-0 ml-4 mt-1">
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-700 transition-colors">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+          
+          <div className="flex items-center gap-2 mb-6 text-sm">
+            {programa.conductor && (
+               <div className="font-semibold" style={{ color: '#4b5563' }}>
+                 {programa.conductor}
+               </div>
+            )}
+            {programa.conductor && <span className="text-gray-300">|</span>}
+            <span className="font-mono text-gray-500">
               {programa.hora_inicio} – {programa.hora_fin}
             </span>
           </div>
+
           {programa.descripcion && (
-            <p className="text-sm text-gray-600 leading-relaxed mb-4">{programa.descripcion}</p>
+            <p className="text-sm text-gray-600 leading-relaxed mb-6 flex-1">{programa.descripcion}</p>
           )}
+
           {programa.youtube_url && (
-            <div className="rounded-xl overflow-hidden mb-4" style={{ aspectRatio: '16/9' }}>
+            <div className="rounded-xl overflow-hidden mb-4 bg-black w-full" style={{ aspectRatio: '16/9' }}>
               <iframe src={programa.youtube_url.replace('watch?v=', 'embed/')}
-                className="w-full h-full" allowFullScreen title={programa.nombre} />
+                className="w-full h-full" allowFullScreen title={programa.nombre} loading="lazy" />
             </div>
           )}
-          <div className="flex items-center justify-between pt-3" style={{ borderTop: '1px solid #eee' }}>
-            <span className="text-xs px-2 py-1 rounded-full font-semibold"
-              style={{ backgroundColor: '#f8f9fa', color: '#611232' }}>
-              {programa.estacion}
-            </span>
-            <button onClick={onClose} className="text-sm font-semibold hover:underline"
-              style={{ color: '#611232' }}>Cerrar ✕</button>
-          </div>
         </div>
       </div>
     </div>

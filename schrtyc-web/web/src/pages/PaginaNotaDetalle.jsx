@@ -137,6 +137,61 @@ function GaleriaImg({ src, alt, onClick }) {
 /* ── Renderer de contenido ───────────────────────────────────── */
 function ContenidoRenderer({ texto, imagenesGaleria, onImageClick }) {
   if (!texto?.trim()) return null
+  
+  // Detectar si el contenido es HTML (viene de ReactQuill)
+  const isHtml = /<[a-z][\s\S]*>/i.test(texto);
+
+  if (isHtml) {
+    // Separa el HTML usando el tag de imagen. Al usar un grupo de captura (\d+),
+    // el array resultante tendrá el HTML en índices pares y los números de imagen en índices impares.
+    const regex = /(?:<p>\s*|<br\s*\/?>\s*)?\[imagen:(\d+)\](?:\s*<\/p>|\s*<br\s*\/?>)?/i;
+    const partes = texto.split(regex);
+    
+    return (
+      <div className="nota-content-html">
+        <style>{`
+          .nota-content-html p { font-size: 16px; color: #374151; line-height: 1.9; margin: 0 0 22px; }
+          .nota-content-html a { color: #611232; text-decoration: underline; font-weight: 600; }
+          .nota-content-html ul { list-style-type: disc; padding-left: 20px; margin-bottom: 22px; font-size: 16px; color: #374151; line-height: 1.9; }
+          .nota-content-html ol { list-style-type: decimal; padding-left: 20px; margin-bottom: 22px; font-size: 16px; color: #374151; line-height: 1.9; }
+          .nota-content-html h1, .nota-content-html h2, .nota-content-html h3 { color: #1a1a1a; margin-top: 32px; margin-bottom: 16px; font-weight: 800; }
+          .nota-content-html h2 { font-size: 24px; }
+          .nota-content-html h3 { font-size: 20px; }
+          .nota-content-html .ql-align-center { text-align: center; }
+          .nota-content-html .ql-align-right { text-align: right; }
+          .nota-content-html .ql-align-justify { text-align: justify; }
+          .nota-content-html strong, .nota-content-html b { font-weight: 700; color: #1f2937; }
+          .nota-content-html em, .nota-content-html i { font-style: italic; }
+          .nota-content-html u { text-decoration: underline; }
+          .nota-content-html s { text-decoration: line-through; }
+        `}</style>
+        {partes.map((parte, i) => {
+          if (i % 2 === 1) { // Es el número de imagen capturado por (\d+)
+            const n = parseInt(parte, 10) - 1;
+            const url = imagenesGaleria[n];
+            if (!url || isVideo(url)) return null;
+            return (
+              <div key={i} style={{ margin:'28px 0', borderRadius:'14px', overflow:'hidden',
+                cursor:'pointer', boxShadow:'0 4px 16px rgba(0,0,0,.1)' }}
+                onClick={() => onImageClick(n)}>
+                <img src={getUploadUrl(url)} alt={`Imagen ${n+1}`}
+                  style={{ width:'100%', maxHeight:'420px', objectFit:'cover', display:'block', transition:'transform .4s' }}
+                  onMouseEnter={e => e.target.style.transform='scale(1.02)'}
+                  onMouseLeave={e => e.target.style.transform='scale(1)'}
+                  onError={e => e.target.parentElement.style.display='none'} />
+              </div>
+            )
+          }
+          
+          // Es contenido HTML
+          if (!parte || !parte.trim()) return null;
+          return <div key={i} dangerouslySetInnerHTML={{ __html: parte }} />
+        })}
+      </div>
+    )
+  }
+
+  // Comportamiento anterior (texto plano) para notas antiguas
   const bloques = texto.split(/\n\s*\n/).map(b => b.trim()).filter(Boolean)
   const partes  = bloques.length > 1 ? bloques : texto.split('\n').map(b => b.trim()).filter(Boolean)
   return (

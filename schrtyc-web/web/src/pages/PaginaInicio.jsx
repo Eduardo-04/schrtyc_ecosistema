@@ -36,14 +36,14 @@ const Eyebrow = ({ t }) => <p className="eyebrow">{t}</p>
 const Bars = ({ n = 14, color = '#611232' }) => (
   <div className="bars-container">
     {Array.from({ length: n }).map((_, i) => (
-      <div 
-        key={i} 
+      <div
+        key={i}
         className="bar"
         style={{
           backgroundColor: color,
           height: `${20 + Math.abs(Math.sin(i * .9)) * 80}%`,
           animation: `barA ${.4 + (i % 5) * .08}s ease-in-out ${i * .03}s infinite`,
-        }} 
+        }}
       />
     ))}
   </div>
@@ -121,7 +121,7 @@ export default function PaginaInicio() {
 
         <div className="page-container hero-content">
           <div className="hero-grid">
-            
+
             <div className="hero-text">
               <div className="hi0 hero-date-badge">
                 <span className="hero-date-dot" />
@@ -207,7 +207,7 @@ export default function PaginaInicio() {
       <section className="institutional-section">
         <div className="page-container">
           <div className="institutional-grid">
-            
+
             <div className="editorial-frame hi0">
               <img src={IMG_ESTUDIO} alt="Estudio" className="editorial-img" />
               <div className="editorial-floating-box">
@@ -224,7 +224,7 @@ export default function PaginaInicio() {
               <p style={{ color: 'var(--text-muted)', fontSize: '16px', lineHeight: 1.8, marginBottom: '40px' }}>
                 El Sistema Chiapaneco de Radio, Televisión y Cinematografía es un organismo descentralizado del Gobierno del Estado de Chiapas, encargado de operar los medios públicos con una visión educativa y social.
               </p>
-              
+
               <div className="mvr-grid">
                 {mvrt.slice(0, 2).map(c => (
                   <div key={c.t} className="mvr-card lift">
@@ -251,7 +251,7 @@ export default function PaginaInicio() {
         <div className="page-container">
           <div className="section-header">
             <div>
-              <Eyebrow t="Radio Chiapas" />
+              <Eyebrow t="Radio" />
               <h2 style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: '900', color: 'var(--brand)', margin: '0 0 12px' }}>Frecuencias Estatales</h2>
               <p style={{ color: 'var(--text-muted)', fontSize: '16px' }}>Sintoniza nuestras estaciones en vivo desde cualquier lugar.</p>
             </div>
@@ -271,7 +271,7 @@ export default function PaginaInicio() {
       {/* ══ CANAL 10 ══════════════════════════════════════════ */}
       <section className="tv-section">
         <div style={{ position: 'absolute', top: '-10%', right: '-5%', width: '400px', height: '400px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(97,18,50,0.03) 0%, transparent 70%)', pointerEvents: 'none' }} />
-        
+
         <div className="page-container">
           <div className="section-header" style={{ marginBottom: '48px' }}>
             <div>
