@@ -216,6 +216,7 @@ export default function PaginaParticipacion() {
   const imagenPortada = data?.imagenportada || data?.imagen_portada || ''
 
   const parrafos = contenido.split('\n\n').map(p => p.trim()).filter(Boolean)
+  const mediaItems = data?.multimedia ? data.multimedia.split('\n').map(procesarMediaUrl).filter(Boolean) : []
 
   if (cargando) return (
     <>
@@ -296,21 +297,83 @@ export default function PaginaParticipacion() {
         </div>
       )}
 
-      {tramites.length > 0 && (
-        <div style={{ backgroundColor: '#f8f9fa' }} className="py-14">
-          <div className="max-w-7xl mx-auto px-6">
-            <div style={{ marginBottom: 28 }}>
-              <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: '#A57F2C', marginBottom: 6 }}>Trámites e información</p>
-              <h2 style={{ fontSize: 24, fontWeight: 800, color: '#611232', margin: 0 }}>¿En qué podemos apoyarte?</h2>
+      {/* Contenedor principal para Trámites y Documentos */}
+      <div className="bg-[#f8f9fa] py-14">
+        <div className="max-w-7xl mx-auto px-6">
+          {tramites.length > 0 ? (
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-12 items-start mb-12">
+              <div className="space-y-6">
+                <h3 className="text-lg font-bold" style={{ color: '#611232' }}>¿En qué podemos apoyarte?</h3>
+                <div className="flex flex-col gap-4">
+                  {tramites.map((t, i) => <TarjetaTramite key={i} tramite={t} />)}
+                </div>
+              </div>
+              
+              <div className="w-full sticky top-8">
+                <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+                  <p className="text-[10px] font-extrabold uppercase tracking-widest mb-1" style={{ color: '#A57F2C' }}>Documentación Oficial</p>
+                  <h2 className="text-xl font-extrabold mb-6" style={{ color: '#611232' }}>Archivos y Convocatorias</h2>
+                  
+                  <div className="flex flex-col gap-2">
+                    {mediaItems.length > 0 ? (
+                      mediaItems.map((item, i) => {
+                        if (item.tipo === 'header') return (
+                          <div key={i} className="mt-6 first:mt-0 mb-2">
+                            <h4 className="text-[10px] font-extrabold text-[#611232] uppercase tracking-widest border-b border-gray-100 pb-1">{item.titulo}</h4>
+                          </div>
+                        )
+                        return (
+                          <a key={i} href={item.src} target="_blank" rel="noreferrer"
+                            className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-[#f8f9fa] transition group">
+                            <span className="text-lg flex-shrink-0">📄</span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-bold text-gray-700 group-hover:text-[#611232] truncate transition">{item.titulo}</p>
+                            </div>
+                            <span className="text-gray-300 group-hover:text-[#611232] transition flex-shrink-0">↗</span>
+                          </a>
+                        )
+                      })
+                    ) : (
+                      <p className="text-sm text-gray-400 italic">No hay documentos disponibles.</p>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {tramites.map((t, i) => <TarjetaTramite key={i} tramite={t} />)}
-            </div>
-          </div>
+          ) : (
+            mediaItems.length > 0 && (
+              <div className="mb-12">
+                <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 max-w-5xl mx-auto">
+                  <p className="text-[10px] font-extrabold uppercase tracking-widest text-center mb-1" style={{ color: '#A57F2C' }}>Documentación Oficial</p>
+                  <h2 className="text-2xl font-extrabold text-center mb-8" style={{ color: '#611232' }}>Archivos y Convocatorias</h2>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2">
+                    {mediaItems.map((item, i) => {
+                      if (item.tipo === 'header') return (
+                        <div key={i} className="col-span-full mt-6 first:mt-0 mb-2">
+                          <h4 className="text-[10px] font-extrabold text-[#611232] uppercase tracking-widest border-b border-gray-100 pb-1">{item.titulo}</h4>
+                        </div>
+                      )
+                      return (
+                        <a key={i} href={item.src} target="_blank" rel="noreferrer"
+                          className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-[#f8f9fa] transition group">
+                          <span className="text-lg flex-shrink-0">📄</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-bold text-gray-700 group-hover:text-[#611232] truncate transition">{item.titulo}</p>
+                          </div>
+                          <span className="text-gray-300 group-hover:text-[#611232] transition flex-shrink-0">↗</span>
+                        </a>
+                      )
+                    })}
+                  </div>
+                </div>
+              </div>
+            )
+          )}
         </div>
-      )}
+      </div>
 
-      {/* Integrantes siempre debajo de trámites */}
+      {/* Integrantes siempre debajo de trámites y documentos */}
       <SeccionIntegrantes integrantes={integrantes} />
 
       {/* Si no hay trámites ni integrantes, no mostrar el bloque estático anterior */}

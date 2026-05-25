@@ -139,6 +139,56 @@ function ModalObraFull({ obra, onClose, onFiltrarAutor }) {
   )
 }
 
+// ── Modal de Artista (Bio) ─────────────────────────────────────────────────
+function ModalArtista({ artista, onClose, onVerCatalogo }) {
+  if (!artista) return null
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-300 font-sans p-4">
+      <div className="bg-white w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl relative flex flex-col md:flex-row">
+        <button 
+          onClick={onClose}
+          className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white/50 hover:bg-white text-gray-800 transition-all shadow-sm"
+        >
+          ✕
+        </button>
+        
+        <div className="w-full md:w-2/5 aspect-square md:aspect-auto md:h-auto bg-gray-100 relative">
+          {artista.portada ? (
+            <img 
+              src={getUploadUrl(artista.portada)} 
+              alt={artista.nombre} 
+              className="w-full h-full object-cover object-center" 
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-[#611232] opacity-30 text-6xl">🎨</div>
+          )}
+        </div>
+        
+        <div className="w-full md:w-3/5 p-8 md:p-10 flex flex-col">
+          <h2 className="text-2xl font-black text-[#611232] mb-2">{artista.nombre}</h2>
+          <p className="text-xs font-bold text-[#A57F2C] uppercase tracking-widest mb-6">
+            Artista Chiapaneco • {artista.obras.length} {artista.obras.length === 1 ? 'obra' : 'obras'}
+          </p>
+          
+          <div className="flex-1 overflow-y-auto mb-8 pr-2">
+            <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-wrap">
+              {artista.biografia || 'Sin biografía disponible. El artista aún no ha proporcionado su información biográfica.'}
+            </p>
+          </div>
+          
+          <button 
+            onClick={() => onVerCatalogo(artista.nombre)}
+            className="w-full mt-auto py-4 bg-[#611232] text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:scale-105 transition-transform shadow-lg shadow-[#611232]/20"
+          >
+            Ver Catálogo de Obras
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ── Página Principal Dinámica ──────────────────────────────────────────────
 export default function PaginaGaleria() {
   const [data, setData] = useState(null)
@@ -147,6 +197,7 @@ export default function PaginaGaleria() {
   const [loading, setLoading] = useState(true)
   const [filtroTecnica, setFiltroTecnica] = useState('Todas')
   const [obraSeleccionada, setObraSeleccionada] = useState(null)
+  const [artistaSeleccionado, setArtistaSeleccionado] = useState(null)
   const [pestanaActiva, setPestanaActiva] = useState('obras')
   const [filtroAutor, setFiltroAutor] = useState(null)
 
@@ -177,17 +228,29 @@ export default function PaginaGaleria() {
 
   const artistas = useMemo(() => {
     const grupos = {}
+    autores.forEach(a => {
+      grupos[a.nombre.trim()] = {
+        nombre: a.nombre.trim(),
+        portada: a.foto || '',
+        biografia: a.biografia || '',
+        obras: []
+      }
+    })
+
     items.forEach(obra => {
       const autorNorm = (obra.autor || 'Artista Anónimo').trim()
       if (!grupos[autorNorm]) {
-        const perfilOficial = autores.find(a => a.nombre.trim().toLowerCase() === autorNorm.toLowerCase())
         grupos[autorNorm] = {
           nombre: autorNorm,
           obras: [],
-          portada: perfilOficial?.foto ? perfilOficial.foto : obra.imagen
+          portada: obra.imagen,
+          biografia: ''
         }
       }
       grupos[autorNorm].obras.push(obra)
+      if (!grupos[autorNorm].portada) {
+         grupos[autorNorm].portada = obra.imagen
+      }
     })
     return Object.values(grupos).sort((a, b) => a.nombre.localeCompare(b.nombre))
   }, [items, autores])
@@ -212,6 +275,16 @@ export default function PaginaGaleria() {
         obra={obraSeleccionada} 
         onClose={() => setObraSeleccionada(null)} 
         onFiltrarAutor={(autor) => {
+          setFiltroAutor(autor)
+          setPestanaActiva('obras')
+        }}
+      />
+
+      <ModalArtista
+        artista={artistaSeleccionado}
+        onClose={() => setArtistaSeleccionado(null)}
+        onVerCatalogo={(autor) => {
+          setArtistaSeleccionado(null)
           setFiltroAutor(autor)
           setPestanaActiva('obras')
         }}
@@ -380,14 +453,11 @@ export default function PaginaGaleria() {
                   {artistas.map(artista => (
                     <div
                       key={artista.nombre}
-                      onClick={() => {
-                        setFiltroAutor(artista.nombre)
-                        setPestanaActiva('obras')
-                      }}
+                      onClick={() => setArtistaSeleccionado(artista)}
                       className="group cursor-pointer bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 overflow-hidden flex flex-col h-full font-sans animate-in fade-in slide-in-from-bottom-4 duration-300"
                     >
-                      {/* Foto de Portada (primera obra) */}
-                      <div className="relative h-48 bg-gray-50 overflow-hidden flex items-center justify-center border-b border-gray-100">
+                      {/* Foto de Portada */}
+                      <div className="relative aspect-square bg-gray-50 overflow-hidden flex items-center justify-center border-b border-gray-100">
                         {artista.portada ? (
                           <img
                             src={getUploadUrl(artista.portada)}

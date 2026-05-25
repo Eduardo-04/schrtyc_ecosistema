@@ -91,9 +91,17 @@ async function initDB() {
       CREATE TABLE IF NOT EXISTS galeria_autores (
         id INT AUTO_INCREMENT PRIMARY KEY,
         nombre VARCHAR(255) UNIQUE NOT NULL,
-        foto VARCHAR(255)
+        foto VARCHAR(255),
+        biografia TEXT
       )
     `);
+
+    // Actualizar schema si ya existía la tabla
+    try {
+      await connection.query('ALTER TABLE galeria_autores ADD COLUMN IF NOT EXISTS biografia TEXT');
+    } catch(e) {
+      try { await connection.query('ALTER TABLE galeria_autores ADD COLUMN biografia TEXT'); } catch(err) {}
+    }
 
     // Tabla Programas
     await connection.query(`

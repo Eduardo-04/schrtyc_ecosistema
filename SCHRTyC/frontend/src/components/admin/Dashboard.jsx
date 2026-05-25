@@ -82,9 +82,9 @@ export default function Dashboard({ onNavegar }) {
 
   const TARJETAS = [
     { label:'Noticias Digitales', valor: stats?.noticias ?? '—', sub: `${stats?.publicadas ?? 0} publicadas`, icono: Newspaper, color:'bg-[#611232]', id:'noticias' },
-    { label:'Televisión (TV)',    valor: stats?.programasTV ?? '—', sub: 'Producciones Canal 10', icono: Tv, color:'bg-[#A57F2C]', id:'programas' },
-    { label:'Emisoras Radio',     valor: stats?.programasRa ?? '—', sub: 'Frecuencias Estatales', icono: Radio, color:'bg-[#611232]', id:'estaciones' },
-    { label:'Programación',       valor: stats?.totalProg ?? '—', sub: 'Grilla de contenidos', icono: CalendarDays, color:'bg-[#A57F2C]', id:'programacion' },
+    { label:'Programas TV',       valor: stats?.programasTV ?? '—', sub: 'Producciones Canal 10', icono: Tv, color:'bg-[#A57F2C]', id:'programas' },
+    { label:'Programas Radio',    valor: stats?.programasRa ?? '—', sub: 'Emisiones radiales', icono: Radio, color:'bg-[#611232]', id:'programas' },
+    { label:'Total Programas',    valor: stats?.totalProg ?? '—', sub: 'Grilla de contenidos', icono: CalendarDays, color:'bg-[#A57F2C]', id:'programacion' },
   ]
 
   return (

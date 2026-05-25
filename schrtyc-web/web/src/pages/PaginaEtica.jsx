@@ -134,60 +134,104 @@ export default function PaginaEtica() {
           </div>
 
           {/* 2. Trámites y Recursos */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-12 items-start">
-            <div className="space-y-4">
-              <h3 className="text-lg font-bold mb-4" style={{ color: '#611232' }}>Trámites y Servicios</h3>
-              {tramites.map((item, i) => (
-                <div key={i} className="flex gap-4 p-5 rounded-2xl border border-gray-100 hover:shadow-md transition bg-gray-50/30">
-                  <div style={{ backgroundColor: 'white', width: '48px', height: '48px', borderRadius: '12px', flexShrink: 0 }}
-                    className="flex items-center justify-center text-xl shadow-sm border border-gray-50">
-                    {ICONOS_TRAMITE[item.icono] || '⚖️'}
+          {tramites.length > 0 ? (
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-12 items-start mb-12">
+              <div className="space-y-4">
+                <h3 className="text-lg font-bold mb-4" style={{ color: '#611232' }}>Trámites y Servicios</h3>
+                {tramites.map((item, i) => (
+                  <div key={i} className="flex gap-4 p-5 rounded-2xl border border-gray-100 hover:shadow-md transition bg-gray-50/30">
+                    <div style={{ backgroundColor: 'white', width: '48px', height: '48px', borderRadius: '12px', flexShrink: 0 }}
+                      className="flex items-center justify-center text-xl shadow-sm border border-gray-50">
+                      {ICONOS_TRAMITE[item.icono] || '⚖️'}
+                    </div>
+                    <div className="flex-1">
+                      {item.imagenportada && (
+                        <div className="w-full h-32 overflow-hidden rounded-xl mb-4 bg-gray-100 shadow-inner">
+                          <img src={getUploadUrl(item.imagenportada)} className="w-full h-full object-cover" alt="" />
+                        </div>
+                      )}
+                      <h3 className="font-bold text-sm mb-1" style={{ color: '#611232' }}>{item.titulo}</h3>
+                      <p className="text-xs text-gray-500 leading-relaxed mb-3">{item.descripcion}</p>
+                      
+                      {item.link?.href && (
+                        <a href={item.link.href} target="_blank" rel="noreferrer" 
+                          className="text-[10px] font-extrabold uppercase tracking-widest text-[#A57F2C] hover:underline">
+                          {item.link.label || 'Ver más'} →
+                        </a>
+                      )}
+                      
+                      {(item.contacto?.email || item.contacto?.direccion) && (
+                        <div className="mt-3 pt-3 border-t border-gray-100 flex flex-col gap-1">
+                          {item.contacto.email && <span className="text-[10px] text-gray-400">📧 {item.contacto.email}</span>}
+                          {item.contacto.direccion && <span className="text-[10px] text-gray-400">📍 {item.contacto.direccion}</span>}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    {item.imagenportada && (
-                      <div className="w-full h-32 overflow-hidden rounded-xl mb-4 bg-gray-100 shadow-inner">
-                        <img src={getUploadUrl(item.imagenportada)} className="w-full h-full object-cover" alt="" />
-                      </div>
-                    )}
-                    <h3 className="font-bold text-sm mb-1" style={{ color: '#611232' }}>{item.titulo}</h3>
-                    <p className="text-xs text-gray-500 leading-relaxed mb-3">{item.descripcion}</p>
-                    
-                    {item.link?.href && (
-                      <a href={item.link.href} target="_blank" rel="noreferrer" 
-                        className="text-[10px] font-extrabold uppercase tracking-widest text-[#A57F2C] hover:underline">
-                        {item.link.label || 'Ver más'} →
-                      </a>
-                    )}
-                    
-                    {(item.contacto?.email || item.contacto?.direccion) && (
-                      <div className="mt-3 pt-3 border-t border-gray-100 flex flex-col gap-1">
-                        {item.contacto.email && <span className="text-[10px] text-gray-400">📧 {item.contacto.email}</span>}
-                        {item.contacto.direccion && <span className="text-[10px] text-gray-400">📍 {item.contacto.direccion}</span>}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
 
-            <div className="lg:sticky lg:top-8">
-              {mediaItems.length > 0 && (
-                <div className="bg-gray-50/50 p-8 rounded-3xl border border-gray-100">
-                  <p className="text-[10px] font-extrabold uppercase tracking-widest mb-6 text-gray-400">Documentos y Recursos</p>
+              <div className="w-full sticky top-8">
+                <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+                  <p className="text-[10px] font-extrabold uppercase tracking-widest mb-1" style={{ color: '#A57F2C' }}>Documentación Oficial</p>
+                  <h2 className="text-xl font-extrabold mb-6" style={{ color: '#611232' }}>Archivos y Recursos</h2>
+                  
                   <div className="flex flex-col gap-2">
-                    {mediaItems.map((doc, i) => (
-                      <a key={i} href={doc.src} target="_blank" rel="noreferrer"
-                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-white transition border border-transparent hover:border-gray-100 group shadow-sm bg-white/50">
-                        <span className="text-lg">📄</span>
-                        <span className="text-xs font-bold text-gray-600 group-hover:text-[#611232] truncate">{doc.titulo}</span>
-                        <span className="ml-auto text-gray-300 group-hover:text-[#611232]">↗</span>
-                      </a>
-                    ))}
+                    {mediaItems.length > 0 ? (
+                      mediaItems.map((item, i) => {
+                        if (item.tipo === 'header') return (
+                          <div key={i} className="mt-6 first:mt-0 mb-2">
+                            <h4 className="text-[10px] font-extrabold text-[#611232] uppercase tracking-widest border-b border-gray-100 pb-1">{item.titulo}</h4>
+                          </div>
+                        )
+                        return (
+                          <a key={i} href={item.src} target="_blank" rel="noreferrer"
+                            className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-[#f8f9fa] transition group">
+                            <span className="text-lg flex-shrink-0">📄</span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-bold text-gray-700 group-hover:text-[#611232] truncate transition">{item.titulo}</p>
+                            </div>
+                            <span className="text-gray-300 group-hover:text-[#611232] transition flex-shrink-0">↗</span>
+                          </a>
+                        )
+                      })
+                    ) : (
+                      <p className="text-sm text-gray-400 italic">No hay documentos disponibles en esta sección.</p>
+                    )}
                   </div>
                 </div>
-              )}
+              </div>
             </div>
-          </div>
+          ) : (
+            mediaItems.length > 0 && (
+              <div className="mb-12">
+                <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 max-w-5xl mx-auto">
+                  <p className="text-[10px] font-extrabold uppercase tracking-widest text-center mb-1" style={{ color: '#A57F2C' }}>Documentación Oficial</p>
+                  <h2 className="text-2xl font-extrabold text-center mb-8" style={{ color: '#611232' }}>Archivos y Recursos</h2>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2">
+                    {mediaItems.map((item, i) => {
+                      if (item.tipo === 'header') return (
+                        <div key={i} className="col-span-full mt-6 first:mt-0 mb-2">
+                          <h4 className="text-[10px] font-extrabold text-[#611232] uppercase tracking-widest border-b border-gray-100 pb-1">{item.titulo}</h4>
+                        </div>
+                      )
+                      return (
+                        <a key={i} href={item.src} target="_blank" rel="noreferrer"
+                          className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-[#f8f9fa] transition group">
+                          <span className="text-lg flex-shrink-0">📄</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-bold text-gray-700 group-hover:text-[#611232] truncate transition">{item.titulo}</p>
+                          </div>
+                          <span className="text-gray-300 group-hover:text-[#611232] transition flex-shrink-0">↗</span>
+                        </a>
+                      )
+                    })}
+                  </div>
+                </div>
+              </div>
+            )
+          )}
 
         </div>
       </div>

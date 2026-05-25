@@ -42,11 +42,11 @@ router.use(verificarToken, verificarRol(['admin', 'editor_prensa']));
 // POST /api/galeria/autores
 router.post('/autores', async (req, res) => {
   try {
-    const { nombre, foto } = req.body;
+    const { nombre, foto, biografia } = req.body;
     if (!nombre) return res.status(400).json({ ok: false, mensaje: 'Nombre del autor requerido' });
     
-    const [result] = await pool.query('INSERT INTO galeria_autores (nombre, foto) VALUES (?, ?)', [nombre, foto || '']);
-    res.json({ ok: true, item: { id: result.insertId, nombre, foto } });
+    const [result] = await pool.query('INSERT INTO galeria_autores (nombre, foto, biografia) VALUES (?, ?, ?)', [nombre, foto || '', biografia || '']);
+    res.json({ ok: true, item: { id: result.insertId, nombre, foto, biografia } });
   } catch (error) {
     console.error('Error al crear autor:', error);
     res.status(500).json({ ok: false, message: 'Error interno del servidor' });
@@ -57,16 +57,16 @@ router.post('/autores', async (req, res) => {
 router.put('/autores/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { nombre, foto } = req.body;
+    const { nombre, foto, biografia } = req.body;
     if (!nombre) return res.status(400).json({ ok: false, mensaje: 'Nombre del autor requerido' });
     
     const [result] = await pool.query(
-      'UPDATE galeria_autores SET nombre = ?, foto = ? WHERE id = ?',
-      [nombre, foto || '', id]
+      'UPDATE galeria_autores SET nombre = ?, foto = ?, biografia = ? WHERE id = ?',
+      [nombre, foto || '', biografia || '', id]
     );
     
     if (result.affectedRows === 0) return res.status(404).json({ ok: false, mensaje: 'Autor no encontrado' });
-    res.json({ ok: true, item: { id: parseInt(id), nombre, foto } });
+    res.json({ ok: true, item: { id: parseInt(id), nombre, foto, biografia } });
   } catch (error) {
     console.error('Error al actualizar autor:', error);
     res.status(500).json({ ok: false, message: 'Error interno del servidor' });

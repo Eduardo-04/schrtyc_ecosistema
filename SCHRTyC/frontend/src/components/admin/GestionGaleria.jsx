@@ -202,32 +202,39 @@ function ModalFiltros({ filtros, onCrear, onEliminar, onCerrar }) {
 function ModalAutores({ autores, onCrear, onEditar, onEliminar, onCerrar }) {
   const [nombre, setNombre] = useState('')
   const [foto, setFoto] = useState('')
+  const [biografia, setBiografia] = useState('')
   const [editandoId, setEditandoId] = useState(null)
+  const [busqueda, setBusqueda] = useState('')
 
   const handleGuardar = (e) => {
     e.preventDefault()
     if (!nombre.trim()) return
     if (editandoId) {
-      onEditar(editandoId, { nombre: nombre.trim(), foto })
+      onEditar(editandoId, { nombre: nombre.trim(), foto, biografia: biografia.trim() })
       setEditandoId(null)
     } else {
-      onCrear({ nombre: nombre.trim(), foto })
+      onCrear({ nombre: nombre.trim(), foto, biografia: biografia.trim() })
     }
     setNombre('')
     setFoto('')
+    setBiografia('')
   }
 
   const handleEditarClick = (a) => {
     setEditandoId(a.id)
     setNombre(a.nombre)
     setFoto(a.foto || '')
+    setBiografia(a.biografia || '')
   }
 
   const handleCancelar = () => {
     setEditandoId(null)
     setNombre('')
     setFoto('')
+    setBiografia('')
   }
+
+  const autoresFiltrados = autores.filter(a => a.nombre.toLowerCase().includes(busqueda.toLowerCase()))
 
   const labelClass = "block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1 ml-1"
   const inputClass = "w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#611232] outline-none text-sm font-bold text-gray-700 transition-all"
@@ -270,6 +277,17 @@ function ModalAutores({ autores, onCrear, onEditar, onEliminar, onCerrar }) {
                 />
               </div>
 
+              <div>
+                <label className={labelClass}>Mini Biografía</label>
+                <textarea 
+                  value={biografia} 
+                  onChange={e => setBiografia(e.target.value)}
+                  className={`${inputClass} resize-none`}
+                  rows={4}
+                  placeholder="Pequeña descripción o biografía del artista..."
+                />
+              </div>
+
               <div className="flex gap-3 pt-2">
                 {editandoId && (
                   <button 
@@ -294,13 +312,28 @@ function ModalAutores({ autores, onCrear, onEditar, onEliminar, onCerrar }) {
           <div className="flex flex-col space-y-4">
             <h4 className="text-sm font-black text-[#611232] uppercase tracking-wider border-b pb-2 flex justify-between items-center">
               <span>Artistas Registrados</span>
-              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-bold">{autores.length}</span>
+              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-bold">{autoresFiltrados.length}</span>
             </h4>
+
+            {/* Buscador */}
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Buscar artista por nombre..."
+                value={busqueda}
+                onChange={e => setBusqueda(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold focus:border-[#611232] outline-none transition-colors"
+              />
+              <span className="absolute left-3 top-2.5 text-gray-400">🔍</span>
+            </div>
+
             <div className="space-y-3 overflow-y-auto max-h-[50vh] pr-2 custom-scrollbar flex-1">
-              {autores.length === 0 ? (
-                <p className="text-xs text-gray-400 font-bold text-center py-10">No hay artistas registrados.</p>
+              {autoresFiltrados.length === 0 ? (
+                <p className="text-xs text-gray-400 font-bold text-center py-10">
+                  {busqueda ? 'No se encontraron artistas con ese nombre.' : 'No hay artistas registrados.'}
+                </p>
               ) : (
-                autores.map(a => (
+                autoresFiltrados.map(a => (
                   <div key={a.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl group hover:bg-gray-100/80 transition-colors border border-gray-100">
                     <div className="flex items-center gap-3">
                       {a.foto ? (

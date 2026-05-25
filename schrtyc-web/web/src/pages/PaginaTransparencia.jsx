@@ -197,40 +197,78 @@ export default function PaginaTransparencia() {
             )}
           </div>
 
-          {tramites.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-              {tramites.map((t, i) => <TarjetaTramite key={i} tramite={t} />)}
+          {tramites.length > 0 ? (
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-12 items-start mb-12">
+              <div className="space-y-6">
+                <h3 className="text-lg font-bold" style={{ color: '#611232' }}>Trámites y Servicios</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {tramites.map((t, i) => <TarjetaTramite key={i} tramite={t} />)}
+                </div>
+              </div>
+              
+              <div className="w-full sticky top-8">
+                <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+                  <p className="text-[10px] font-extrabold uppercase tracking-widest mb-1" style={{ color: '#A57F2C' }}>{seccionLabel}</p>
+                  <h2 className="text-xl font-extrabold mb-6" style={{ color: '#611232' }}>{seccionTitulo}</h2>
+                  
+                  <div className="flex flex-col gap-2">
+                    {mediaItems.length > 0 ? (
+                      mediaItems.map((item, i) => {
+                        if (item.tipo === 'header') return (
+                          <div key={i} className="mt-6 first:mt-0 mb-2">
+                            <h4 className="text-[10px] font-extrabold text-[#611232] uppercase tracking-widest border-b border-gray-100 pb-1">{item.titulo}</h4>
+                          </div>
+                        )
+                        return (
+                          <a key={i} href={item.src} target="_blank" rel="noreferrer"
+                            className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-[#f8f9fa] transition group">
+                            <span className="text-lg flex-shrink-0">📄</span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-bold text-gray-700 group-hover:text-[#611232] truncate transition">{item.titulo}</p>
+                            </div>
+                            <span className="text-gray-300 group-hover:text-[#611232] transition flex-shrink-0">↗</span>
+                          </a>
+                        )
+                      })
+                    ) : (
+                      <p className="text-sm text-gray-400 italic">No hay documentos disponibles en esta sección.</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="mb-12">
+              <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 max-w-5xl mx-auto">
+                <p className="text-[10px] font-extrabold uppercase tracking-widest text-center mb-1" style={{ color: '#A57F2C' }}>{seccionLabel}</p>
+                <h2 className="text-2xl font-extrabold text-center mb-8" style={{ color: '#611232' }}>{seccionTitulo}</h2>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2">
+                  {mediaItems.length > 0 ? (
+                    mediaItems.map((item, i) => {
+                      if (item.tipo === 'header') return (
+                        <div key={i} className="col-span-full mt-6 first:mt-0 mb-2">
+                          <h4 className="text-[10px] font-extrabold text-[#611232] uppercase tracking-widest border-b border-gray-100 pb-1">{item.titulo}</h4>
+                        </div>
+                      )
+                      return (
+                        <a key={i} href={item.src} target="_blank" rel="noreferrer"
+                          className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-[#f8f9fa] transition group">
+                          <span className="text-lg flex-shrink-0">📄</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-bold text-gray-700 group-hover:text-[#611232] truncate transition">{item.titulo}</p>
+                          </div>
+                          <span className="text-gray-300 group-hover:text-[#611232] transition flex-shrink-0">↗</span>
+                        </a>
+                      )
+                    })
+                  ) : (
+                    <p className="text-sm text-gray-400 italic text-center col-span-full">No hay documentos disponibles en esta sección.</p>
+                  )}
+                </div>
+              </div>
             </div>
           )}
-
-          <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-            <p className="text-[10px] font-extrabold uppercase tracking-widest mb-1" style={{ color: '#A57F2C' }}>{seccionLabel}</p>
-            <h2 className="text-2xl font-extrabold mb-8" style={{ color: '#611232' }}>{seccionTitulo}</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2">
-              {mediaItems.length > 0 ? (
-                mediaItems.map((item, i) => {
-                  if (item.tipo === 'header') return (
-                    <div key={i} className="col-span-full mt-6 first:mt-0 mb-2">
-                      <h4 className="text-[10px] font-extrabold text-[#611232] uppercase tracking-widest border-b border-gray-100 pb-1">{item.titulo}</h4>
-                    </div>
-                  )
-                  return (
-                    <a key={i} href={item.src} target="_blank" rel="noreferrer"
-                      className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-[#f8f9fa] transition group">
-                      <span className="text-lg flex-shrink-0">📄</span>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-gray-700 group-hover:text-[#611232] truncate transition">{item.titulo}</p>
-                      </div>
-                      <span className="text-gray-300 group-hover:text-[#611232] transition flex-shrink-0">↗</span>
-                    </a>
-                  )
-                })
-              ) : (
-                <p className="text-sm text-gray-400 italic">No hay documentos disponibles en esta sección.</p>
-              )}
-            </div>
-          </div>
 
         </div>
       </div>
