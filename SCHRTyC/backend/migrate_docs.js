@@ -92,7 +92,7 @@ async function run() {
     const conn = await db.pool.getConnection()
     
     // Update Etica
-    await conn.query('UPDATE paginas SET multimedia = ? WHERE slug = ?', [eticaContent, 'etica'])
+    await conn.query('UPDATE paginas SET multimedia = ? WHERE slug = ?', [eticaContent, 'comite-etica'])
     
     // Update Transparencia
     await conn.query('UPDATE paginas SET multimedia = ? WHERE slug = ?', [transContent, 'transparencia'])
