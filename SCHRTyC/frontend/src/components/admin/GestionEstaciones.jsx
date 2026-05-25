@@ -169,7 +169,7 @@ export default function GestionEstaciones() {
                     est.imagen ? 'bg-gray-50 border border-gray-100' : (est.tipo === 'TV' ? 'bg-[#611232]' : 'bg-[#A57F2C]')
                   }`}>
                     {est.imagen
-                      ? <img src={getUploadUrl(est.imagen)} alt={est.nombre} className="w-full h-full object-cover" onError={e => { e.target.style.display='none'; e.target.nextSibling.style.display='flex' }} />
+                      ? <img src={getUploadUrl(est.imagen)} alt={est.nombre} className="w-full h-full object-contain" onError={e => { e.target.style.display='none'; e.target.nextSibling.style.display='flex' }} />
                       : null
                     }
                     <span style={{ display: est.imagen ? 'none' : 'flex' }} className="w-full h-full items-center justify-center">
@@ -228,7 +228,7 @@ export default function GestionEstaciones() {
                     }`}
                   >
                     {imgPreview
-                      ? <img src={imgPreview} alt="preview" className="w-full h-full object-cover" />
+                      ? <img src={imgPreview} alt="preview" className="w-full h-full object-contain p-1" />
                       : <span className="text-3xl select-none">📻</span>
                     }
                   </div>

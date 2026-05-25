@@ -572,7 +572,7 @@ function RadioPlayer({ radios, seleccionada, setSeleccionada }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
             {actual?.imagen
               ? <img src={getUploadUrl(actual.imagen)} alt={actual.nombre}
-                style={{ width: '56px', height: '56px', borderRadius: '14px', objectFit: 'cover', flexShrink: 0 }}
+                style={{ width: '56px', height: '56px', borderRadius: '14px', objectFit: 'contain', flexShrink: 0, backgroundColor: 'white' }}
                 onError={e => e.target.style.display = 'none'} />
               : <div style={{
                 width: '56px',

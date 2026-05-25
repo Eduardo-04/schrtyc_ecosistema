@@ -1,26 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getEstaciones, getProgramacionHoy } from '../services/api'
+import { getEstaciones, getProgramacionHoy, getUploadUrl } from '../services/api'
 import { estaEnVivo } from '../utils/date'
 import IMG_TV from '../assets/tv_studio.png'
 import IMG_ESTUDIO from '../assets/radio_studio.png'
+import LOGO_SCHRTYC from '../assets/logo_sistema.jpg'
 
-// ── Estaciones fijas ──────────────────────────────────────────
-const ESTACIONES_FIJAS = [
-  { id: 's1', nombre: 'Canal de AudioStreaming', ciudad: '', freq: '', am: false, activa: true },
-  { id: 's2', nombre: 'Tuxtlan', ciudad: 'Tuxtla Gutiérrez', freq: '92.5', am: false, activa: true },
-  { id: 's3', nombre: 'Uno', ciudad: 'San Cristóbal', freq: '760', am: true, activa: true },
-  { id: 's4', nombre: 'Frecuencia V Norte', ciudad: 'Pichucalco', freq: '102.1', am: false, activa: true },
-  { id: 's5', nombre: 'Digital', ciudad: 'Tonalá', freq: '89.5', am: false, activa: true },
-  { id: 's6', nombre: 'K-in', ciudad: 'Ocosingo', freq: '600', am: true, activa: true },
-  { id: 's7', nombre: 'Palenque', ciudad: 'Palenque', freq: '1040', am: true, activa: true },
-  { id: 's8', nombre: 'Brisas De Montebello', ciudad: 'Trinitaria', freq: '89.9', am: false, activa: true },
-]
-
-const SEEDS = {
-  s1: 'studiomix', s2: 'tuxtlan', s3: 'sancristobal', s4: 'pichucalco',
-  s5: 'tonala', s6: 'ocosingo', s7: 'palenque', s8: 'montebello'
-}
+// ── Estaciones dinámicas cargadas desde el backend ──────────────
 
 // ── Íconos ────────────────────────────────────────────────────
 const Arr = () => (
@@ -51,30 +37,34 @@ const Bars = ({ n = 14, color = '#611232' }) => (
 
 // ── RadioCard ─────────────────────────────────────────────────
 function RadioCard({ e: est }) {
-  const bg = `https://picsum.photos/seed/${SEEDS[est.id] || est.id}/400/220`
-  const badge = est.freq ? `${est.freq} ${est.am ? 'AM' : 'FM'}` : null
+  const tieneImagen = !!est.imagen
+  const bg = tieneImagen ? getUploadUrl(est.imagen) : LOGO_SCHRTYC
 
   return (
     <Link to="/radio" className="radio-card-v3 lift">
       <div className="radio-img-container">
-        <img src={bg} alt={est.nombre} className="radio-img" />
+        <img 
+          src={bg} 
+          alt={est.nombre} 
+          className="radio-img" 
+          style={{ 
+            objectFit: 'contain', 
+            backgroundColor: 'white', 
+            padding: tieneImagen ? '0' : '20px' 
+          }} 
+        />
         <div className="radio-img-overlay" />
-        {est.activa && (
+        {est.activo && (
           <div className="live-badge-floating">
             <span className="hero-date-dot" style={{ width: '6px', height: '6px' }} />
             <span style={{ fontSize: '10px', fontWeight: '800', color: 'white', textTransform: 'uppercase' }}>Vivo</span>
           </div>
         )}
-        {badge && (
-          <div className="freq-badge-floating">
-            <span style={{ fontSize: '11px', fontWeight: '900', color: 'white' }}>{badge}</span>
-          </div>
-        )}
       </div>
       <div style={{ padding: '0 8px' }}>
         <h3 style={{ margin: '0 0 4px', color: '#333333', fontSize: '15px', fontWeight: '800', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{est.nombre}</h3>
-        <p style={{ margin: '0 0 14px', color: '#6b7280', fontSize: '12px', fontWeight: '600' }}>{est.ciudad || 'Chiapas'}</p>
-        <Bars color={est.activa ? 'var(--gold)' : 'rgba(165,127,44,0.2)'} n={18} />
+        <p style={{ margin: '0 0 14px', color: '#6b7280', fontSize: '12px', fontWeight: '600' }}>{est.tipo === 'TV' ? 'Televisión' : 'Frecuencia Estatal'}</p>
+        <Bars color={est.activo ? 'var(--gold)' : 'rgba(165,127,44,0.2)'} n={18} />
       </div>
     </Link>
   )
@@ -151,7 +141,7 @@ export default function PaginaInicio() {
 
               <div className="hi3 hero-stats">
                 {[
-                  { n: ESTACIONES_FIJAS.length, l: 'Frecuencias Activas' },
+                  { n: estaciones.filter(e => e.tipo === 'Radio' && e.activo).length, l: 'Frecuencias Activas' },
                   { n: '1', l: 'Canal de TV Digital' },
                   { n: '12', l: 'Regiones Cubiertas' },
                 ].map(s => (
@@ -186,7 +176,7 @@ export default function PaginaInicio() {
                 {activas.slice(0, 3).map(e => (
                   <div key={e.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
                     <div style={{ width: '32px', height: '32px', borderRadius: '10px', backgroundColor: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', color: 'var(--gold-light)', fontWeight: '900' }}>
-                      {e.freq.split('.')[0] || 'FM'}
+                      📻
                     </div>
                     <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', fontWeight: '600' }}>{e.nombre}</span>
                   </div>
@@ -261,7 +251,7 @@ export default function PaginaInicio() {
           </div>
 
           <div className="radio-grid">
-            {ESTACIONES_FIJAS.map(e => <RadioCard key={e.id} e={e} />)}
+            {estaciones.filter(e => e.tipo === 'Radio').map(e => <RadioCard key={e.id} e={e} />)}
           </div>
         </div>
       </section>
