@@ -1,16 +1,16 @@
 import { useState, useEffect, useCallback, memo, useMemo } from 'react'
 import { Palette, Plus, Pencil, Trash2, Check, RefreshCw, X, Image as ImageIcon, Settings2, Filter, Hash, Users } from 'lucide-react'
 import ArchiveroInput from '../shared/ArchiveroInput'
-import { 
+import {
   getGaleria, crearGaleriaItem, editarGaleriaItem, eliminarGaleriaItem,
   getPaginas, editarPagina,
   getGaleriaFiltros, crearGaleriaFiltro, eliminarGaleriaFiltro,
   getGaleriaAutores, crearGaleriaAutor, editarGaleriaAutor, eliminarGaleriaAutor
 } from '../../services/api'
 
-const FORM_VACIO = { 
-  titulo: '', autor: '', tecnica: '', formato: '', 
-  ciudad: '', año: '', descripcion: '', imagen: '', telefono: '' 
+const FORM_VACIO = {
+  titulo: '', autor: '', tecnica: '', formato: '',
+  ciudad: '', año: '', descripcion: '', imagen: '', telefono: ''
 }
 
 // ── Modal para Añadir/Editar Obra ──────────────────────────────────────────
@@ -49,7 +49,7 @@ const ModalGaleria = memo(({ item, onGuardar, onCerrar, tecnicas = [], autores =
             <X size={24} />
           </button>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="overflow-y-auto p-8 grid grid-cols-1 md:grid-cols-2 gap-10">
           <div className="space-y-6">
             <div>
@@ -57,11 +57,11 @@ const ModalGaleria = memo(({ item, onGuardar, onCerrar, tecnicas = [], autores =
               <input value={form.titulo} onChange={e => setForm({ ...form, titulo: e.target.value })}
                 className={inputClass} placeholder="Ej. La noche estrellada" required />
             </div>
-            
+
             <div>
               <label className={labelClass}>Autor / Artista *</label>
-              <select 
-                value={form.autor} 
+              <select
+                value={form.autor}
                 onChange={e => setForm({ ...form, autor: e.target.value })}
                 className={inputClass}
                 required
@@ -77,8 +77,8 @@ const ModalGaleria = memo(({ item, onGuardar, onCerrar, tecnicas = [], autores =
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className={labelClass}>Técnica *</label>
-                <select 
-                  value={form.tecnica} 
+                <select
+                  value={form.tecnica}
                   onChange={e => setForm({ ...form, tecnica: e.target.value })}
                   className={inputClass}
                   required
@@ -115,7 +115,7 @@ const ModalGaleria = memo(({ item, onGuardar, onCerrar, tecnicas = [], autores =
           </div>
 
           <div className="space-y-6">
-            <ArchiveroInput 
+            <ArchiveroInput
               label="URL de la imagen *"
               value={form.imagen}
               onChange={v => setForm({ ...form, imagen: v })}
@@ -124,15 +124,15 @@ const ModalGaleria = memo(({ item, onGuardar, onCerrar, tecnicas = [], autores =
 
             {form.imagen && (
               <div className="rounded-3xl overflow-hidden border-4 border-white shadow-xl bg-gray-50 aspect-video relative group">
-                <img src={form.imagen} alt="Preview" className="w-full h-full object-cover" 
-                  onError={e => e.target.style.display='none'} />
+                <img src={form.imagen} alt="Preview" className="w-full h-full object-cover"
+                  onError={e => e.target.style.display = 'none'} />
               </div>
             )}
 
             <div>
               <label className={labelClass}>Descripción / Reseña</label>
               <textarea value={form.descripcion} onChange={e => setForm({ ...form, descripcion: e.target.value })}
-                rows={4} className={`${inputClass} resize-none leading-relaxed text-xs`} 
+                rows={4} className={`${inputClass} resize-none leading-relaxed text-xs`}
                 placeholder="Escribe una breve reseña..." />
             </div>
           </div>
@@ -167,13 +167,13 @@ function ModalFiltros({ filtros, onCrear, onEliminar, onCerrar }) {
         </div>
         <div className="p-8 space-y-6">
           <div className="flex gap-2">
-            <input 
-              value={nuevo} 
+            <input
+              value={nuevo}
               onChange={e => setNuevo(e.target.value)}
               className="flex-1 px-4 py-3 rounded-2xl border-2 border-gray-100 focus:border-[#A57F2C] outline-none text-sm font-bold text-gray-700"
               placeholder="Nueva técnica..."
             />
-            <button 
+            <button
               onClick={() => { onCrear(nuevo); setNuevo(''); }}
               className="p-3 bg-[#A57F2C] text-white rounded-2xl hover:scale-105 transition-transform shadow-lg"
             >
@@ -259,8 +259,8 @@ function ModalAutores({ autores, onCrear, onEditar, onEliminar, onCerrar }) {
             <form onSubmit={handleGuardar} className="space-y-6">
               <div>
                 <label className={labelClass}>Nombre del Artista *</label>
-                <input 
-                  value={nombre} 
+                <input
+                  value={nombre}
                   onChange={e => setNombre(e.target.value)}
                   className={inputClass}
                   placeholder="Ej. Francisco Toledo"
@@ -269,7 +269,7 @@ function ModalAutores({ autores, onCrear, onEditar, onEliminar, onCerrar }) {
               </div>
 
               <div>
-                <ArchiveroInput 
+                <ArchiveroInput
                   label="Foto de Perfil"
                   value={foto}
                   onChange={v => setFoto(v)}
@@ -279,8 +279,8 @@ function ModalAutores({ autores, onCrear, onEditar, onEliminar, onCerrar }) {
 
               <div>
                 <label className={labelClass}>Mini Biografía</label>
-                <textarea 
-                  value={biografia} 
+                <textarea
+                  value={biografia}
                   onChange={e => setBiografia(e.target.value)}
                   className={`${inputClass} resize-none`}
                   rows={4}
@@ -290,15 +290,15 @@ function ModalAutores({ autores, onCrear, onEditar, onEliminar, onCerrar }) {
 
               <div className="flex gap-3 pt-2">
                 {editandoId && (
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={handleCancelar}
                     className="flex-1 py-3 border border-gray-200 rounded-2xl text-xs font-black uppercase tracking-widest text-gray-500 hover:bg-gray-50 transition-all"
                   >
                     Cancelar
                   </button>
                 )}
-                <button 
+                <button
                   type="submit"
                   className="flex-1 py-3 bg-[#611232] text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-[1.02] transition-transform shadow-lg shadow-[#611232]/10"
                 >
@@ -337,9 +337,9 @@ function ModalAutores({ autores, onCrear, onEditar, onEliminar, onCerrar }) {
                   <div key={a.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl group hover:bg-gray-100/80 transition-colors border border-gray-100">
                     <div className="flex items-center gap-3">
                       {a.foto ? (
-                        <img 
-                          src={a.foto} 
-                          alt={a.nombre} 
+                        <img
+                          src={a.foto}
+                          alt={a.nombre}
                           className="w-10 h-10 rounded-full object-cover border border-gray-200 bg-white"
                         />
                       ) : (
@@ -355,14 +355,14 @@ function ModalAutores({ autores, onCrear, onEditar, onEliminar, onCerrar }) {
                       </div>
                     </div>
                     <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button 
+                      <button
                         onClick={() => handleEditarClick(a)}
                         className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
                         title="Editar artista"
                       >
                         <Pencil size={15} />
                       </button>
-                      <button 
+                      <button
                         onClick={() => onEliminar(a.id)}
                         className="p-2 text-red-300 hover:text-red-500 transition-colors"
                         title="Eliminar artista"
@@ -484,17 +484,17 @@ export default function GestionGaleria() {
           <p className="text-gray-400 text-[10px] mt-1 font-black uppercase tracking-[0.2em]">Curaduría y Control Editorial</p>
         </div>
         <div className="flex flex-wrap gap-3">
-           <button onClick={() => setModalAutores(true)}
+          <button onClick={() => setModalAutores(true)}
             className="flex items-center gap-2 px-5 py-2.5 bg-gray-50 text-gray-500 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-gray-100 transition-all border border-gray-100"
           >
             <Users size={16} className="text-[#611232]" /> Artistas
           </button>
-           <button onClick={() => setModalFiltros(true)}
+          <button onClick={() => setModalFiltros(true)}
             className="flex items-center gap-2 px-5 py-2.5 bg-gray-50 text-gray-500 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-gray-100 transition-all border border-gray-100"
           >
             <Filter size={16} /> Técnicas
           </button>
-           <button onClick={() => setModalPagina(true)}
+          <button onClick={() => setModalPagina(true)}
             className="flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-gray-100 text-gray-600 rounded-2xl text-xs font-black uppercase tracking-widest hover:border-[#A57F2C] hover:text-[#A57F2C] transition-all"
           >
             <Settings2 size={16} /> Página
@@ -511,9 +511,9 @@ export default function GestionGaleria() {
       {!loading && pageData && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center bg-gray-50/50 p-10 rounded-[3rem] border border-gray-100 relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-6">
-             <span className="text-[9px] font-black text-gray-300 uppercase tracking-[0.5em] rotate-90 inline-block origin-right opacity-40 group-hover:opacity-100 transition-opacity underline decoration-[#A57F2C] decoration-2 underline-offset-4">EDITORIAL PREVIEW</span>
+            <span className="text-[9px] font-black text-gray-300 uppercase tracking-[0.5em] rotate-90 inline-block origin-right opacity-40 group-hover:opacity-100 transition-opacity underline decoration-[#A57F2C] decoration-2 underline-offset-4">EDITORIAL PREVIEW</span>
           </div>
-          
+
           <div className="space-y-8">
             <div>
               <p className="text-[11px] font-black text-[#A57F2C] uppercase tracking-[0.4em] mb-4 flex items-center gap-3">
@@ -554,12 +554,12 @@ export default function GestionGaleria() {
       {/* 3. Galería de Obras */}
       <div className="space-y-8">
         <div className="flex items-center gap-6">
-           <h3 className="text-xl font-black text-gray-900 tracking-tight">Catálogo Digital</h3>
-           <div className="h-px flex-1 bg-gradient-to-r from-gray-100 to-transparent"></div>
-           <div className="flex items-center gap-2 px-4 py-1.5 bg-[#A57F2C]/10 rounded-full">
-              <div className="w-2 h-2 rounded-full bg-[#A57F2C] animate-pulse"></div>
-              <span className="text-[10px] font-black text-[#A57F2C] uppercase tracking-widest">{items.length} obras</span>
-           </div>
+          <h3 className="text-xl font-black text-gray-900 tracking-tight">Catálogo Digital</h3>
+          <div className="h-px flex-1 bg-gradient-to-r from-gray-100 to-transparent"></div>
+          <div className="flex items-center gap-2 px-4 py-1.5 bg-[#A57F2C]/10 rounded-full">
+            <div className="w-2 h-2 rounded-full bg-[#A57F2C] animate-pulse"></div>
+            <span className="text-[10px] font-black text-[#A57F2C] uppercase tracking-widest">{items.length} obras</span>
+          </div>
         </div>
 
         {loading ? (
@@ -573,10 +573,10 @@ export default function GestionGaleria() {
             {items.map(item => (
               <div key={item.id} className="group bg-white rounded-[2.5rem] border border-gray-100 overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500">
                 <div className="aspect-[4/3] relative overflow-hidden bg-gray-100">
-                  <img 
-                    src={item.imagen} 
-                    alt={item.titulo} 
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                  <img
+                    src={item.imagen}
+                    alt={item.titulo}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-[#611232]/0 group-hover:bg-[#611232]/40 backdrop-blur-[2px] transition-all duration-500 flex flex-col justify-end p-6">
                     <div className="flex gap-3 translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
@@ -585,7 +585,7 @@ export default function GestionGaleria() {
                     </div>
                   </div>
                   <div className="absolute top-4 left-4">
-                     <span className="px-3 py-1 bg-white/90 backdrop-blur-md rounded-full text-[9px] font-black text-[#611232] uppercase tracking-tighter border border-white shadow-sm">{item.tecnica || 'Obra'}</span>
+                    <span className="px-3 py-1 bg-white/90 backdrop-blur-md rounded-full text-[9px] font-black text-[#611232] uppercase tracking-tighter border border-white shadow-sm">{item.tecnica || 'Obra'}</span>
                   </div>
                 </div>
                 <div className="p-6">
@@ -623,19 +623,19 @@ export default function GestionGaleria() {
       )}
 
       {modalPagina && pageData && (
-        <ModalPaginaGaleria 
-          data={pageData} 
-          onGuardar={handleGuardarPagina} 
-          onCerrar={() => setModalPagina(false)} 
+        <ModalPaginaGaleria
+          data={pageData}
+          onGuardar={handleGuardarPagina}
+          onCerrar={() => setModalPagina(false)}
         />
       )}
 
       {modalFiltros && (
-        <ModalFiltros 
-          filtros={tecnicas} 
-          onCrear={handleCrearFiltro} 
-          onEliminar={handleEliminarFiltro} 
-          onCerrar={() => setModalFiltros(false)} 
+        <ModalFiltros
+          filtros={tecnicas}
+          onCrear={handleCrearFiltro}
+          onEliminar={handleEliminarFiltro}
+          onCerrar={() => setModalFiltros(false)}
         />
       )}
 
@@ -716,7 +716,7 @@ function ModalPaginaGaleria({ data, onGuardar, onCerrar }) {
             </div>
 
             <div className="space-y-6">
-               <div>
+              <div>
                 <label className={labelClass}>Contenido Editorial (Intro)</label>
                 <textarea value={form.contenido} onChange={e => setForm({ ...form, contenido: e.target.value })} rows={6} className={`${inputClass} resize-none leading-relaxed text-xs`} placeholder="Escribe el texto de presentación..." />
               </div>
@@ -726,7 +726,7 @@ function ModalPaginaGaleria({ data, onGuardar, onCerrar }) {
           <div className="space-y-8">
             <div className="p-8 bg-white border-4 border-gray-50 rounded-[2.5rem] space-y-6 shadow-sm">
               <p className="text-[11px] font-black text-[#A57F2C] uppercase tracking-[0.3em] border-b border-gray-200 pb-3">Banner Destacado</p>
-              <ArchiveroInput 
+              <ArchiveroInput
                 label="URL de la Imagen"
                 value={form.imagenportada}
                 onChange={v => setForm({ ...form, imagenportada: v })}
@@ -743,29 +743,29 @@ function ModalPaginaGaleria({ data, onGuardar, onCerrar }) {
               <p className="text-[11px] font-black text-[#611232] uppercase tracking-[0.3em] border-b border-gray-200 pb-3">Banner de Invitación (CTA)</p>
               <div>
                 <label className={labelClass}>Título del Banner</label>
-                <input 
-                  value={form.cta_titulo || ''} 
-                  onChange={e => setForm({ ...form, cta_titulo: e.target.value })} 
-                  className={inputClass} 
+                <input
+                  value={form.cta_titulo || ''}
+                  onChange={e => setForm({ ...form, cta_titulo: e.target.value })}
+                  className={inputClass}
                   placeholder="Ej. ¿Eres creador chiapaneco?"
                 />
               </div>
               <div>
                 <label className={labelClass}>Descripción del Banner</label>
-                <textarea 
-                  value={form.cta_descripcion || ''} 
-                  onChange={e => setForm({ ...form, cta_descripcion: e.target.value })} 
-                  rows={2} 
-                  className={`${inputClass} resize-none`} 
+                <textarea
+                  value={form.cta_descripcion || ''}
+                  onChange={e => setForm({ ...form, cta_descripcion: e.target.value })}
+                  rows={2}
+                  className={`${inputClass} resize-none`}
                   placeholder="Ej. Somete tu obra y forma parte de..."
                 />
               </div>
               <div>
                 <label className={labelClass}>Enlace del Botón</label>
-                <input 
-                  value={form.cta_link || ''} 
-                  onChange={e => setForm({ ...form, cta_link: e.target.value })} 
-                  className={inputClass} 
+                <input
+                  value={form.cta_link || ''}
+                  onChange={e => setForm({ ...form, cta_link: e.target.value })}
+                  className={inputClass}
                   placeholder="Ej. https://forms.gle/... o #"
                 />
               </div>

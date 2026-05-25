@@ -223,7 +223,7 @@ export default function Dashboard({ onNavegar }) {
              {estaciones.map((e, i) => (
                <div key={i} className="flex items-center justify-between p-4 bg-gray-50/50 rounded-[1.5rem] border border-gray-50 hover:border-[#A57F2C]/30 transition-colors">
                   <div className="flex items-center gap-3">
-                     <div className={`w-2 h-2 rounded-full ${e.activa ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]' : 'bg-gray-300'}`}></div>
+                     <div className={`w-2 h-2 rounded-full ${e.activo === 1 ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]' : 'bg-gray-300'}`}></div>
                      <span className="text-xs font-bold text-gray-700">{e.nombre}</span>
                   </div>
                   <span className="text-[9px] font-black text-gray-300 uppercase">{e.frecuencia || 'Señal Digital'}</span>
