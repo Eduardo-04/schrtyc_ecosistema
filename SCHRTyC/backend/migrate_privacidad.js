@@ -1,4 +1,4 @@
-const db = require('../src/db')
+const db = require('./src/db')
 
 const AVISOS_HARDCODEADOS = [
   { titulo: 'Recursos Humanos: Aviso de privacidad', src: 'http://radiotvycine.chiapas.gob.mx/assets/docs/privacidad/1_1_rh.pdf' },
