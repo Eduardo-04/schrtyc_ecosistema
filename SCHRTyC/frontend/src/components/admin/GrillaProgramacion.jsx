@@ -34,6 +34,7 @@ function ModalImportar({ estaciones, onCerrar, onImportado }) {
   const [preview, setPreview]     = useState(null)
   const [loading, setLoading]     = useState(false)
   const [guardando, setGuardando] = useState(false)
+  const [dia, setDia]             = useState('')
   const [error, setError]         = useState('')
 
   const handlePreview = async () => {
@@ -43,6 +44,7 @@ function ModalImportar({ estaciones, onCerrar, onImportado }) {
       const form = new FormData()
       form.append('archivo', archivo)
       form.append('estacion', estacion)
+      if (dia) form.append('dia', dia)
       const data = await previewImportar(form)
       setPreview(data)
     } catch(e) { setError(e.message) }
@@ -55,6 +57,7 @@ function ModalImportar({ estaciones, onCerrar, onImportado }) {
       const form = new FormData()
       form.append('archivo', archivo)
       form.append('estacion', estacion)
+      if (dia) form.append('dia', dia)
       await guardarImportar(form)
       onImportado()
     } catch(e) { setError(e.message) }
@@ -72,11 +75,18 @@ function ModalImportar({ estaciones, onCerrar, onImportado }) {
         </div>
         
         <div className="p-10 space-y-8 overflow-y-auto">
-           <div className="grid grid-cols-2 gap-6">
+           <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
               <div className="space-y-1">
                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Estación Destino</label>
                  <select value={estacion} onChange={e => setEstacion(e.target.value)} className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-xs font-black uppercase tracking-widest outline-none">
                     {estaciones.map(s => <option key={s.id} value={s.nombre}>{s.nombre}</option>)}
+                 </select>
+              </div>
+              <div className="space-y-1">
+                 <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Día de Transmisión</label>
+                 <select value={dia} onChange={e => setDia(e.target.value)} className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-xs font-black uppercase tracking-widest outline-none">
+                    <option value="">Automático (Parrilla completa)</option>
+                    {DIAS.map(d => <option key={d} value={d}>{d}</option>)}
                  </select>
               </div>
               <div className="space-y-1">
