@@ -149,12 +149,12 @@ function ModalPrograma({ programa, onClose }) {
           </div>
           
           <div className="flex items-center gap-2 mb-6 text-sm">
-            {programa.conductor && (
+            {programa.conductor && programa.conductor.toLowerCase() !== 'sin asignar' && (
                <div className="font-semibold" style={{ color: '#4b5563' }}>
                  {programa.conductor}
                </div>
             )}
-            {programa.conductor && <span className="text-gray-300">|</span>}
+            {programa.conductor && programa.conductor.toLowerCase() !== 'sin asignar' && <span className="text-gray-300">|</span>}
             <span className="font-mono text-gray-500">
               {programa.hora_inicio} – {programa.hora_fin}
             </span>
@@ -339,7 +339,7 @@ function ModalCatalogo({ prog, onClose }) {
             <h2 style={{ fontSize: 'clamp(24px, 4vw, 32px)', fontWeight: '900', lineHeight: 1.1, margin: 0 }}>{prog.nombre}</h2>
             
             <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '16px', marginTop: '16px', opacity: 0.9 }}>
-              {prog.conductor && (
+              {prog.conductor && prog.conductor.toLowerCase() !== 'sin asignar' && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                   <span style={{ fontSize: '14px', fontWeight: '600' }}>{prog.conductor}</span>
@@ -640,7 +640,7 @@ export default function PaginaCanal10() {
                             {p.hora_inicio} – {p.hora_fin}
                           </p>
                           <p className="text-sm font-semibold truncate" style={{ color: '#333333' }}>{p.nombre}</p>
-                          {p.conductor && (
+                          {p.conductor && p.conductor.toLowerCase() !== 'sin asignar' && (
                             <p className="text-xs mt-0.5 truncate" style={{ color: '#6b7280' }}>{p.conductor}</p>
                           )}
                         </div>
@@ -711,7 +711,7 @@ export default function PaginaCanal10() {
                     <p style={{ fontWeight: '700', fontSize: '13px', color: '#1f2937', margin: '0 0 3px', lineHeight: '1.3', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {prog.nombre}
                     </p>
-                    {prog.conductor && (
+                    {prog.conductor && prog.conductor.toLowerCase() !== 'sin asignar' && (
                       <p style={{ fontSize: '11px', color: '#9ca3af', margin: '0 0 2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {prog.conductor}
                       </p>

@@ -162,7 +162,7 @@ export default function PaginaInicio() {
                     <span className="live-text-mini">DIRECTO</span>
                   </div>
                   <h3 style={{ fontSize: '22px', fontWeight: '900', color: 'white', margin: '0 0 8px', lineHeight: 1.1 }}>{progActual.nombre}</h3>
-                  {progActual.conductor && <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', margin: '0 0 16px', fontWeight: '500' }}>con {progActual.conductor}</p>}
+                  {progActual.conductor && progActual.conductor.toLowerCase() !== 'sin asignar' && <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', margin: '0 0 16px', fontWeight: '500' }}>con {progActual.conductor}</p>}
                   <div className="tv-time-badge" style={{ fontSize: '12px' }}>
                     {progActual.estacion} · {progActual.hora_inicio}
                   </div>
@@ -298,7 +298,7 @@ export default function PaginaInicio() {
                 {progTV ? (
                   <>
                     <h3 style={{ fontSize: '28px', fontWeight: '900', color: '#611232', margin: '0 0 8px', lineHeight: 1.1 }}>{progTV.nombre}</h3>
-                    {progTV.conductor && <p style={{ fontSize: '16px', color: '#6b7280', margin: '0 0 16px' }}>con {progTV.conductor}</p>}
+                    {progTV.conductor && progTV.conductor.toLowerCase() !== 'sin asignar' && <p style={{ fontSize: '16px', color: '#6b7280', margin: '0 0 16px' }}>con {progTV.conductor}</p>}
                     <div className="tv-time-badge">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
                       {progTV.hora_inicio} — {progTV.hora_fin}
