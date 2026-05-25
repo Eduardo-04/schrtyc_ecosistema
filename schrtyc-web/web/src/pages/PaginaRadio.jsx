@@ -855,7 +855,7 @@ function ProgramacionAcordeon({ programas, estaciones = [], onVerPrograma, estac
                           <span style={{ fontWeight: '700', fontSize: '13px', color: '#1f2937' }}>{p.nombre}</span>
                         </td>
                         <td style={{ padding: '14px 20px', fontSize: '13px', color: '#6b7280' }}>{p.estacion}</td>
-                        <td style={{ padding: '14px 20px', fontSize: '13px', color: '#6b7280' }}>{p.conductor}</td>
+                        <td style={{ padding: '14px 20px', fontSize: '13px', color: '#6b7280' }}>{p.conductor && p.conductor.toLowerCase() !== 'sin asignar' ? p.conductor : '—'}</td>
                         <td style={{ padding: '14px 20px', fontSize: '12px', color: '#9ca3af' }} className="hidden md:table-cell">
                           {p.descripcion ? p.descripcion.slice(0, 60) + (p.descripcion.length > 60 ? '…' : '') : '—'}
                         </td>
