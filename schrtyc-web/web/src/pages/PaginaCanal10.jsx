@@ -616,7 +616,9 @@ export default function PaginaCanal10() {
                         <span className="text-xs font-bold uppercase tracking-wide" style={{ color: '#A57F2C' }}>EN VIVO</span>
                       </div>
                       <h3 className="text-lg font-bold mb-1 truncate" style={{ color: '#611232' }}>{programaActual.nombre}</h3>
-                      <p className="text-sm truncate" style={{ color: '#6b7280' }}>{programaActual.conductor}</p>
+                      {programaActual.conductor && programaActual.conductor.toLowerCase() !== 'sin asignar' && (
+                        <p className="text-sm truncate" style={{ color: '#6b7280' }}>{programaActual.conductor}</p>
+                      )}
                       <p className="text-xs mt-2 font-mono" style={{ color: '#9ca3af' }}>
                         {programaActual.hora_inicio} – {programaActual.hora_fin}
                       </p>

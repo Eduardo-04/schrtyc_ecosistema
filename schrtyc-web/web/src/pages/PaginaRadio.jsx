@@ -963,7 +963,9 @@ export default function PaginaRadio() {
                       <span style={{ fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', color: '#A57F2C' }}>EN VIVO</span>
                     </div>
                     <h3 style={{ fontSize: '17px', fontWeight: '800', marginBottom: '4px', color: '#611232' }}>{programaEnVivo.nombre}</h3>
-                    <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '4px' }}>{programaEnVivo.conductor}</p>
+                    {programaEnVivo.conductor && programaEnVivo.conductor.toLowerCase() !== 'sin asignar' && (
+                      <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '4px' }}>{programaEnVivo.conductor}</p>
+                    )}
                     <p style={{ fontSize: '11px', fontFamily: 'monospace', color: '#9ca3af' }}>{programaEnVivo.hora_inicio} – {programaEnVivo.hora_fin}</p>
                   </>
                 ) : (
