@@ -44,10 +44,13 @@ export default function Dashboard({ onNavegar }) {
   useEffect(() => {
     const cargar = async () => {
       try {
+        const token = localStorage.getItem('token')
+        const headers = token ? { 'Authorization': `Bearer ${token}` } : {}
+        
         const [resProg, resNot, resEst] = await Promise.all([
           fetch(`${BASE_URL}/programacion`),
           fetch(`${BASE_URL}/noticias`),
-          fetch(`${BASE_URL}/estaciones`),
+          fetch(`${BASE_URL}/estaciones/todas`, { headers }),
         ])
         const [prog, not, est] = await Promise.all([
           resProg.json(), resNot.json(), resEst.json()
@@ -64,12 +67,12 @@ export default function Dashboard({ onNavegar }) {
           programasTV: programas.filter(p => p.tipo === 'TV').length,
           programasRa: programas.filter(p => p.tipo === 'Radio').length,
           totalProg:   programas.length,
-          estActivas:  estacionesd.filter(e => e.activa).length,
+          estActivas:  estacionesd.filter(e => e.activo === 1).length,
           estTotal:    estacionesd.length,
         })
 
         setPV(programas.filter(p => estaEnVivo(p.hora_inicio, p.hora_fin, p.dia)).slice(0, 4))
-        setEstaciones(estacionesd)
+        setEstaciones(estacionesd.filter(e => e.activo === 1))
         setNotRec([...noticias].sort((a, b) => b.fecha?.localeCompare(a.fecha)).slice(0, 4))
       } catch (e) {
         console.error(e)
