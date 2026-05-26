@@ -71,7 +71,7 @@ export default function Dashboard({ onNavegar }) {
           estTotal:    estacionesd.length,
         })
 
-        setPV(programas.filter(p => estaEnVivo(p.hora_inicio, p.hora_fin, p.dia)).slice(0, 4))
+        setPV(programas.filter(p => estaEnVivo(p.hora_inicio, p.hora_fin, p.dia)))
         setEstaciones(estacionesd.filter(e => e.activa || e.activo === 1))
         setNotRec([...noticias].sort((a, b) => b.fecha?.localeCompare(a.fecha)).slice(0, 4))
       } catch (e) {
@@ -147,7 +147,13 @@ export default function Dashboard({ onNavegar }) {
               <h3 className="text-xs font-black uppercase tracking-[0.3em]">En Vivo Ahora</h3>
             </div>
 
-            <div className="space-y-6">
+            <style>{`
+              .dash-scroll::-webkit-scrollbar { width: 6px; }
+              .dash-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
+              .dash-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+              .dash-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+            `}</style>
+            <div className="space-y-4 max-h-[320px] overflow-y-auto pr-2 dash-scroll">
               {loading ? (
                 <div className="space-y-4">
                   {[1,2].map(i => <div key={i} className="h-12 bg-white/10 rounded-2xl animate-pulse"></div>)}
