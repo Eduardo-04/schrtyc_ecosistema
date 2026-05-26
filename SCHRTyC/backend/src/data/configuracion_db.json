@@ -26,6 +26,98 @@
   },
   "sistema": {
     "modoMantenimiento": false,
-    "mensajeMantenimiento": "Estamos actualizando nuestro portal para brindarte un mejor servicio. Volveremos pronto."
+    "mensajeMantenimiento": "Estamos actualizando nuestro portal para brindarte un mejor servicio. Volveremos pronto.",
+    "documentos": [
+      {
+        "id": "17797660466860.7868663469489616",
+        "nombre": "Constitución Política de los Estados Unidos Mexicanos",
+        "url": "http://radiotvycine.chiapas.gob.mx/assets/docs/MarcoJuridico/CONSTITUCION%20POLITICA%20DE%20LOS%20ESTADOS%20UNIDOS%20MEXICANOS.pdf"
+      },
+      {
+        "id": "17797660466860.3259009800502912",
+        "nombre": "Constitución Política del Estado Libre y Soberano de Chiapas",
+        "url": "http://radiotvycine.chiapas.gob.mx/assets/docs/MarcoJuridico/CONSTITUCION%20POLITICA%20DEL%20ESTADO%20LIBRE%20Y%20SOBERANO%20DE%20CHIAPAS.PDF"
+      },
+      {
+        "id": "17797660466860.8757049414276876",
+        "nombre": "Decreto de creación",
+        "url": "http://radiotvycine.chiapas.gob.mx/assets/docs/MarcoJuridico/1_dec_cre_01.pdf"
+      },
+      {
+        "id": "17797660466860.5581838179595464",
+        "nombre": "Reformas al Decreto de Creación marzo/2007",
+        "url": "http://radiotvycine.chiapas.gob.mx/assets/docs/MarcoJuridico/1_1_ref_mar_07.pdf"
+      },
+      {
+        "id": "17797660466860.6430524337705659",
+        "nombre": "Reformas al Decreto de Creación octubre/2008",
+        "url": "http://radiotvycine.chiapas.gob.mx/assets/docs/MarcoJuridico/1_2_ref_oct_08.pdf"
+      },
+      {
+        "id": "17797660466860.2521282932454494",
+        "nombre": "Reformas al Decreto de Creación diciembre/2008",
+        "url": "http://radiotvycine.chiapas.gob.mx/assets/docs/MarcoJuridico/1_3_ref_dic_08.pdf"
+      },
+      {
+        "id": "17797660466860.6948632402174151",
+        "nombre": "Reformas al Decreto de Creación enero/2009",
+        "url": "http://radiotvycine.chiapas.gob.mx/assets/docs/MarcoJuridico/1_4_ref_ene_09.pdf"
+      },
+      {
+        "id": "17797660466860.320216134452747",
+        "nombre": "Reformas al Decreto de Creación septiembre/2011",
+        "url": "http://radiotvycine.chiapas.gob.mx/assets/docs/MarcoJuridico/2_1_ref_sep_11.pdf"
+      },
+      {
+        "id": "17797660466860.646357091807612",
+        "nombre": "Reformas al Decreto de Creación febrero/2018",
+        "url": "http://radiotvycine.chiapas.gob.mx/assets/docs/MarcoJuridico/2_2_ref_feb_18.pdf"
+      },
+      {
+        "id": "17797660466860.447612467266983",
+        "nombre": "Reformas al Decreto de Creación febrero/2019",
+        "url": "http://radiotvycine.chiapas.gob.mx/assets/docs/MarcoJuridico/2_3_ref_feb_19.pdf"
+      },
+      {
+        "id": "17797660466860.8918844702201485",
+        "nombre": "Organigrama",
+        "url": "http://radiotvycine.chiapas.gob.mx/assets/docs/MarcoJuridico/3_1_org.pdf"
+      },
+      {
+        "id": "17797660466860.4586346017557186",
+        "nombre": "Reglamento interior",
+        "url": "http://radiotvycine.chiapas.gob.mx/assets/docs/MarcoJuridico/3_2_regl_int_23.pdf"
+      },
+      {
+        "id": "17797660466860.8190365138429003",
+        "nombre": "Reforma A-465-2025 al Reglamento interior",
+        "url": "http://radiotvycine.chiapas.gob.mx/assets/docs/MarcoJuridico/A_465_2025.pdf"
+      },
+      {
+        "id": "17797660466860.11752614137924677",
+        "nombre": "Manuales de inducción",
+        "url": "http://radiotvycine.chiapas.gob.mx/assets/docs/MarcoJuridico/3_3_man_ind.pdf"
+      },
+      {
+        "id": "17797660466860.9348884974295715",
+        "nombre": "Manual de organización",
+        "url": "http://radiotvycine.chiapas.gob.mx/assets/docs/MarcoJuridico/3_4_man_org.pdf"
+      },
+      {
+        "id": "17797660466860.3583812317743662",
+        "nombre": "Manual de procedimientos",
+        "url": "http://radiotvycine.chiapas.gob.mx/assets/docs/MarcoJuridico/3_5_proc.pdf"
+      },
+      {
+        "id": "17797660466860.2988926137011738",
+        "nombre": "PO 112 SEGUNDA SECCIÓN 27/AGOSTO/2008",
+        "url": "http://radiotvycine.chiapas.gob.mx/assets/docs/MarcoJuridico/5_1_ing_pat.pdf"
+      },
+      {
+        "id": "17797660466860.30426089226767483",
+        "nombre": "Normas y Tarifas para la aplicación de viáticos y pasajes del Estado de Chiapas",
+        "url": "http://radiotvycine.chiapas.gob.mx/assets/docs/MarcoJuridico/6_1_nor_via.pdf"
+      }
+    ]
   }
 }

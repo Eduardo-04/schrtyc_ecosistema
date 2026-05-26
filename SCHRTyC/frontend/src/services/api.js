@@ -186,7 +186,7 @@ export const editarGaleriaAutor = (id, datos) => request(`/galeria/autores/${id}
 export const eliminarGaleriaAutor = (id) => request(`/galeria/autores/${id}`, { method: 'DELETE' })
 
 // ── Configuración ─────────────────────────────────────────────
-export const getConfiguracion = () => request('/configuracion').then(j => j.data)
+export const getConfiguracion = () => request(`/configuracion?_t=${Date.now()}`).then(j => j.data)
 export const actualizarConfiguracion = (config) => request('/configuracion', { method: 'PUT', body: JSON.stringify(config) }).then(j => j.data)
 
 // ── Archivero ─────────────────────────────────────────────────

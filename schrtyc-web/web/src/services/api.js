@@ -64,8 +64,8 @@ export const getGaleria = async () => {
 };
 
 export const getConfiguracion = async () => {
-  const data = await fetcher(`${BASE}/configuracion`);
-  return data ?? {};
+  const res = await fetcher(`${BASE}/configuracion?_t=${Date.now()}`);
+  return res?.data ?? res ?? {};
 };
 
 export const getGaleriaAutores = async () => {

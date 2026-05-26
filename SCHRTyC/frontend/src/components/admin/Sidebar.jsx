@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, Newspaper, Radio, CalendarDays,
-  Settings, LogOut, PlaySquare, FileText, Tv, Palette, Users
+  Settings, LogOut, PlaySquare, FileText, Tv, Palette, Users, Image as ImageIcon
 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 
@@ -29,6 +29,7 @@ const MENU_MODULES = [
   {
     titulo: "Sitio Web",
     items: [
+      { id: 'banners',      label: 'Inicio (Banners y Docs)', icono: ImageIcon, roles: ['admin', 'editor_inst'] },
       { id: 'paginas',      label: 'Páginas Institucionales', icono: FileText, roles: ['admin', 'editor_inst'] },
     ]
   },

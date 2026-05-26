@@ -10,6 +10,7 @@ import GestionPaginas     from './components/admin/GestionPaginas'
 import GestionGaleria     from './components/admin/GestionGaleria'
 import GestionUsuarios    from './components/admin/GestionUsuarios'
 import Configuracion      from './components/admin/Configuracion'
+import GestionBanners     from './components/admin/GestionBanners'
 import Login              from './components/admin/Login'
 import { useAuth }        from './context/AuthContext'
 
@@ -31,6 +32,7 @@ export default function App() {
       case 'estaciones':   return esProg ? <GestionEstaciones /> : <Dashboard />
       case 'programas':    return esProg ? <GestionProgramas /> : <Dashboard />
       case 'programacion': return esProg ? <GrillaProgramacion /> : <Dashboard />
+      case 'banners':      return esInst ? <GestionBanners /> : <Dashboard />
       case 'paginas':      return esInst ? <GestionPaginas /> : <Dashboard />
       case 'galeria':      return esPrensa ? <GestionGaleria /> : <Dashboard />
       case 'usuarios':     return esAdmin ? <GestionUsuarios /> : <Dashboard />

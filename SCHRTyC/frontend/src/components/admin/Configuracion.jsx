@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react'
 import {
   Settings, Save, Check, Layout, Globe, Share2, 
-  ShieldAlert, Phone, Mail, MapPin, Loader2, AlertCircle, Info
+  ShieldAlert, Phone, Mail, MapPin, Loader2, AlertCircle, Info, Image as ImageIcon, Plus, Trash2
 } from 'lucide-react'
-import { getConfiguracion, actualizarConfiguracion } from '../../services/api'
+import { getConfiguracion, actualizarConfiguracion, subirArchivo, getUploadUrl } from '../../services/api'
 
 const TABS = [
   { id: 'identidad', label: 'Identidad', icono: Layout },
+  { id: 'banners',   label: 'Banners Inicio', icono: ImageIcon },
   { id: 'seo',       label: 'SEO & Redes', icono: Globe },
   { id: 'contacto',  label: 'Contacto',    icono: Phone },
   { id: 'sistema',   label: 'Sistema',     icono: ShieldAlert },
@@ -27,6 +28,10 @@ export default function Configuracion() {
     setLoading(true)
     try {
       const data = await getConfiguracion()
+      // Asegurarnos de que el array banners exista dentro de sistema
+      if (!data.sistema.banners) {
+        data.sistema.banners = []
+      }
       setConfig(data)
     } catch (err) {
       mostrarToast('Error al cargar configuración', 'error')
@@ -276,6 +281,76 @@ export default function Configuracion() {
                         Para actualizaciones críticas inmediatas, recomendamos limpiar la caché del navegador del lado del cliente.
                       </p>
                    </div>
+                </div>
+              </div>
+            )}
+
+            {tabActiva === 'banners' && (
+              <div className="space-y-10">
+                <div className="flex items-center justify-between gap-3 text-[#A57F2C]">
+                  <div className="flex items-center gap-3">
+                    <ImageIcon size={20} />
+                    <h3 className="text-xs font-black uppercase tracking-[0.2em]">Banners de Inicio</h3>
+                  </div>
+                  <button type="button" onClick={() => {
+                    const nuevos = [...(config.sistema.banners || []), { id: Date.now().toString(), imagen: '', url: '', activo: true }]
+                    update('sistema', 'banners', nuevos)
+                  }} className="flex items-center gap-2 px-4 py-2 bg-[#611232] text-white rounded-xl text-xs font-bold hover:opacity-90">
+                    <Plus size={14} /> Añadir Banner
+                  </button>
+                </div>
+
+                <div className="space-y-6">
+                  {(!config.sistema.banners || config.sistema.banners.length === 0) ? (
+                    <p className="text-sm text-gray-400 font-medium text-center py-10 border-2 border-dashed rounded-3xl">No hay banners activos en este momento.</p>
+                  ) : config.sistema.banners.map((banner, index) => (
+                    <div key={banner.id} className="p-6 bg-gray-50 border border-gray-100 rounded-3xl flex gap-6 items-start relative">
+                      <div className="w-48 h-32 bg-gray-200 rounded-xl overflow-hidden shrink-0 flex items-center justify-center relative group">
+                        {banner.imagen ? (
+                          <img src={getUploadUrl(banner.imagen)} alt="Banner" className="w-full h-full object-cover" />
+                        ) : (
+                          <ImageIcon size={32} className="text-gray-400" />
+                        )}
+                        <label className="absolute inset-0 bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity text-xs font-bold">
+                          Subir Foto
+                          <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                            if (!e.target.files[0]) return
+                            try {
+                              const res = await subirArchivo(e.target.files[0])
+                              const nuevos = [...config.sistema.banners]
+                              nuevos[index].imagen = res.url
+                              update('sistema', 'banners', nuevos)
+                            } catch(err) {
+                              mostrarToast('Error al subir imagen', 'error')
+                            }
+                          }} />
+                        </label>
+                      </div>
+
+                      <div className="flex-1 space-y-4 pt-2">
+                        <div className="space-y-2">
+                          <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Enlace / URL de destino</label>
+                          <input value={banner.url} onChange={e => {
+                            const nuevos = [...config.sistema.banners]; nuevos[index].url = e.target.value; update('sistema', 'banners', nuevos)
+                          }} className="w-full px-4 py-3 bg-white border border-gray-100 rounded-xl text-sm font-bold outline-none focus:border-[#611232]" placeholder="https://..." />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" checked={banner.activo} onChange={e => {
+                              const nuevos = [...config.sistema.banners]; nuevos[index].activo = e.target.checked; update('sistema', 'banners', nuevos)
+                            }} className="w-4 h-4 rounded text-[#611232] focus:ring-[#611232]" />
+                            <span className="text-xs font-bold text-gray-700">Banner Activo</span>
+                          </label>
+                          <button type="button" onClick={() => {
+                            const nuevos = config.sistema.banners.filter((_, i) => i !== index)
+                            update('sistema', 'banners', nuevos)
+                          }} className="text-red-500 hover:text-red-700 p-2 bg-red-50 rounded-lg">
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
