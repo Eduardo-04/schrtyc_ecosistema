@@ -207,7 +207,7 @@ export default function Dashboard({ onNavegar }) {
             <span className="text-[10px] font-black text-green-500">{stats?.estActivas}/{stats?.estTotal} ON</span>
           </div>
 
-          <div className="grid grid-cols-1 gap-3">
+          <div className="grid grid-cols-1 gap-3 max-h-[320px] overflow-y-auto pr-2 dash-scroll">
             {estaciones.map((e, i) => (
               <div key={i} className="flex items-center justify-between p-4 bg-gray-50/50 rounded-[1.5rem] border border-gray-50 hover:border-[#A57F2C]/30 transition-colors">
                 <div className="flex items-center gap-3">
