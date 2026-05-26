@@ -67,12 +67,12 @@ export default function Dashboard({ onNavegar }) {
           programasTV: programas.filter(p => p.tipo === 'TV').length,
           programasRa: programas.filter(p => p.tipo === 'Radio').length,
           totalProg:   programas.length,
-          estActivas:  estacionesd.filter(e => e.activo === 1).length,
+          estActivas:  estacionesd.filter(e => e.activa || e.activo === 1).length,
           estTotal:    estacionesd.length,
         })
 
         setPV(programas.filter(p => estaEnVivo(p.hora_inicio, p.hora_fin, p.dia)).slice(0, 4))
-        setEstaciones(estacionesd.filter(e => e.activo === 1))
+        setEstaciones(estacionesd.filter(e => e.activa || e.activo === 1))
         setNotRec([...noticias].sort((a, b) => b.fecha?.localeCompare(a.fecha)).slice(0, 4))
       } catch (e) {
         console.error(e)
@@ -223,7 +223,7 @@ export default function Dashboard({ onNavegar }) {
              {estaciones.map((e, i) => (
                <div key={i} className="flex items-center justify-between p-4 bg-gray-50/50 rounded-[1.5rem] border border-gray-50 hover:border-[#A57F2C]/30 transition-colors">
                   <div className="flex items-center gap-3">
-                     <div className={`w-2 h-2 rounded-full ${e.activo === 1 ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]' : 'bg-gray-300'}`}></div>
+                     <div className={`w-2 h-2 rounded-full ${ (e.activa || e.activo === 1) ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]' : 'bg-gray-300'}`}></div>
                      <span className="text-xs font-bold text-gray-700">{e.nombre}</span>
                   </div>
                   <span className="text-[9px] font-black text-gray-300 uppercase">{e.frecuencia || 'Señal Digital'}</span>
