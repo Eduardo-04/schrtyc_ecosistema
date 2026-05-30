@@ -43,15 +43,15 @@ function RadioCard({ e: est }) {
   return (
     <Link to="/radio" className="radio-card-v3 lift">
       <div className="radio-img-container">
-        <img 
-          src={bg} 
-          alt={est.nombre} 
-          className="radio-img" 
-          style={{ 
-            objectFit: 'contain', 
-            backgroundColor: 'white', 
-            padding: tieneImagen ? '0' : '20px' 
-          }} 
+        <img
+          src={bg}
+          alt={est.nombre}
+          className="radio-img"
+          style={{
+            objectFit: 'contain',
+            backgroundColor: 'white',
+            padding: tieneImagen ? '0' : '20px'
+          }}
         />
         {/* Se quita radio-img-overlay para no oscurecer el logo */}
         {est.activo && (
@@ -99,7 +99,7 @@ export default function PaginaInicio() {
     return () => clearInterval(t)
   }, [])
 
-  const progRadio = programas.find(p => p.tipo === 'Radio' && estaEnVivo(p.hora_inicio, p.hora_fin))
+  const progActual = programas.find(p => estaEnVivo(p.hora_inicio, p.hora_fin))
   const progTV = programas.find(p => p.tipo === 'TV' && estaEnVivo(p.hora_inicio, p.hora_fin))
   const activas = estaciones.filter(e => e.activa)
 
@@ -163,49 +163,21 @@ export default function PaginaInicio() {
 
             <div className="hi2 hero-glass-card">
               <p style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--gold-light)', marginBottom: '20px' }}>Al aire ahora</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '24px' }}>
-                {progRadio ? (
-                  <div>
-                    <div className="live-badge-mini" style={{ marginBottom: '8px' }}>
-                      <span className="live-dot" style={{ backgroundColor: '#ef4444' }} />
-                      <span className="live-text-mini" style={{ color: '#ef4444' }}>RADIO EN VIVO</span>
-                    </div>
-                    <h3 style={{ fontSize: '18px', fontWeight: '900', color: 'white', margin: '0 0 4px', lineHeight: 1.1 }}>{progRadio.nombre}</h3>
-                    {progRadio.conductor && progRadio.conductor.toLowerCase() !== 'sin asignar' && <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', margin: '0 0 8px', fontWeight: '500' }}>con {progRadio.conductor}</p>}
-                    <div className="tv-time-badge" style={{ fontSize: '11px' }}>
-                      {progRadio.estacion} · {progRadio.hora_inicio}
-                    </div>
+              {progActual ? (
+                <div style={{ marginBottom: '24px' }}>
+                  <div className="live-badge-mini">
+                    <span className="live-dot" />
+                    <span className="live-text-mini">DIRECTO</span>
                   </div>
-                ) : (
-                  <div>
-                    <div className="live-badge-mini" style={{ marginBottom: '8px', backgroundColor: 'rgba(255,255,255,0.1)' }}>
-                      <span className="live-text-mini">RADIO</span>
-                    </div>
-                    <p style={{ fontSize: '14px', fontWeight: '600', color: 'rgba(255,255,255,0.4)', margin: '0' }}>Programación automática</p>
+                  <h3 style={{ fontSize: '22px', fontWeight: '900', color: 'white', margin: '0 0 8px', lineHeight: 1.1 }}>{progActual.nombre}</h3>
+                  {progActual.conductor && progActual.conductor.toLowerCase() !== 'sin asignar' && <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', margin: '0 0 16px', fontWeight: '500' }}>con {progActual.conductor}</p>}
+                  <div className="tv-time-badge" style={{ fontSize: '12px' }}>
+                    {progActual.estacion} · {progActual.hora_inicio}
                   </div>
-                )}
-
-                {progTV ? (
-                  <div style={{ paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-                    <div className="live-badge-mini" style={{ marginBottom: '8px' }}>
-                      <span className="live-dot" style={{ backgroundColor: '#ef4444' }} />
-                      <span className="live-text-mini" style={{ color: '#ef4444' }}>TV EN VIVO</span>
-                    </div>
-                    <h3 style={{ fontSize: '18px', fontWeight: '900', color: 'white', margin: '0 0 4px', lineHeight: 1.1 }}>{progTV.nombre}</h3>
-                    {progTV.conductor && progTV.conductor.toLowerCase() !== 'sin asignar' && <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', margin: '0 0 8px', fontWeight: '500' }}>con {progTV.conductor}</p>}
-                    <div className="tv-time-badge" style={{ fontSize: '11px' }}>
-                      Canal 10 · {progTV.hora_inicio}
-                    </div>
-                  </div>
-                ) : (
-                  <div style={{ paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-                    <div className="live-badge-mini" style={{ marginBottom: '8px', backgroundColor: 'rgba(255,255,255,0.1)' }}>
-                      <span className="live-text-mini">TV</span>
-                    </div>
-                    <p style={{ fontSize: '14px', fontWeight: '600', color: 'rgba(255,255,255,0.4)', margin: '0' }}>Programación habitual</p>
-                  </div>
-                )}
-              </div>
+                </div>
+              ) : (
+                <p style={{ fontSize: '15px', fontWeight: '600', color: 'rgba(255,255,255,0.3)', marginBottom: '24px' }}>Programación automática</p>
+              )}
 
               <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '24px', marginBottom: '24px' }}>
                 <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', fontWeight: '800', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '16px' }}>Estaciones Destacadas</p>
@@ -254,7 +226,7 @@ export default function PaginaInicio() {
               <div className="mvr-grid" style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '30px' }}>
                 <div className="mvr-card lift" style={{ padding: '20px', backgroundColor: '#fff', borderRadius: '16px', border: '1px solid #f3f4f6' }}>
                   <h4 style={{ margin: '0 0 8px', fontWeight: '800', color: 'var(--brand)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div style={{ width: '30px', height: '30px', borderRadius: '8px', backgroundColor: '#fff1f2', color: 'var(--brand)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>M</div> 
+                    <div style={{ width: '30px', height: '30px', borderRadius: '8px', backgroundColor: '#fff1f2', color: 'var(--brand)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>M</div>
                     Misión
                   </h4>
                   <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6 }}>
@@ -263,7 +235,7 @@ export default function PaginaInicio() {
                 </div>
                 <div className="mvr-card lift" style={{ padding: '20px', backgroundColor: '#fff', borderRadius: '16px', border: '1px solid #f3f4f6' }}>
                   <h4 style={{ margin: '0 0 8px', fontWeight: '800', color: 'var(--brand)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div style={{ width: '30px', height: '30px', borderRadius: '8px', backgroundColor: '#fff1f2', color: 'var(--brand)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>V</div> 
+                    <div style={{ width: '30px', height: '30px', borderRadius: '8px', backgroundColor: '#fff1f2', color: 'var(--brand)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>V</div>
                     Visión
                   </h4>
                   <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.6 }}>
@@ -300,7 +272,7 @@ export default function PaginaInicio() {
         `}</style>
         <div className="page-container">
           <div className="map-banners-grid">
-            
+
             {/* IZQUIERDA: Mapa */}
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <div style={{ marginBottom: '32px' }}>
@@ -316,28 +288,28 @@ export default function PaginaInicio() {
               </div>
 
               <div className="map-container lift" style={{ borderRadius: '24px', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.08)', height: '450px', backgroundColor: '#e5e7eb', position: 'relative' }}>
-                <iframe 
-                  src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d1910.0380607850318!2d-93.128136!3d16.772888!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85ecd8dd2e2135bd%3A0xe826e3314ff2d8b!2sSistema%20Chiapaneco%20de%20Radio%20y%20Televisi%C3%B3n!5e0!3m2!1sen!2smx!4v1779763460251!5m2!1sen!2smx" 
-                  width="100%" 
-                  height="100%" 
-                  style={{ border: 0, position: 'absolute', top: 0, left: 0 }} 
-                  allowFullScreen="" 
-                  loading="lazy" 
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d1910.0380607850318!2d-93.128136!3d16.772888!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85ecd8dd2e2135bd%3A0xe826e3314ff2d8b!2sSistema%20Chiapaneco%20de%20Radio%20y%20Televisi%C3%B3n!5e0!3m2!1sen!2smx!4v1779763460251!5m2!1sen!2smx"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0, position: 'absolute', top: 0, left: 0 }}
+                  allowFullScreen=""
+                  loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
                   title="Ubicación del Sistema Chiapaneco"
                 ></iframe>
-                
+
                 <div style={{ position: 'absolute', bottom: '24px', left: '24px', backgroundColor: 'white', padding: '16px', borderRadius: '16px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', maxWidth: '280px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
                     <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: '#fff1f2', color: 'var(--brand)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
                     </div>
                     <div>
                       <p style={{ fontSize: '10px', fontWeight: '800', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '1px', margin: '0 0 2px' }}>Conmutador y Teléfono</p>
                       <p style={{ fontSize: '13px', fontWeight: '700', color: '#1f2937', margin: '0 0 2px 0' }}>(961) 61 705-00 Ext. 57000</p>
                     </div>
                   </div>
-                  
+
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     <a href="http://www.radiotvycine.chiapas.gob.mx" target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', padding: '10px', border: '1px solid #e5e7eb', color: '#4b5563', borderRadius: '8px', fontSize: '11px', fontWeight: '700', textDecoration: 'none' }}>
                       www.radiotvycine.chiapas.gob.mx
@@ -348,31 +320,6 @@ export default function PaginaInicio() {
                   </div>
                 </div>
               </div>
-
-              {/* Marco Jurídico integrado debajo del mapa */}
-              {(configuracion?.sistema?.documentos?.length > 0) && (
-                <div style={{ marginTop: '20px', padding: '30px', backgroundColor: 'white', borderRadius: '24px', border: '1px solid #f3f4f6', boxShadow: '0 10px 25px rgba(0,0,0,0.02)' }}>
-                  <div style={{ marginBottom: '24px' }}>
-                    <Eyebrow t="Documentos Oficiales" />
-                    <h2 style={{ fontSize: '24px', fontWeight: '900', color: '#1a1a1a', margin: '0' }}>
-                      Marco <span style={{ color: 'var(--brand)' }}>Jurídico</span>
-                    </h2>
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
-                    {(configuracion?.sistema?.documentos || []).map((doc, i) => (
-                      <a key={doc.id || i} href={doc.url?.startsWith('http') ? doc.url : getUploadUrl(doc.url)} target="_blank" rel="noreferrer" className="hover:scale-[1.02] transition-transform" style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', backgroundColor: '#f9fafb', borderRadius: '12px', textDecoration: 'none', border: '1px solid #e5e7eb' }}>
-                        <div style={{ minWidth: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#fff1f2', color: 'var(--brand)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                        </div>
-                        <div>
-                          <p style={{ margin: 0, fontSize: '11px', fontWeight: '700', color: '#374151', lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{doc.nombre}</p>
-                        </div>
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              )}
-
             </div>
 
             {/* DERECHA: Banners */}
@@ -391,12 +338,36 @@ export default function PaginaInicio() {
                 </div>
               </div>
             )}
-            
+
           </div>
         </div>
       </section>
 
+      {/* ══ MARCO JURÍDICO ══════════════════════════════════════════ */}
+      <section style={{ padding: '60px 0', backgroundColor: 'white' }}>
+        <div className="page-container">
+          <div className="section-header" style={{ marginBottom: '40px', textAlign: 'center' }}>
+            <Eyebrow t="Documentos Oficiales" />
+            <h2 style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: '900', color: '#1a1a1a', margin: '0' }}>
+              Marco <span style={{ color: 'var(--brand)' }}>Jurídico</span>
+            </h2>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '12px' }}>
+            {(configuracion?.sistema?.documentos || []).map((doc, i) => (
+              <a key={doc.id || i} href={doc.url?.startsWith('http') ? doc.url : getUploadUrl(doc.url)} target="_blank" rel="noreferrer" className="hover:scale-[1.02] transition-transform" style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', backgroundColor: '#f9fafb', borderRadius: '12px', textDecoration: 'none', border: '1px solid #f3f4f6' }}>
+                <div style={{ minWidth: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#fff1f2', color: 'var(--brand)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
+                </div>
+                <div>
+                  <p style={{ margin: 0, fontSize: '11px', fontWeight: '700', color: '#374151', lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{doc.nombre}</p>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
 
+      <Gold />
 
 
 

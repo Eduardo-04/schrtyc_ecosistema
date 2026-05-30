@@ -4,10 +4,10 @@ import { Link, useLocation } from 'react-router-dom'
 const navLinks = [
   { label: 'Inicio', href: '/' },
   { label: 'Radio', href: '/radio' },
-  { label: 'Canal 10.1', href: '/canal10' },
-  { label: 'Cine', href: '/cine' },
+  { label: 'Canal 10', href: '/canal10' },
+  { label: 'Cinematografía', href: '/cine' },
+  { label: '10 Noticias', href: '/notas' },
   { label: 'Galería de Arte', href: '/galeria' },
-  { label: 'Notas', href: '/notas' },
   { label: 'Participación Ciudadana', href: '/participacion' },
   { label: 'Transparencia', href: '/transparencia' },
   { label: 'Avisos de Privacidad', href: '/privacidad' },
