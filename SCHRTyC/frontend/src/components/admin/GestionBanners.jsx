@@ -118,10 +118,44 @@ export default function GestionBanners() {
               const nuevos = [...banners]; nuevos[index].categoria = e.target.value; updateBanners(nuevos)
             }} className="w-full px-6 py-4 bg-gray-50 border border-transparent rounded-[1.5rem] text-sm font-bold outline-none focus:bg-white focus:border-[#611232] transition-all cursor-pointer appearance-none">
               <option value="general">Banner General (Junto al mapa)</option>
+              <option value="slider">Banner Carrusel (Slider Promocional)</option>
               <option value="acerca_de">Banner Acerca del Sistema (Institución)</option>
               <option value="canal_10">Banner Canal 10 en Vivo</option>
             </select>
           </div>
+          
+          {banner.categoria === 'slider' && (
+            <div className="space-y-4 pt-4 border-t border-gray-100 mt-4">
+              <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Textos adicionales para el Slider Promocional</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-2">Título Principal</label>
+                  <input value={banner.titulo || ''} onChange={e => {
+                    const nuevos = [...banners]; nuevos[index].titulo = e.target.value; updateBanners(nuevos)
+                  }} className="w-full px-4 py-3 bg-gray-50 border border-transparent rounded-xl text-sm font-bold outline-none focus:bg-white focus:border-[#611232] transition-all" placeholder="Ej: Sonidos vivos" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-2">Subtítulo (Rojo/Acento)</label>
+                  <input value={banner.subtitulo || ''} onChange={e => {
+                    const nuevos = [...banners]; nuevos[index].subtitulo = e.target.value; updateBanners(nuevos)
+                  }} className="w-full px-4 py-3 bg-gray-50 border border-transparent rounded-xl text-sm font-bold outline-none focus:bg-white focus:border-[#611232] transition-all" placeholder="Ej: Vangelis: Juno to Jupiter" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-2">Fecha y Hora</label>
+                  <textarea value={banner.fechaHora || ''} onChange={e => {
+                    const nuevos = [...banners]; nuevos[index].fechaHora = e.target.value; updateBanners(nuevos)
+                  }} className="w-full px-4 py-3 bg-gray-50 border border-transparent rounded-xl text-sm font-bold outline-none focus:bg-white focus:border-[#611232] transition-all resize-none" placeholder="Ej: Viernes 29 de mayo&#10;21:00 horas" rows={2} />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-2">Texto Inferior (Estación)</label>
+                  <input value={banner.estacionText || ''} onChange={e => {
+                    const nuevos = [...banners]; nuevos[index].estacionText = e.target.value; updateBanners(nuevos)
+                  }} className="w-full px-4 py-3 bg-gray-50 border border-transparent rounded-xl text-sm font-bold outline-none focus:bg-white focus:border-[#611232] transition-all" placeholder="Ej: Opus 94 / 94.5 FM" />
+                </div>
+              </div>
+            </div>
+          )}
+
         </div>
         
         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
@@ -186,12 +220,27 @@ export default function GestionBanners() {
       {tab === 'banners' && (
         <div className="space-y-6">
           <div className="flex justify-end">
-            <button 
-              onClick={() => updateBanners([...banners, { id: Date.now().toString(), imagen: '', url: '', activo: true, categoria: 'general' }])}
-              className="flex items-center gap-2 px-6 py-3 bg-gray-100 text-[#611232] rounded-[1.5rem] text-xs font-black uppercase tracking-widest hover:bg-gray-200"
-            >
-              <Plus size={16} /> Añadir Banner
-            </button>
+            <div className="flex items-center gap-3 bg-white p-2 rounded-[2rem] border border-gray-100 shadow-sm">
+              <select
+                id="nuevaCategoriaBanner"
+                className="px-4 py-2 bg-transparent text-xs font-bold text-gray-600 outline-none cursor-pointer border-r border-gray-100"
+              >
+                <option value="slider">Carrusel Promocional (Slider)</option>
+                <option value="acerca_de">Principal: Acerca del Sistema</option>
+                <option value="canal_10">Principal: Canal 10</option>
+                <option value="general">Promocional (Junto al mapa)</option>
+              </select>
+              <button 
+                onClick={() => {
+                  const cat = document.getElementById('nuevaCategoriaBanner').value;
+                  updateBanners([{ id: Date.now().toString(), imagen: '', url: '', activo: true, categoria: cat, titulo: '', subtitulo: '', fechaHora: '', estacionText: '' }, ...banners])
+                  mostrarToast('Banner creado y añadido al principio de la lista', 'success')
+                }}
+                className="flex items-center gap-2 px-5 py-2 bg-[#611232] text-white rounded-[1.5rem] text-xs font-black uppercase tracking-widest hover:bg-[#4a0d26] transition-colors"
+              >
+                <Plus size={16} /> Añadir Banner
+              </button>
+            </div>
           </div>
           {banners.length === 0 ? (
           <div className="bg-white p-16 rounded-[3rem] border border-gray-50 shadow-sm text-center">
@@ -209,6 +258,18 @@ export default function GestionBanners() {
                   .map(banner => renderBannerItem(banner, banner.originalIndex))}
                 {banners.filter(b => b.categoria === 'acerca_de' || b.categoria === 'canal_10').length === 0 && (
                   <p className="text-sm text-gray-400">No hay banners principales configurados.</p>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-black text-[#611232] uppercase tracking-widest mb-6 border-b border-gray-100 pb-2">Banners Carrusel (Slider Promocional)</h3>
+              <div className="space-y-6">
+                {banners.map((banner, index) => ({...banner, originalIndex: index}))
+                  .filter(b => b.categoria === 'slider')
+                  .map(banner => renderBannerItem(banner, banner.originalIndex))}
+                {banners.filter(b => b.categoria === 'slider').length === 0 && (
+                  <p className="text-sm text-gray-400">No hay banners para el carrusel configurados.</p>
                 )}
               </div>
             </div>

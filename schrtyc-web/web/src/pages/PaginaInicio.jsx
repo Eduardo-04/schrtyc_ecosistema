@@ -106,6 +106,7 @@ export default function PaginaInicio() {
   const bannerAcercaDe = banners.find(b => b.categoria === 'acerca_de')
   const bannerCanal10 = banners.find(b => b.categoria === 'canal_10')
   const bannersGenerales = banners.filter(b => !b.categoria || b.categoria === 'general')
+  const bannersSlider = banners.filter(b => b.categoria === 'slider')
 
   const mvrt = [
     { l: 'M', t: 'Misión', d: 'Producir y transmitir programas informativos, culturales y educativos para la población chiapaneca.' },
@@ -204,6 +205,9 @@ export default function PaginaInicio() {
       </section>
 
       <Gold />
+
+      {/* ══ SLIDER PROMOCIONAL ═════════════════════════════════════════════ */}
+      {bannersSlider.length > 0 && <SliderPromocional banners={bannersSlider} />}
 
       {/* ══ INSTITUCIÓN ═══════════════════════════════════════ */}
       <section className="institutional-section">
@@ -452,5 +456,126 @@ export default function PaginaInicio() {
 
 
     </>
+  )
+}
+
+// ── Componente Carrusel Promocional ──────────────────────────────────
+function SliderPromocional({ banners }) {
+  const [currentIndex, setCurrentIndex] = useState(0)
+
+  useEffect(() => {
+    if (banners.length <= 1) return
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % banners.length)
+    }, 6000)
+    return () => clearInterval(timer)
+  }, [banners.length])
+
+  const next = () => setCurrentIndex(c => (c + 1) % banners.length)
+  const prev = () => setCurrentIndex(c => (c - 1 + banners.length) % banners.length)
+
+  return (
+    <section style={{ width: '100%', backgroundColor: '#fdfdfd', padding: '48px 0', position: 'relative' }}>
+      <div className="page-container" style={{ position: 'relative' }}>
+        <div className="w-full overflow-hidden shadow-[0_20px_40px_rgba(0,0,0,0.06)] rounded-xl h-[600px] md:h-[420px] relative bg-white border border-gray-100">
+          <div
+            style={{
+              display: 'flex',
+              transition: 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)',
+              transform: `translateX(-${currentIndex * 100}%)`,
+              height: '100%'
+            }}
+          >
+            {banners.map((b, i) => (
+              <div key={b.id || i} className="min-w-full flex flex-col md:flex-row h-full">
+
+                {/* Lado izquierdo: Imagen */}
+                <div className="w-full h-[55%] md:h-full md:w-[55%] relative overflow-hidden shrink-0">
+                  <a href={b.url || '#'} target={b.url ? '_blank' : '_self'} rel="noreferrer" className="block w-full h-full">
+                    {b.imagen ? (
+                      <img
+                        src={getUploadUrl(b.imagen)}
+                        alt={`Promoción ${i + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-50 flex items-center justify-center">
+                        <span className="text-gray-400 text-sm">Sin imagen</span>
+                      </div>
+                    )}
+                  </a>
+                </div>
+
+                {/* Lado derecho: Texto tipo IMER */}
+                <div className="w-full h-[45%] md:h-full md:w-[45%] p-6 md:p-12 flex flex-col justify-center overflow-y-auto bg-white md:border-l md:border-gray-100">
+                  {b.titulo && (
+                    <h2 style={{ fontSize: 'clamp(20px, 3vw, 28px)', fontWeight: '900', color: 'var(--brand)', lineHeight: '1.2', margin: '0 0 8px' }}>
+                      {b.titulo}
+                    </h2>
+                  )}
+                  {b.subtitulo && (
+                    <p style={{ fontSize: 'clamp(14px, 2vw, 18px)', color: 'var(--gold)', fontWeight: '700', margin: '0 0 24px' }}>
+                      {b.subtitulo}
+                    </p>
+                  )}
+
+                  {b.fechaHora && (
+                    <p style={{ fontSize: 'clamp(13px, 1.5vw, 16px)', color: 'var(--text-main)', fontWeight: '600', whiteSpace: 'pre-line', margin: '0 0 12px', lineHeight: '1.4' }}>
+                      {b.fechaHora}
+                    </p>
+                  )}
+                  {b.estacionText && (
+                    <p style={{ fontSize: 'clamp(13px, 1.5vw, 16px)', color: 'var(--brand-dark)', fontWeight: '800', margin: 0 }}>
+                      {b.estacionText}
+                    </p>
+                  )}
+
+                  {!b.titulo && !b.subtitulo && !b.fechaHora && !b.estacionText && (
+                    <div style={{ opacity: 0.4, color: 'var(--text-muted)', fontSize: '12px', fontStyle: 'italic' }}>
+                      (No se ha configurado texto para este banner)
+                    </div>
+                  )}
+                </div>
+
+              </div>
+            ))}
+          </div>
+
+          {/* Flechas de navegación */}
+          {banners.length > 1 && (
+            <>
+              <button onClick={prev} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', width: '40px', height: '40px', borderRadius: '20px', backgroundColor: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', transition: 'all 0.2s', zIndex: 10 }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              </button>
+              <button onClick={next} style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', width: '40px', height: '40px', borderRadius: '20px', backgroundColor: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', transition: 'all 0.2s', zIndex: 10 }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </>
+          )}
+
+          {/* Controles y paginación */}
+          {banners.length > 1 && (
+            <div style={{ position: 'absolute', bottom: '16px', left: '0', right: '0', display: 'flex', justifyContent: 'center', gap: '6px', zIndex: 10 }}>
+              {banners.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentIndex(i)}
+                  style={{
+                    width: currentIndex === i ? '24px' : '6px',
+                    height: '6px',
+                    borderRadius: '3px',
+                    backgroundColor: currentIndex === i ? 'var(--brand)' : 'rgba(97,18,50,0.2)',
+                    border: 'none',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease'
+                  }}
+                  aria-label={`Ir al banner ${i + 1}`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
   )
 }
