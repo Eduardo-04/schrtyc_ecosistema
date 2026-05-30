@@ -520,7 +520,9 @@ function RadioPlayer({ radios, seleccionada, setSeleccionada }) {
       audio.play().then(() => setPlaying(true)).catch(err => {
         console.error('Autoplay error:', err)
         setPlaying(false)
-        setError(true)
+        if (err.name !== 'AbortError' && err.name !== 'NotAllowedError') {
+          setError(true)
+        }
       })
     }
   }, [seleccionada?.id])
@@ -545,7 +547,9 @@ function RadioPlayer({ radios, seleccionada, setSeleccionada }) {
     } catch (err) {
       console.error('Stream error:', err)
       setPlaying(false)
-      setError(true)
+      if (err.name !== 'AbortError' && err.name !== 'NotAllowedError') {
+        setError(true)
+      }
     }
   }
 

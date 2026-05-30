@@ -103,6 +103,10 @@ export default function PaginaInicio() {
   const progTV = programas.find(p => p.tipo === 'TV' && estaEnVivo(p.hora_inicio, p.hora_fin))
   const activas = estaciones.filter(e => e.activa)
 
+  const bannerAcercaDe = banners.find(b => b.categoria === 'acerca_de')
+  const bannerCanal10 = banners.find(b => b.categoria === 'canal_10')
+  const bannersGenerales = banners.filter(b => !b.categoria || b.categoria === 'general')
+
   const mvrt = [
     { l: 'M', t: 'Misión', d: 'Producir y transmitir programas informativos, culturales y educativos para la población chiapaneca.' },
     { l: 'V', t: 'Visión', d: 'Ser el sistema audiovisual reconocido a nivel nacional e internacional.' },
@@ -207,7 +211,7 @@ export default function PaginaInicio() {
           <div className="institutional-grid">
 
             <div className="editorial-frame hi0">
-              <img src={IMG_ESTUDIO} alt="Estudio" className="editorial-img" />
+              <img src={bannerAcercaDe?.imagen ? getUploadUrl(bannerAcercaDe.imagen) : IMG_ESTUDIO} alt="Estudio" className="editorial-img" />
               <div className="editorial-floating-box">
                 <p style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--gold-light)', margin: '0 0 10px' }}>Institución</p>
                 <p style={{ fontSize: '16px', fontWeight: '700', lineHeight: 1.4, margin: 0 }}>Comprometidos con la difusión cultural en Chiapas.</p>
@@ -343,10 +347,10 @@ export default function PaginaInicio() {
             </div>
 
             {/* DERECHA: Banners */}
-            {banners.length > 0 && (
+            {bannersGenerales.length > 0 && (
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', alignContent: 'start', justifyContent: 'center' }}>
-                  {banners.map(b => (
+                  {bannersGenerales.map(b => (
                     <a key={b.id} href={b.url || '#'} target="_blank" rel="noreferrer" style={{ display: 'block', width: '100%', maxWidth: '300px', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 10px 25px rgba(0,0,0,0.06)', transition: 'transform 0.2s', backgroundColor: 'white' }} className="hover:scale-[1.03] lift">
                       <img src={getUploadUrl(b.imagen)} alt="Banner promocional" style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'contain' }} />
                     </a>
@@ -405,7 +409,7 @@ export default function PaginaInicio() {
 
           <div className="tv-card lift">
             <div className="tv-card-img-container" style={{ position: 'relative', overflow: 'hidden', backgroundColor: '#000' }}>
-              <img src={IMG_TV} alt="Estudio" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.7 }} />
+              <img src={bannerCanal10?.imagen ? getUploadUrl(bannerCanal10.imagen) : IMG_TV} alt="Estudio" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.7 }} />
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(0,0,0,0.4) 0%, transparent 40%, rgba(0,0,0,0.8) 100%)' }} />
               <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Link to="/canal10" className="tv-play-btn">

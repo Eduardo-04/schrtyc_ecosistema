@@ -76,6 +76,77 @@ export default function GestionBanners() {
 
   const banners = config?.sistema?.banners || []
 
+  const renderBannerItem = (banner, index) => (
+    <div key={banner.id} className="p-8 bg-white border border-gray-50 rounded-[3rem] shadow-sm flex flex-col md:flex-row gap-8 items-start relative animate-in slide-in-from-bottom-4">
+      <div className="w-full md:w-72 h-40 bg-gray-100 rounded-3xl overflow-hidden shrink-0 flex items-center justify-center relative group shadow-inner">
+        {banner.imagen ? (
+          <img src={getUploadUrl(banner.imagen)} alt="Banner" className="w-full h-full object-cover" />
+        ) : (
+          <div className="flex flex-col items-center gap-2 text-gray-400">
+            <ImageIcon size={32} />
+            <span className="text-[10px] font-black uppercase tracking-widest">Sin Imagen</span>
+          </div>
+        )}
+        <label className="absolute inset-0 bg-[#611232]/80 text-white flex flex-col gap-2 items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity backdrop-blur-sm">
+          <Plus size={24} />
+          <span className="text-xs font-black uppercase tracking-widest">Subir Imagen</span>
+          <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+            if (!e.target.files[0]) return
+            try {
+              const res = await subirArchivo(e.target.files[0])
+              const nuevos = [...banners]
+              nuevos[index] = { ...nuevos[index], imagen: res.ruta }
+              updateBanners(nuevos)
+            } catch(err) {
+              mostrarToast('Error al subir imagen', 'error')
+            }
+          }} />
+        </label>
+      </div>
+
+      <div className="flex-1 w-full space-y-6 pt-2">
+        <div className="space-y-4">
+          <div>
+            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-2">Enlace / URL de destino al hacer clic</label>
+            <input value={banner.url} onChange={e => {
+              const nuevos = [...banners]; nuevos[index].url = e.target.value; updateBanners(nuevos)
+            }} className="w-full px-6 py-4 bg-gray-50 border border-transparent rounded-[1.5rem] text-sm font-bold outline-none focus:bg-white focus:border-[#611232] transition-all" placeholder="https://..." />
+          </div>
+          <div>
+            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-2">Categoría (Ubicación en la web)</label>
+            <select value={banner.categoria || 'general'} onChange={e => {
+              const nuevos = [...banners]; nuevos[index].categoria = e.target.value; updateBanners(nuevos)
+            }} className="w-full px-6 py-4 bg-gray-50 border border-transparent rounded-[1.5rem] text-sm font-bold outline-none focus:bg-white focus:border-[#611232] transition-all cursor-pointer appearance-none">
+              <option value="general">Banner General (Junto al mapa)</option>
+              <option value="acerca_de">Banner Acerca del Sistema (Institución)</option>
+              <option value="canal_10">Banner Canal 10 en Vivo</option>
+            </select>
+          </div>
+        </div>
+        
+        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+          <label className="flex items-center gap-3 cursor-pointer group">
+            <div className={`w-12 h-6 rounded-full transition-colors relative ${banner.activo ? 'bg-[#611232]' : 'bg-gray-300'}`}>
+              <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${banner.activo ? 'translate-x-6' : 'translate-x-0'}`} />
+            </div>
+            <input type="checkbox" checked={banner.activo} onChange={e => {
+              const nuevos = [...banners]; nuevos[index].activo = e.target.checked; updateBanners(nuevos)
+            }} className="hidden" />
+            <span className="text-xs font-black uppercase tracking-widest text-gray-600 group-hover:text-[#611232] transition-colors">Visible al público</span>
+          </label>
+
+          <button type="button" onClick={() => {
+            const nuevos = banners.filter((_, i) => i !== index)
+            updateBanners(nuevos)
+          }} className="flex items-center gap-2 text-red-500 hover:text-white px-4 py-2 hover:bg-red-500 rounded-xl transition-colors">
+            <Trash2 size={16} />
+            <span className="text-[10px] font-black uppercase tracking-widest">Eliminar</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+
   return (
     <div className="p-8 md:p-12 space-y-8 max-w-[1200px] mx-auto animate-in fade-in duration-700">
       {toast && (
@@ -116,7 +187,7 @@ export default function GestionBanners() {
         <div className="space-y-6">
           <div className="flex justify-end">
             <button 
-              onClick={() => updateBanners([...banners, { id: Date.now().toString(), imagen: '', url: '', activo: true }])}
+              onClick={() => updateBanners([...banners, { id: Date.now().toString(), imagen: '', url: '', activo: true, categoria: 'general' }])}
               className="flex items-center gap-2 px-6 py-3 bg-gray-100 text-[#611232] rounded-[1.5rem] text-xs font-black uppercase tracking-widest hover:bg-gray-200"
             >
               <Plus size={16} /> Añadir Banner
@@ -128,64 +199,33 @@ export default function GestionBanners() {
             <h3 className="text-xl font-bold text-gray-800 mb-2">No hay banners activos</h3>
             <p className="text-gray-400 font-medium">Haz clic en "Añadir" para subir tu primer banner promocional.</p>
           </div>
-        ) : banners.map((banner, index) => (
-          <div key={banner.id} className="p-8 bg-white border border-gray-50 rounded-[3rem] shadow-sm flex flex-col md:flex-row gap-8 items-start relative animate-in slide-in-from-bottom-4">
-            <div className="w-full md:w-72 h-40 bg-gray-100 rounded-3xl overflow-hidden shrink-0 flex items-center justify-center relative group shadow-inner">
-              {banner.imagen ? (
-                <img src={getUploadUrl(banner.imagen)} alt="Banner" className="w-full h-full object-cover" />
-              ) : (
-                <div className="flex flex-col items-center gap-2 text-gray-400">
-                  <ImageIcon size={32} />
-                  <span className="text-[10px] font-black uppercase tracking-widest">Sin Imagen</span>
-                </div>
-              )}
-              <label className="absolute inset-0 bg-[#611232]/80 text-white flex flex-col gap-2 items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity backdrop-blur-sm">
-                <Plus size={24} />
-                <span className="text-xs font-black uppercase tracking-widest">Subir Imagen</span>
-                <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
-                  if (!e.target.files[0]) return
-                  try {
-                    const res = await subirArchivo(e.target.files[0])
-                    const nuevos = [...banners]
-                    nuevos[index] = { ...nuevos[index], imagen: res.ruta }
-                    updateBanners(nuevos)
-                  } catch(err) {
-                    mostrarToast('Error al subir imagen', 'error')
-                  }
-                }} />
-              </label>
+        ) : (
+          <div className="space-y-12">
+            <div>
+              <h3 className="text-lg font-black text-[#611232] uppercase tracking-widest mb-6 border-b border-gray-100 pb-2">Banners Principales (Estructura)</h3>
+              <div className="space-y-6">
+                {banners.map((banner, index) => ({...banner, originalIndex: index}))
+                  .filter(b => b.categoria === 'acerca_de' || b.categoria === 'canal_10')
+                  .map(banner => renderBannerItem(banner, banner.originalIndex))}
+                {banners.filter(b => b.categoria === 'acerca_de' || b.categoria === 'canal_10').length === 0 && (
+                  <p className="text-sm text-gray-400">No hay banners principales configurados.</p>
+                )}
+              </div>
             </div>
 
-            <div className="flex-1 w-full space-y-6 pt-2">
-              <div className="space-y-2">
-                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Enlace / URL de destino al hacer clic</label>
-                <input value={banner.url} onChange={e => {
-                  const nuevos = [...banners]; nuevos[index].url = e.target.value; updateBanners(nuevos)
-                }} className="w-full px-6 py-4 bg-gray-50 border border-transparent rounded-[1.5rem] text-sm font-bold outline-none focus:bg-white focus:border-[#611232] transition-all" placeholder="https://..." />
-              </div>
-              
-              <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                <label className="flex items-center gap-3 cursor-pointer group">
-                  <div className={`w-12 h-6 rounded-full transition-colors relative ${banner.activo ? 'bg-[#611232]' : 'bg-gray-300'}`}>
-                    <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${banner.activo ? 'translate-x-6' : 'translate-x-0'}`} />
-                  </div>
-                  <input type="checkbox" checked={banner.activo} onChange={e => {
-                    const nuevos = [...banners]; nuevos[index].activo = e.target.checked; updateBanners(nuevos)
-                  }} className="hidden" />
-                  <span className="text-xs font-black uppercase tracking-widest text-gray-600 group-hover:text-[#611232] transition-colors">Visible al público</span>
-                </label>
-
-                <button type="button" onClick={() => {
-                  const nuevos = banners.filter((_, i) => i !== index)
-                  updateBanners(nuevos)
-                }} className="flex items-center gap-2 text-red-500 hover:text-white px-4 py-2 hover:bg-red-500 rounded-xl transition-colors">
-                  <Trash2 size={16} />
-                  <span className="text-[10px] font-black uppercase tracking-widest">Eliminar</span>
-                </button>
+            <div>
+              <h3 className="text-lg font-black text-[#611232] uppercase tracking-widest mb-6 border-b border-gray-100 pb-2">Banners Promocionales (Junto al mapa)</h3>
+              <div className="space-y-6">
+                {banners.map((banner, index) => ({...banner, originalIndex: index}))
+                  .filter(b => !b.categoria || b.categoria === 'general')
+                  .map(banner => renderBannerItem(banner, banner.originalIndex))}
+                {banners.filter(b => !b.categoria || b.categoria === 'general').length === 0 && (
+                  <p className="text-sm text-gray-400">No hay banners promocionales configurados.</p>
+                )}
               </div>
             </div>
           </div>
-        ))}
+        )}
         </div>
       )}
 
