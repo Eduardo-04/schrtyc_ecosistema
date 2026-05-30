@@ -21,7 +21,7 @@ const obtenerUrlAudioDirecto = (url) => {
       if (port) {
         return `${urlObj.protocol}//${urlObj.hostname}:${port}/stream`;
       }
-    } catch(e) { return url; }
+    } catch (e) { return url; }
   }
   return url;
 }
@@ -194,112 +194,112 @@ function EmbedItem({ embed }) {
     <>
       <div className="embed-card">
         <div className="embed-header" style={{ backgroundColor: '#f9f9f9', borderBottom: '1px solid #f0f0f0' }}>
-        <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: c.bg, flexShrink: 0 }} />
-        <span style={{ fontSize: '11px', fontWeight: '700', color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {embed.titulo || (esSpotify ? 'Audio / Podcast' : esFacebook ? 'Video en Facebook' : 'Video')}
-        </span>
-      </div>
-
-      {/* Foto + descripción del invitado */}
-      {tieneInvitado && (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '32px 24px', borderBottom: '1px solid #f0f0f0', backgroundColor: '#fafafa', textAlign: 'center' }}>
-          {embed.imagen && (
-            <div style={{ position: 'relative', marginBottom: '20px' }}>
-              <img
-                src={getUploadUrl(embed.imagen)}
-                alt={embed.titulo || 'Invitado'}
-                style={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover', border: '4px solid white', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.15)', cursor: 'zoom-in', transition: 'transform 0.2s' }}
-                onClick={() => setVerImagen(true)}
-                onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
-                onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-                onError={e => e.target.style.display = 'none'}
-              />
-              <div style={{ position: 'absolute', bottom: '-12px', left: '50%', transform: 'translateX(-50%)', backgroundColor: '#A57F2C', color: 'white', fontSize: '11px', fontWeight: 'bold', padding: '6px 16px', borderRadius: '20px', letterSpacing: '1px', textTransform: 'uppercase', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', whiteSpace: 'nowrap', pointerEvents: 'none' }}>
-                 Invitado Especial
-              </div>
-            </div>
-          )}
-          {embed.descripcion && (
-            <div style={{ maxWidth: '450px', marginTop: embed.imagen ? '12px' : '0' }}>
-               <p style={{ fontSize: '15px', color: '#374151', lineHeight: 1.7, margin: 0, fontStyle: 'italic', fontWeight: '500' }}>"{embed.descripcion}"</p>
-            </div>
-          )}
+          <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: c.bg, flexShrink: 0 }} />
+          <span style={{ fontSize: '11px', fontWeight: '700', color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {embed.titulo || (esSpotify ? 'Audio / Podcast' : esFacebook ? 'Video en Facebook' : 'Video')}
+          </span>
         </div>
-      )}
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        {esFacebook ? (
-          /* Facebook bloquea iframes externos — mostramos botón de enlace directo */
-          <a
-            href={embed.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-              backgroundColor: '#1877F2', color: 'white', textDecoration: 'none',
-              fontSize: '13px', fontWeight: '700', padding: '16px 14px',
-              borderRadius: '0 0 12px 12px', transition: 'background-color 0.2s',
-            }}
-            onMouseEnter={e => e.currentTarget.style.backgroundColor = '#1557c0'}
-            onMouseLeave={e => e.currentTarget.style.backgroundColor = '#1877F2'}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-            </svg>
-            Ver en Facebook
-          </a>
-        ) : esSpotify ? (
-          <div style={{ width: '100%', borderRadius: '12px', overflow: 'hidden', padding: '4px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <iframe
-              src={urlNorm}
-              style={{ width: '100%', height: '152px', display: 'block', border: 'none' }}
-              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-              allowFullScreen title={embed.titulo || 'Spotify Embed'}
-            />
+        {/* Foto + descripción del invitado */}
+        {tieneInvitado && (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '32px 24px', borderBottom: '1px solid #f0f0f0', backgroundColor: '#fafafa', textAlign: 'center' }}>
+            {embed.imagen && (
+              <div style={{ position: 'relative', marginBottom: '20px' }}>
+                <img
+                  src={getUploadUrl(embed.imagen)}
+                  alt={embed.titulo || 'Invitado'}
+                  style={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover', border: '4px solid white', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.15)', cursor: 'zoom-in', transition: 'transform 0.2s' }}
+                  onClick={() => setVerImagen(true)}
+                  onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
+                  onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                  onError={e => e.target.style.display = 'none'}
+                />
+                <div style={{ position: 'absolute', bottom: '-12px', left: '50%', transform: 'translateX(-50%)', backgroundColor: '#A57F2C', color: 'white', fontSize: '11px', fontWeight: 'bold', padding: '6px 16px', borderRadius: '20px', letterSpacing: '1px', textTransform: 'uppercase', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', whiteSpace: 'nowrap', pointerEvents: 'none' }}>
+                  Invitado Especial
+                </div>
+              </div>
+            )}
+            {embed.descripcion && (
+              <div style={{ maxWidth: '450px', marginTop: embed.imagen ? '12px' : '0' }}>
+                <p style={{ fontSize: '15px', color: '#374151', lineHeight: 1.7, margin: 0, fontStyle: 'italic', fontWeight: '500' }}>"{embed.descripcion}"</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          {esFacebook ? (
+            /* Facebook bloquea iframes externos — mostramos botón de enlace directo */
             <a
               href={embed.url}
               target="_blank"
               rel="noopener noreferrer"
               style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                backgroundColor: '#1DB954', color: 'white', textDecoration: 'none',
-                fontSize: '12px', fontWeight: '700', padding: '10px 14px',
-                borderRadius: '8px', textAlign: 'center', transition: 'background-color 0.2s',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+                backgroundColor: '#1877F2', color: 'white', textDecoration: 'none',
+                fontSize: '13px', fontWeight: '700', padding: '16px 14px',
+                borderRadius: '0 0 12px 12px', transition: 'background-color 0.2s',
               }}
-              onMouseEnter={e => e.currentTarget.style.backgroundColor = '#1ed760'}
-              onMouseLeave={e => e.currentTarget.style.backgroundColor = '#1DB954'}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = '#1557c0'}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = '#1877F2'}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
               </svg>
-              Abrir directamente en Spotify
+              Ver en Facebook
             </a>
-          </div>
-        ) : (
-          <iframe
-            src={urlNorm}
-            style={{ width: '100%', height: altura ? `${altura}px` : 'auto', aspectRatio: altura ? 'auto' : '16/9', display: 'block', border: 'none', backgroundColor: '#000' }}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen title={embed.titulo || 'Embed'}
-          />
-        )}
+          ) : esSpotify ? (
+            <div style={{ width: '100%', borderRadius: '12px', overflow: 'hidden', padding: '4px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <iframe
+                src={urlNorm}
+                style={{ width: '100%', height: '152px', display: 'block', border: 'none' }}
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                allowFullScreen title={embed.titulo || 'Spotify Embed'}
+              />
+              <a
+                href={embed.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                  backgroundColor: '#1DB954', color: 'white', textDecoration: 'none',
+                  fontSize: '12px', fontWeight: '700', padding: '10px 14px',
+                  borderRadius: '8px', textAlign: 'center', transition: 'background-color 0.2s',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                }}
+                onMouseEnter={e => e.currentTarget.style.backgroundColor = '#1ed760'}
+                onMouseLeave={e => e.currentTarget.style.backgroundColor = '#1DB954'}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
+                </svg>
+                Abrir directamente en Spotify
+              </a>
+            </div>
+          ) : (
+            <iframe
+              src={urlNorm}
+              style={{ width: '100%', height: altura ? `${altura}px` : 'auto', aspectRatio: altura ? 'auto' : '16/9', display: 'block', border: 'none', backgroundColor: '#000' }}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen title={embed.titulo || 'Embed'}
+            />
+          )}
+        </div>
       </div>
-    </div>
 
       {/* Lightbox de la foto del invitado */}
       {verImagen && (
-        <div 
+        <div
           style={{ position: 'fixed', inset: 0, zIndex: 99999, backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(5px)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'zoom-out' }}
           onClick={(e) => { e.stopPropagation(); setVerImagen(false); }}
         >
-          <img 
-            src={getUploadUrl(embed.imagen)} 
-            alt="Invitado Completo" 
-            style={{ maxWidth: '90%', maxHeight: '90%', objectFit: 'contain', borderRadius: '12px', boxShadow: '0 20px 50px rgba(0,0,0,0.5)', cursor: 'default' }} 
+          <img
+            src={getUploadUrl(embed.imagen)}
+            alt="Invitado Completo"
+            style={{ maxWidth: '90%', maxHeight: '90%', objectFit: 'contain', borderRadius: '12px', boxShadow: '0 20px 50px rgba(0,0,0,0.5)', cursor: 'default' }}
             onClick={(e) => e.stopPropagation()}
           />
-          <button 
+          <button
             onClick={(e) => { e.stopPropagation(); setVerImagen(false); }}
             style={{ position: 'absolute', top: '20px', right: '30px', background: 'transparent', border: 'none', color: 'white', fontSize: '40px', cursor: 'pointer' }}
           >
@@ -318,45 +318,49 @@ function ModalPrograma({ programa, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4"
       style={{ backgroundColor: 'rgba(0,0,0,0.8)' }} onClick={onClose}>
-      <div className="bg-white rounded-2xl overflow-hidden w-full max-w-3xl shadow-2xl flex flex-col md:flex-row"
+      <div className="bg-white rounded-2xl overflow-hidden w-full max-w-2xl shadow-2xl flex flex-col"
         onClick={e => e.stopPropagation()}>
-        
-        {/* Imagen Izquierda */}
+
+        {/* Imagen Arriba (Banner con ajuste inteligente) */}
         {programa.imagen ? (
-          <img src={getUploadUrl(programa.imagen)} alt={programa.nombre} className="w-full md:w-2/5 h-56 md:h-auto object-cover" />
+          <div className="w-full relative" style={{ aspectRatio: '16/9', backgroundColor: '#f3f4f6' }}>
+            <img src={getUploadUrl(programa.imagen)} alt={programa.nombre} className="w-full h-full object-contain" />
+            {vivo && <span className="absolute bottom-4 right-4 text-xs bg-red-600 text-white font-bold px-3 py-1 rounded-full shadow-lg animate-pulse">EN VIVO AHORA</span>}
+          </div>
         ) : (
-          <div style={{ background: 'linear-gradient(135deg, #611232 0%, #A57F2C 100%)' }}
-            className="w-full md:w-2/5 h-56 md:h-auto flex flex-col items-center justify-center text-white p-6 gap-3 shrink-0">
-            <div style={{ width: '56px', height: '56px', borderRadius: '14px', backgroundColor: 'rgba(255,255,255,0.15)', border: '2px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{ color: 'white', fontWeight: '800', fontSize: '18px' }}>{getIniciales(programa.nombre)}</span>
+          <div style={{ background: 'linear-gradient(135deg, #611232 0%, #A57F2C 100%)', aspectRatio: '21/9' }}
+            className="w-full flex flex-col items-center justify-center text-white p-6 gap-3 shrink-0 relative">
+            <div style={{ width: '64px', height: '64px', borderRadius: '16px', backgroundColor: 'rgba(255,255,255,0.15)', border: '2px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ color: 'white', fontWeight: '800', fontSize: '24px' }}>{getIniciales(programa.nombre)}</span>
             </div>
-            {vivo && <span className="text-xs bg-red-500 px-3 py-1 rounded-full animate-pulse mt-2">EN VIVO AHORA</span>}
+            {vivo && <span className="absolute bottom-4 right-4 text-xs bg-red-500 text-white font-bold px-3 py-1 rounded-full shadow-lg animate-pulse">EN VIVO AHORA</span>}
           </div>
         )}
 
-        {/* Contenido Derecha */}
-        <div className="p-8 md:w-3/5 flex flex-col">
-          <div className="flex items-start justify-between mb-4">
+        {/* Contenido Abajo */}
+        <div className="p-8 flex flex-col relative">
+          <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 hover:bg-gray-200 rounded-full p-2 transition-colors">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12" /></svg>
+          </button>
+
+          <div className="flex items-start justify-between mb-4 pr-10">
             <div>
-              <span className="text-xs px-3 py-1 rounded-full font-semibold inline-block mb-2"
-                style={{ backgroundColor: '#f8f9fa', color: '#611232' }}>
+              <span className="text-xs px-3 py-1 rounded-full font-bold inline-block mb-3"
+                style={{ backgroundColor: '#fff5f5', color: '#dc2626' }}>
                 {programa.estacion}
               </span>
-              <h3 className="text-2xl font-bold leading-tight" style={{ color: '#1f2937' }}>{programa.nombre}</h3>
+              <h3 className="text-2xl font-black leading-tight" style={{ color: '#1f2937' }}>{programa.nombre}</h3>
             </div>
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-700 transition-colors">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-            </button>
           </div>
-          
+
           <div className="flex items-center gap-2 mb-6 text-sm">
             {programa.conductor && programa.conductor.toLowerCase() !== 'sin asignar' && (
-               <div className="font-semibold" style={{ color: '#4b5563' }}>
-                 {programa.conductor}
-               </div>
+              <div className="font-semibold" style={{ color: '#4b5563' }}>
+                {programa.conductor}
+              </div>
             )}
             {programa.conductor && programa.conductor.toLowerCase() !== 'sin asignar' && <span className="text-gray-300">|</span>}
-            <span className="font-mono text-gray-500">
+            <span className="font-mono font-medium text-gray-500">
               {programa.hora_inicio} – {programa.hora_fin}
             </span>
           </div>
@@ -366,7 +370,7 @@ function ModalPrograma({ programa, onClose }) {
           )}
 
           {programa.youtube_url && (
-            <div className="rounded-xl overflow-hidden mb-4 bg-black w-full" style={{ aspectRatio: '16/9' }}>
+            <div className="rounded-xl overflow-hidden mt-2 bg-black w-full" style={{ aspectRatio: '16/9' }}>
               <iframe src={programa.youtube_url.replace('watch?v=', 'embed/')}
                 className="w-full h-full" allowFullScreen title={programa.nombre} loading="lazy" />
             </div>
@@ -387,7 +391,6 @@ function ModalCatalogo({ prog, onClose }) {
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-container" onClick={e => e.stopPropagation()}>
-
         <div className="modal-hero">
           {/* Background Blurred Image */}
           <div className="modal-hero-bg">
@@ -400,7 +403,7 @@ function ModalCatalogo({ prog, onClose }) {
           </div>
 
           <button className="modal-close-btn" onClick={onClose} aria-label="Cerrar">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12" /></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
           </button>
 
           {/* Poster Image (Intelligent Layout) */}
@@ -417,17 +420,17 @@ function ModalCatalogo({ prog, onClose }) {
               <span className="modal-badge" style={{ backgroundColor: 'rgba(255,255,255,0.15)', marginBottom: 0 }}>{prog.estacion}</span>
             </div>
             <h2 style={{ fontSize: 'clamp(24px, 4vw, 32px)', fontWeight: '900', lineHeight: 1.1, margin: 0 }}>{prog.nombre}</h2>
-
+            
             <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '16px', marginTop: '16px', opacity: 0.9 }}>
               {prog.conductor && prog.conductor.toLowerCase() !== 'sin asignar' && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                   <span style={{ fontSize: '14px', fontWeight: '600' }}>{prog.conductor}</span>
                 </div>
               )}
               {prog.horario && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
                   <span style={{ fontSize: '14px', fontWeight: '800', color: '#f0c060' }}>{prog.horario}</span>
                 </div>
               )}
@@ -495,8 +498,7 @@ function RadioPlayer({ radios, seleccionada, setSeleccionada }) {
   const [error, setError] = useState(false)
   const audioRef = useRef(null)
 
-  const esWidget = esWidgetCentovacast(seleccionada?.streamUrl)
-
+  const isInitialMount = useRef(true)
 
   useEffect(() => {
     if (!seleccionada) return
@@ -504,11 +506,28 @@ function RadioPlayer({ radios, seleccionada, setSeleccionada }) {
     setError(false)
     const audio = audioRef.current
     if (audio) audio.pause()
+
+    if (isInitialMount.current) {
+      isInitialMount.current = false
+      return
+    }
+
+    const esWidget = esWidgetCentovacast(seleccionada.streamUrl)
+    if (seleccionada.activo && seleccionada.streamUrl && !esWidget) {
+      const finalUrl = obtenerUrlAudioDirecto(seleccionada.streamUrl)
+      audio.src = finalUrl.replace(/\/?$/, '/;')
+      audio.load()
+      audio.play().then(() => setPlaying(true)).catch(err => {
+        console.error('Autoplay error:', err)
+        setPlaying(false)
+        setError(true)
+      })
+    }
   }, [seleccionada?.id])
 
   // Toggle solo aplica a streams directos (no widgets iframe)
   const toggle = async () => {
-    if (!seleccionada?.streamUrl || !seleccionada?.activo || esWidget) return
+    if (!seleccionada?.streamUrl || !seleccionada?.activo || esWidgetCentovacast(seleccionada?.streamUrl)) return
     if (playing) {
       audioRef.current?.pause()
       setPlaying(false)
@@ -543,7 +562,7 @@ function RadioPlayer({ radios, seleccionada, setSeleccionada }) {
   const actualEsWidget = esWidgetCentovacast(actual?.streamUrl)
 
   return (
-    <div className="radio-player-container">
+    <div className="w-full">
       {/* Audio oculto — solo se usa para streams directos */}
       <audio
         ref={audioRef}
@@ -558,24 +577,16 @@ function RadioPlayer({ radios, seleccionada, setSeleccionada }) {
         }}
       />
 
-      {/* Player principal */}
-      <div className={`player-main ${playing ? 'playing' : 'paused'}`}>
-        {playing && (
-          <>
-            <div className="pulse-ring pulse-ring-1" />
-            <div className="pulse-ring pulse-ring-2" />
-          </>
-        )}
-
+      {/* Player principal a lo ancho total */}
+      <div className={`player-main flex flex-col md:flex-row items-center justify-between gap-8 md:gap-16 ${playing ? 'playing' : 'paused'}`} style={{ width: '100%', gridColumn: '1 / -1' }}>
+        
         <AudioWave playing={playing} />
 
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-            {actual?.imagen
-              ? <img src={getUploadUrl(actual.imagen)} alt={actual.nombre}
-                style={{ width: '56px', height: '56px', borderRadius: '14px', objectFit: 'contain', flexShrink: 0, backgroundColor: 'white' }}
-                onError={e => e.target.style.display = 'none'} />
-              : <div style={{
+        {/* Lado izquierdo: Información y Controles */}
+        <div style={{ flex: 1, width: '100%', position: 'relative' }}>
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+              <div style={{
                 width: '56px',
                 height: '56px',
                 borderRadius: '14px',
@@ -607,52 +618,51 @@ function RadioPlayer({ radios, seleccionada, setSeleccionada }) {
                   <circle cx="15.5" cy="17.5" r="1" />
                 </svg>
               </div>
-            }
-            <div>
-              <p style={{ fontSize: '11px', fontWeight: '700', letterSpacing: '2px', textTransform: 'uppercase', color: actual?.activo ? '#A57F2C' : 'rgba(255,255,255,0.28)', marginBottom: '4px' }}>
-                {actual?.activo ? 'En vivo' : 'Offline'}
-              </p>
-              <h3 style={{ fontSize: '22px', fontWeight: '800', margin: 0, lineHeight: 1.1 }}>{actual?.nombre}</h3>
+              <div>
+                <p style={{ fontSize: '11px', fontWeight: '700', letterSpacing: '2px', textTransform: 'uppercase', color: actual?.activo ? '#A57F2C' : 'rgba(255,255,255,0.28)', marginBottom: '4px' }}>
+                  {actual?.activo ? 'En vivo' : 'Offline'}
+                </p>
+                <h3 style={{ fontSize: '22px', fontWeight: '800', margin: 0, lineHeight: 1.1 }}>{actual?.nombre}</h3>
+              </div>
             </div>
-          </div>
-          {actual?.descripcion && (
-            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, marginBottom: '20px' }}>
-              {actual.descripcion}
-            </p>
-          )}
-        </div>
-
-        {/* ── Widget CentovaCast (iframe embebido) ── */}
-        {puedeReproducir && actualEsWidget && (
-          <div style={{ position: 'relative', zIndex: 1, borderRadius: '12px', overflow: 'hidden', backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <iframe
-              key={actual.id}
-              src={actual.streamUrl}
-              height="110"
-              width="100%"
-              scrolling="no"
-              style={{ display: 'block', border: 'none' }}
-              title={actual.nombre}
-              allow="autoplay"
-            />
-          </div>
-        )}
-
-        {/* ── Stream directo: botón play/pause + error ── */}
-        {!actualEsWidget && (
-          <>
-            {error && (
-              <p style={{ position: 'relative', zIndex: 1, fontSize: '12px', color: '#A57F2C', backgroundColor: 'rgba(165,127,44,0.1)', border: '1px solid rgba(165,127,44,0.25)', borderRadius: '10px', padding: '10px 14px', marginBottom: '16px' }}>
-                ⚠️ No se pudo conectar al stream. Puede que el servidor esté caído o el formato no sea compatible.
+            {actual?.descripcion && (
+              <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, marginBottom: '20px' }}>
+                {actual.descripcion}
               </p>
             )}
-            {puedeReproducir && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', position: 'relative', zIndex: 1 }}>
-                <button onClick={toggle} className={`play-toggle-btn ${playing ? 'playing' : 'paused'}`}>
-                  {playing ? <IconPause /> : <IconPlay />}
-                </button>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <p style={{ fontWeight: '700', fontSize: '15px', margin: 0 }}>
+          </div>
+
+          {/* ── Widget CentovaCast (iframe embebido) ── */}
+          {puedeReproducir && actualEsWidget && (
+            <div style={{ position: 'relative', zIndex: 1, borderRadius: '12px', overflow: 'hidden', backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <iframe
+                key={actual.id}
+                src={actual.streamUrl}
+                height="110"
+                width="100%"
+                scrolling="no"
+                style={{ display: 'block', border: 'none' }}
+                title={actual.nombre}
+                allow="autoplay"
+              />
+            </div>
+          )}
+
+          {/* ── Stream directo: botón play/pause + error ── */}
+          {!actualEsWidget && (
+            <>
+              {error && (
+                <p style={{ position: 'relative', zIndex: 1, fontSize: '12px', color: '#A57F2C', backgroundColor: 'rgba(165,127,44,0.1)', border: '1px solid rgba(165,127,44,0.25)', borderRadius: '10px', padding: '10px 14px', marginBottom: '16px' }}>
+                  ⚠️ No se pudo conectar al stream. Puede que el servidor esté caído o el formato no sea compatible.
+                </p>
+              )}
+              {puedeReproducir && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', position: 'relative', zIndex: 1 }}>
+                  <button onClick={toggle} className={`play-toggle-btn ${playing ? 'playing' : 'paused'}`}>
+                    {playing ? <IconPause /> : <IconPlay />}
+                  </button>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <p style={{ fontWeight: '700', fontSize: '15px', margin: 0 }}>
                       {playing ? 'Reproduciendo ahora' : 'Listo para escuchar'}
                     </p>
                     {playing
@@ -662,10 +672,39 @@ function RadioPlayer({ radios, seleccionada, setSeleccionada }) {
                   </div>
                 </div>
               )}
-          </>
-        )}
-      </div>
+            </>
+          )}
+        </div>
 
+        {/* Lado derecho: Portada con pulso animado */}
+        <div className="relative flex items-center justify-center shrink-0 mt-4 md:mt-0" style={{ width: '220px', height: '220px' }}>
+          {playing && (
+            <>
+              <div style={{ position: 'absolute', inset: '-12px', borderRadius: '32px', backgroundColor: 'rgba(165,127,44,0.15)', animation: 'pulseRing 1.8s ease-out infinite', pointerEvents: 'none' }} />
+              <div style={{ position: 'absolute', inset: '-12px', borderRadius: '32px', backgroundColor: 'rgba(165,127,44,0.08)', animation: 'pulseRing 1.8s ease-out 0.6s infinite', pointerEvents: 'none' }} />
+            </>
+          )}
+          {actual?.imagen ? (
+            <img src={getUploadUrl(actual.imagen)} alt={actual.nombre}
+              style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '24px', backgroundColor: 'white', boxShadow: '0 12px 32px rgba(0,0,0,0.1)', position: 'relative', zIndex: 10 }}
+              onError={e => e.target.style.display = 'none'} />
+          ) : (
+            <div style={{ width: '100%', height: '100%', borderRadius: '24px', backgroundColor: '#fff5f5', border: '3px solid #feb2b2', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', zIndex: 10 }}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="5" y1="9" x2="16" y2="2" />
+                <circle cx="16" cy="2" r="1" fill="#dc2626" />
+                <path d="M7 9V7a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2" />
+                <rect x="3" y="9" width="18" height="12" rx="2" />
+                <circle cx="8" cy="15" r="3" />
+                <circle cx="8" cy="15" r="0.8" fill="#dc2626" />
+                <rect x="13" y="12" width="5" height="2.5" rx="0.5" />
+                <circle cx="15.5" cy="17.5" r="1" />
+              </svg>
+            </div>
+          )}
+        </div>
+
+      </div>
     </div>
   )
 }
@@ -912,48 +951,22 @@ export default function PaginaRadio() {
         <div className="max-w-7xl mx-auto px-6">
           <p className="text-xs tracking-widest uppercase mb-1" style={{ color: '#A57F2C' }}>En vivo</p>
           <h2 className="text-2xl font-bold mb-8" style={{ color: '#611232' }}>Estaciones de Radio</h2>
-          
-          <div className="radio-grid" style={{ marginBottom: '40px' }}>
+
+          <div className="flex gap-4 p-2 mb-8 overflow-x-auto md:flex-wrap md:justify-center md:overflow-visible pb-4 snap-x radio-list-wrapper">
             {radios.map(e => {
               const tieneImagen = !!e.imagen;
               const bg = tieneImagen ? getUploadUrl(e.imagen) : LOGO_SCHRTYC;
               return (
-                <button key={e.id} onClick={() => setEstacionSeleccionada(e)} className="radio-card-v3 lift" style={{ textAlign: 'left', border: 'none', background: 'none', cursor: 'pointer', padding: 0, outline: estacionSeleccionada?.id === e.id ? '3px solid var(--gold)' : 'none', borderRadius: '24px' }}>
-                  <div className="radio-img-container">
-                    <img
-                      src={bg}
-                      alt={e.nombre}
-                      className="radio-img"
-                      style={{
-                        objectFit: 'contain',
-                        backgroundColor: 'white',
-                        padding: tieneImagen ? '0' : '20px'
-                      }}
-                    />
-                    {e.activo && (
-                      <div className="live-badge-floating">
-                        <span className="hero-date-dot" style={{ width: '6px', height: '6px' }} />
-                        <span style={{ fontSize: '10px', fontWeight: '800', color: 'white', textTransform: 'uppercase' }}>Vivo</span>
-                      </div>
-                    )}
+                <button key={e.id} onClick={() => setEstacionSeleccionada(e)} className="lift snap-start" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '12px', borderRadius: '16px', backgroundColor: 'white', border: estacionSeleccionada?.id === e.id ? '2px solid var(--gold)' : '2px solid #e5e7eb', minWidth: '110px', flexShrink: 0, boxShadow: '0 4px 6px rgba(0,0,0,0.02)', transition: 'all 0.2s', cursor: 'pointer' }}>
+                  <div style={{ width: '50px', height: '50px', borderRadius: '12px', backgroundColor: '#f9fafb', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px', padding: tieneImagen ? '0' : '6px', overflow: 'hidden' }}>
+                    <img src={bg} alt={e.nombre} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                   </div>
-                  <div style={{ padding: '0 8px' }}>
-                    <h3 style={{ margin: '0 0 4px', color: '#333333', fontSize: '15px', fontWeight: '800', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{e.nombre}</h3>
-                    <p style={{ margin: '0 0 14px', color: '#6b7280', fontSize: '12px', fontWeight: '600' }}>{e.tipo === 'TV' ? 'Televisión' : 'Frecuencia Estatal'}</p>
-                    <div className="bars-container">
-                      {Array.from({ length: 18 }).map((_, i) => (
-                        <div
-                          key={i}
-                          className="bar"
-                          style={{
-                            backgroundColor: e.activo ? 'var(--gold)' : 'rgba(165,127,44,0.2)',
-                            height: `${20 + Math.abs(Math.sin(i * .9)) * 80}%`,
-                            animation: `barA ${.4 + (i % 5) * .08}s ease-in-out ${i * .03}s infinite`,
-                          }}
-                        />
-                      ))}
-                    </div>
-                  </div>
+                  <h3 style={{ fontSize: '11px', fontWeight: '800', textAlign: 'center', margin: '0 0 6px', color: '#1f2937', lineHeight: 1.2 }}>{e.nombre}</h3>
+                  {e.activo ? (
+                    <span style={{ fontSize: '9px', fontWeight: '800', color: '#dc2626', backgroundColor: '#fee2e2', padding: '2px 6px', borderRadius: '999px', letterSpacing: '0.5px' }}>EN VIVO</span>
+                  ) : (
+                    <span style={{ fontSize: '9px', fontWeight: '700', color: '#9ca3af', backgroundColor: '#f3f4f6', padding: '2px 6px', borderRadius: '999px', letterSpacing: '0.5px' }}>OFFLINE</span>
+                  )}
                 </button>
               )
             })}

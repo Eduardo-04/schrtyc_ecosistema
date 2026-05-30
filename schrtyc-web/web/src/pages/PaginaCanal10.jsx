@@ -117,45 +117,49 @@ function ModalPrograma({ programa, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4"
       style={{ backgroundColor: 'rgba(0,0,0,0.8)' }} onClick={onClose}>
-      <div className="bg-white rounded-2xl overflow-hidden w-full max-w-3xl shadow-2xl flex flex-col md:flex-row"
+      <div className="bg-white rounded-2xl overflow-hidden w-full max-w-2xl shadow-2xl flex flex-col"
         onClick={e => e.stopPropagation()}>
-        
-        {/* Imagen Izquierda */}
+
+        {/* Imagen Arriba (Banner con ajuste inteligente) */}
         {programa.imagen ? (
-          <img src={getUploadUrl(programa.imagen)} alt={programa.nombre} className="w-full md:w-2/5 h-56 md:h-auto object-cover" />
+          <div className="w-full relative" style={{ aspectRatio: '16/9', backgroundColor: '#f3f4f6' }}>
+            <img src={getUploadUrl(programa.imagen)} alt={programa.nombre} className="w-full h-full object-contain" />
+            {vivo && <span className="absolute bottom-4 right-4 text-xs bg-red-600 text-white font-bold px-3 py-1 rounded-full shadow-lg animate-pulse">EN VIVO AHORA</span>}
+          </div>
         ) : (
-          <div style={{ background: 'linear-gradient(135deg, #611232 0%, #A57F2C 100%)' }}
-            className="w-full md:w-2/5 h-56 md:h-auto flex flex-col items-center justify-center text-white p-6 gap-3 shrink-0">
-            <div style={{ width: '56px', height: '56px', borderRadius: '14px', backgroundColor: 'rgba(255,255,255,0.15)', border: '2px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{ color: 'white', fontWeight: '800', fontSize: '18px' }}>{getIniciales(programa.nombre)}</span>
+          <div style={{ background: 'linear-gradient(135deg, #611232 0%, #A57F2C 100%)', aspectRatio: '21/9' }}
+            className="w-full flex flex-col items-center justify-center text-white p-6 gap-3 shrink-0 relative">
+            <div style={{ width: '64px', height: '64px', borderRadius: '16px', backgroundColor: 'rgba(255,255,255,0.15)', border: '2px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ color: 'white', fontWeight: '800', fontSize: '24px' }}>{getIniciales(programa.nombre)}</span>
             </div>
-            {vivo && <span className="text-xs bg-red-500 px-3 py-1 rounded-full animate-pulse mt-2">EN VIVO AHORA</span>}
+            {vivo && <span className="absolute bottom-4 right-4 text-xs bg-red-500 text-white font-bold px-3 py-1 rounded-full shadow-lg animate-pulse">EN VIVO AHORA</span>}
           </div>
         )}
 
-        {/* Contenido Derecha */}
-        <div className="p-8 md:w-3/5 flex flex-col">
-          <div className="flex items-start justify-between mb-4">
+        {/* Contenido Abajo */}
+        <div className="p-8 flex flex-col relative">
+          <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 hover:bg-gray-200 rounded-full p-2 transition-colors">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12" /></svg>
+          </button>
+
+          <div className="flex items-start justify-between mb-4 pr-10">
             <div>
-              <span className="text-xs px-3 py-1 rounded-full font-semibold inline-block mb-2"
-                style={{ backgroundColor: '#f8f9fa', color: '#611232' }}>
+              <span className="text-xs px-3 py-1 rounded-full font-bold inline-block mb-3"
+                style={{ backgroundColor: '#fff5f5', color: '#dc2626' }}>
                 {programa.estacion}
               </span>
-              <h3 className="text-2xl font-bold leading-tight" style={{ color: '#1f2937' }}>{programa.nombre}</h3>
+              <h3 className="text-2xl font-black leading-tight" style={{ color: '#1f2937' }}>{programa.nombre}</h3>
             </div>
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-700 transition-colors">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-            </button>
           </div>
-          
+
           <div className="flex items-center gap-2 mb-6 text-sm">
             {programa.conductor && programa.conductor.toLowerCase() !== 'sin asignar' && (
-               <div className="font-semibold" style={{ color: '#4b5563' }}>
-                 {programa.conductor}
-               </div>
+              <div className="font-semibold" style={{ color: '#4b5563' }}>
+                {programa.conductor}
+              </div>
             )}
             {programa.conductor && programa.conductor.toLowerCase() !== 'sin asignar' && <span className="text-gray-300">|</span>}
-            <span className="font-mono text-gray-500">
+            <span className="font-mono font-medium text-gray-500">
               {programa.hora_inicio} – {programa.hora_fin}
             </span>
           </div>
@@ -165,7 +169,7 @@ function ModalPrograma({ programa, onClose }) {
           )}
 
           {programa.youtube_url && (
-            <div className="rounded-xl overflow-hidden mb-4 bg-black w-full" style={{ aspectRatio: '16/9' }}>
+            <div className="rounded-xl overflow-hidden mt-2 bg-black w-full" style={{ aspectRatio: '16/9' }}>
               <iframe src={programa.youtube_url.replace('watch?v=', 'embed/')}
                 className="w-full h-full" allowFullScreen title={programa.nombre} loading="lazy" />
             </div>
@@ -356,6 +360,7 @@ function ModalCatalogo({ prog, onClose }) {
         </div>
 
         <div className="modal-body">
+
           {tieneDesc && (
             <div className="modal-description">
               <p>{prog.descripcionLarga || prog.descripcion}</p>
