@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import { getEstaciones, getProgramacionHoy, getProgramas, getUploadUrl } from '../services/api'
 import { estaEnVivo, esFuturo, getIniciales } from '../utils/date'
 import { esUrlValida, detectarTipoMedia, getYoutubeThumbnail, normalizarEmbedUrl } from '../utils/media'
+import LOGO_SCHRTYC from '../assets/logo_sistema.jpg'
 
 // ── Helpers Específicos ───────────────────────────────────────
 // Detecta si la URL es un widget de CentovaCast para usar iframe
@@ -665,36 +666,6 @@ function RadioPlayer({ radios, seleccionada, setSeleccionada }) {
         )}
       </div>
 
-      {/* Lista estaciones */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        <div className="station-list-container">
-          <p style={{ fontSize: '10px', fontWeight: '700', letterSpacing: '2px', textTransform: 'uppercase', color: '#A57F2C', marginBottom: '14px' }}>
-            Red de frecuencias
-          </p>
-          {secundarias.length === 0 ? (
-            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.2)' }}>Solo hay una estación configurada.</p>
-          ) : (
-            <div className="station-scroll-list">
-              {secundarias.map((e, i) => (
-                <button key={e.id} onClick={() => setSeleccionada(e)} className="station-btn">
-                  <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.28)', fontVariantNumeric: 'tabular-nums' }}>
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <div>
-                    <p style={{ fontWeight: '700', fontSize: '13px', margin: '0 0 2px', lineHeight: 1.2 }}>{e.nombre}</p>
-                    <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', margin: 0 }}>
-                      {e.activo && e.streamUrl ? 'Stream disponible' : 'Sin stream'}
-                    </p>
-                  </div>
-                  <span style={{ fontSize: '11px' }}>
-                    {e.activo && e.streamUrl ? '🔴' : '—'}
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
     </div>
   )
 }
@@ -941,6 +912,53 @@ export default function PaginaRadio() {
         <div className="max-w-7xl mx-auto px-6">
           <p className="text-xs tracking-widest uppercase mb-1" style={{ color: '#A57F2C' }}>En vivo</p>
           <h2 className="text-2xl font-bold mb-8" style={{ color: '#611232' }}>Estaciones de Radio</h2>
+          
+          <div className="radio-grid" style={{ marginBottom: '40px' }}>
+            {radios.map(e => {
+              const tieneImagen = !!e.imagen;
+              const bg = tieneImagen ? getUploadUrl(e.imagen) : LOGO_SCHRTYC;
+              return (
+                <button key={e.id} onClick={() => setEstacionSeleccionada(e)} className="radio-card-v3 lift" style={{ textAlign: 'left', border: 'none', background: 'none', cursor: 'pointer', padding: 0, outline: estacionSeleccionada?.id === e.id ? '3px solid var(--gold)' : 'none', borderRadius: '24px' }}>
+                  <div className="radio-img-container">
+                    <img
+                      src={bg}
+                      alt={e.nombre}
+                      className="radio-img"
+                      style={{
+                        objectFit: 'contain',
+                        backgroundColor: 'white',
+                        padding: tieneImagen ? '0' : '20px'
+                      }}
+                    />
+                    {e.activo && (
+                      <div className="live-badge-floating">
+                        <span className="hero-date-dot" style={{ width: '6px', height: '6px' }} />
+                        <span style={{ fontSize: '10px', fontWeight: '800', color: 'white', textTransform: 'uppercase' }}>Vivo</span>
+                      </div>
+                    )}
+                  </div>
+                  <div style={{ padding: '0 8px' }}>
+                    <h3 style={{ margin: '0 0 4px', color: '#333333', fontSize: '15px', fontWeight: '800', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{e.nombre}</h3>
+                    <p style={{ margin: '0 0 14px', color: '#6b7280', fontSize: '12px', fontWeight: '600' }}>{e.tipo === 'TV' ? 'Televisión' : 'Frecuencia Estatal'}</p>
+                    <div className="bars-container">
+                      {Array.from({ length: 18 }).map((_, i) => (
+                        <div
+                          key={i}
+                          className="bar"
+                          style={{
+                            backgroundColor: e.activo ? 'var(--gold)' : 'rgba(165,127,44,0.2)',
+                            height: `${20 + Math.abs(Math.sin(i * .9)) * 80}%`,
+                            animation: `barA ${.4 + (i % 5) * .08}s ease-in-out ${i * .03}s infinite`,
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </button>
+              )
+            })}
+          </div>
+
           <RadioPlayer
             radios={radios}
             seleccionada={estacionSeleccionada}

@@ -320,18 +320,34 @@ export default function PaginaInicio() {
                   </div>
                 </div>
               </div>
+              <div style={{ marginTop: '60px' }}>
+                <div style={{ marginBottom: '32px' }}>
+                  <Eyebrow t="Documentos Oficiales" />
+                  <h2 style={{ fontSize: 'clamp(24px, 4vw, 32px)', fontWeight: '900', color: '#1a1a1a', margin: '0' }}>
+                    Marco <span style={{ color: 'var(--brand)' }}>Jurídico</span>
+                  </h2>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '12px' }}>
+                  {(configuracion?.sistema?.documentos || []).map((doc, i) => (
+                    <a key={doc.id || i} href={doc.url?.startsWith('http') ? doc.url : getUploadUrl(doc.url)} target="_blank" rel="noreferrer" className="hover:scale-[1.02] transition-transform" style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', backgroundColor: '#f9fafb', borderRadius: '12px', textDecoration: 'none', border: '1px solid #f3f4f6' }}>
+                      <div style={{ minWidth: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#fff1f2', color: 'var(--brand)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
+                      </div>
+                      <div>
+                        <p style={{ margin: 0, fontSize: '11px', fontWeight: '700', color: '#374151', lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{doc.nombre}</p>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
             </div>
 
             {/* DERECHA: Banners */}
             {banners.length > 0 && (
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <div style={{ marginBottom: '24px' }}>
-                  <Eyebrow t="Avisos" />
-                  <h2 style={{ fontSize: '24px', fontWeight: '900', color: '#1a1a1a', margin: '0' }}>De interés</h2>
-                </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', alignContent: 'start' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', alignContent: 'start', justifyContent: 'center' }}>
                   {banners.map(b => (
-                    <a key={b.id} href={b.url || '#'} target="_blank" rel="noreferrer" style={{ display: 'block', flex: '1 1 200px', maxWidth: '300px', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 10px 25px rgba(0,0,0,0.06)', transition: 'transform 0.2s', backgroundColor: 'white' }} className="hover:scale-[1.03] lift">
+                    <a key={b.id} href={b.url || '#'} target="_blank" rel="noreferrer" style={{ display: 'block', width: '100%', maxWidth: '300px', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 10px 25px rgba(0,0,0,0.06)', transition: 'transform 0.2s', backgroundColor: 'white' }} className="hover:scale-[1.03] lift">
                       <img src={getUploadUrl(b.imagen)} alt="Banner promocional" style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'contain' }} />
                     </a>
                   ))}
@@ -339,30 +355,6 @@ export default function PaginaInicio() {
               </div>
             )}
 
-          </div>
-        </div>
-      </section>
-
-      {/* ══ MARCO JURÍDICO ══════════════════════════════════════════ */}
-      <section style={{ padding: '60px 0', backgroundColor: 'white' }}>
-        <div className="page-container">
-          <div className="section-header" style={{ marginBottom: '40px', textAlign: 'center' }}>
-            <Eyebrow t="Documentos Oficiales" />
-            <h2 style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: '900', color: '#1a1a1a', margin: '0' }}>
-              Marco <span style={{ color: 'var(--brand)' }}>Jurídico</span>
-            </h2>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '12px' }}>
-            {(configuracion?.sistema?.documentos || []).map((doc, i) => (
-              <a key={doc.id || i} href={doc.url?.startsWith('http') ? doc.url : getUploadUrl(doc.url)} target="_blank" rel="noreferrer" className="hover:scale-[1.02] transition-transform" style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', backgroundColor: '#f9fafb', borderRadius: '12px', textDecoration: 'none', border: '1px solid #f3f4f6' }}>
-                <div style={{ minWidth: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#fff1f2', color: 'var(--brand)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
-                </div>
-                <div>
-                  <p style={{ margin: 0, fontSize: '11px', fontWeight: '700', color: '#374151', lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{doc.nombre}</p>
-                </div>
-              </a>
-            ))}
           </div>
         </div>
       </section>
