@@ -135,34 +135,18 @@ export default function PaginaInicio() {
 
               <h1 className="hi1 hero-title">
                 Conectando a<br />
-                <span style={{ color: 'var(--gold-light)', display: 'block' }}>Chiapas</span>
-                <span style={{ opacity: 0.4, fontSize: '0.7em' }}>con el Mundo</span>
+                <span style={{ color: 'var(--gold-light)' }}>Chiapas</span><br />
+                con el Mundo
               </h1>
 
               <p className="hi2 hero-subtitle">
                 Somos la voz institucional y el medio público que promueve la cultura, educación y el desarrollo de nuestro estado a través de señales que llegan a cada rincón.
               </p>
 
-              <div className="hi2 hero-actions">
-                <Link to="/radio" className="btn-primary">
-                  Escuchar Radio <Arr />
-                </Link>
-                <Link to="/canal10" className="btn-secondary">
-                  Ver Canal 10 <Arr />
-                </Link>
-              </div>
 
-              <div className="hi3 hero-stats">
-                {[
-                  { n: estaciones.filter(e => e.tipo === 'Radio' && e.activo).length, l: 'Frecuencias Activas' },
-                  { n: '1', l: 'Canal de TV Digital' },
-                  { n: '12', l: 'Regiones Cubiertas' },
-                ].map(s => (
-                  <div key={s.l} className="stat-item">
-                    <h4>{s.n}</h4>
-                    <p>{s.l}</p>
-                  </div>
-                ))}
+
+              <div className="hi3" style={{ marginTop: '40px' }}>
+                {bannersSlider.length > 0 && <SliderPromocional banners={bannersSlider} />}
               </div>
             </div>
 
@@ -179,12 +163,18 @@ export default function PaginaInicio() {
                   <>
                     <h3 style={{ fontSize: '20px', fontWeight: '900', color: 'white', margin: '0 0 8px', lineHeight: 1.1 }}>{progRadio.nombre}</h3>
                     {progRadio.conductor && progRadio.conductor.toLowerCase() !== 'sin asignar' && <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', margin: '0 0 12px', fontWeight: '500' }}>con {progRadio.conductor}</p>}
-                    <div className="tv-time-badge" style={{ fontSize: '11px', padding: '4px 10px' }}>
-                      {progRadio.estacion} · {progRadio.hora_inicio}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
+                      <div className="tv-time-badge" style={{ fontSize: '11px', padding: '4px 10px', margin: 0 }}>
+                        {progRadio.estacion} · {progRadio.hora_inicio}
+                      </div>
+                      <Link to="/radio" className="hover:scale-[1.05] transition-transform" style={{ fontSize: '10px', fontWeight: '800', backgroundColor: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'white', padding: '4px 12px', borderRadius: '20px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>Sintonizar <Arr /></Link>
                     </div>
                   </>
                 ) : (
-                  <p style={{ fontSize: '14px', fontWeight: '600', color: 'rgba(255,255,255,0.5)', margin: 0 }}>Programación habitual</p>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <p style={{ fontSize: '14px', fontWeight: '600', color: 'rgba(255,255,255,0.5)', margin: 0 }}>Programación habitual</p>
+                    <Link to="/radio" className="hover:scale-[1.05] transition-transform" style={{ fontSize: '10px', fontWeight: '800', backgroundColor: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'white', padding: '4px 12px', borderRadius: '20px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>Sintonizar <Arr /></Link>
+                  </div>
                 )}
               </div>
 
@@ -197,8 +187,11 @@ export default function PaginaInicio() {
                   </div>
                   <h3 style={{ fontSize: '20px', fontWeight: '900', color: 'white', margin: '0 0 8px', lineHeight: 1.1 }}>{progTV.nombre}</h3>
                   {progTV.conductor && progTV.conductor.toLowerCase() !== 'sin asignar' && <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', margin: '0 0 12px', fontWeight: '500' }}>con {progTV.conductor}</p>}
-                  <div className="tv-time-badge" style={{ fontSize: '11px', padding: '4px 10px' }}>
-                    {progTV.hora_inicio} — {progTV.hora_fin}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
+                    <div className="tv-time-badge" style={{ fontSize: '11px', padding: '4px 10px', margin: 0 }}>
+                      {progTV.hora_inicio} — {progTV.hora_fin}
+                    </div>
+                    <Link to="/canal10" className="hover:scale-[1.05] transition-transform" style={{ fontSize: '10px', fontWeight: '800', backgroundColor: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'white', padding: '4px 12px', borderRadius: '20px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>Sintonizar <Arr /></Link>
                   </div>
                 </div>
               )}
@@ -225,9 +218,7 @@ export default function PaginaInicio() {
 
       <Gold />
 
-      {/* ══ SLIDER PROMOCIONAL ═════════════════════════════════════════════ */}
-      {bannersSlider.length > 0 && <SliderPromocional banners={bannersSlider} />}
-
+      {/* ══ SLIDER INTEGRADO EN EL HERO (Removido de aquí) ═════ */}
       {/* ══ INSTITUCIÓN ═══════════════════════════════════════ */}
       <section className="institutional-section">
         <div className="page-container">
@@ -478,7 +469,7 @@ export default function PaginaInicio() {
   )
 }
 
-// ── Componente Carrusel Promocional ──────────────────────────────────
+// ── Componente Carrusel Promocional (Integrado en Hero) ──────────────────────────────────
 function SliderPromocional({ banners }) {
   const [currentIndex, setCurrentIndex] = useState(0)
 
@@ -494,107 +485,103 @@ function SliderPromocional({ banners }) {
   const prev = () => setCurrentIndex(c => (c - 1 + banners.length) % banners.length)
 
   return (
-    <section style={{ width: '100%', backgroundColor: '#fdfdfd', padding: '48px 0', position: 'relative' }}>
-      <div className="page-container" style={{ position: 'relative' }}>
-        <div className="w-full overflow-hidden shadow-[0_20px_40px_rgba(0,0,0,0.06)] rounded-xl h-[600px] md:h-[420px] relative bg-white border border-gray-100">
-          <div
-            style={{
-              display: 'flex',
-              transition: 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)',
-              transform: `translateX(-${currentIndex * 100}%)`,
-              height: '100%'
-            }}
-          >
-            {banners.map((b, i) => (
-              <div key={b.id || i} className="min-w-full flex flex-col md:flex-row h-full">
+    <div className="w-full overflow-hidden shadow-[0_20px_40px_rgba(0,0,0,0.3)] rounded-2xl h-[400px] sm:h-[300px] relative bg-[rgba(255,255,255,0.03)] backdrop-blur-md border border-[rgba(255,255,255,0.1)]">
+      <div
+        style={{
+          display: 'flex',
+          transition: 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)',
+          transform: `translateX(-${currentIndex * 100}%)`,
+          height: '100%'
+        }}
+      >
+        {banners.map((b, i) => (
+          <div key={b.id || i} className="min-w-full flex flex-col sm:flex-row h-full">
 
-                {/* Lado izquierdo: Imagen */}
-                <div className="w-full h-[55%] md:h-full md:w-[55%] relative overflow-hidden shrink-0">
-                  <a href={b.url || '#'} target={b.url ? '_blank' : '_self'} rel="noreferrer" className="block w-full h-full">
-                    {b.imagen ? (
-                      <img
-                        src={getUploadUrl(b.imagen)}
-                        alt={`Promoción ${i + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gray-50 flex items-center justify-center">
-                        <span className="text-gray-400 text-sm">Sin imagen</span>
-                      </div>
-                    )}
-                  </a>
-                </div>
-
-                {/* Lado derecho: Texto tipo IMER */}
-                <div className="w-full h-[45%] md:h-full md:w-[45%] p-6 md:p-12 flex flex-col justify-center overflow-y-auto bg-white md:border-l md:border-gray-100">
-                  {b.titulo && (
-                    <h2 style={{ fontSize: 'clamp(20px, 3vw, 28px)', fontWeight: '900', color: 'var(--brand)', lineHeight: '1.2', margin: '0 0 8px' }}>
-                      {b.titulo}
-                    </h2>
-                  )}
-                  {b.subtitulo && (
-                    <p style={{ fontSize: 'clamp(14px, 2vw, 18px)', color: 'var(--gold)', fontWeight: '700', margin: '0 0 24px' }}>
-                      {b.subtitulo}
-                    </p>
-                  )}
-
-                  {b.fechaHora && (
-                    <p style={{ fontSize: 'clamp(13px, 1.5vw, 16px)', color: 'var(--text-main)', fontWeight: '600', whiteSpace: 'pre-line', margin: '0 0 12px', lineHeight: '1.4' }}>
-                      {b.fechaHora}
-                    </p>
-                  )}
-                  {b.estacionText && (
-                    <p style={{ fontSize: 'clamp(13px, 1.5vw, 16px)', color: 'var(--brand-dark)', fontWeight: '800', margin: 0 }}>
-                      {b.estacionText}
-                    </p>
-                  )}
-
-                  {!b.titulo && !b.subtitulo && !b.fechaHora && !b.estacionText && (
-                    <div style={{ opacity: 0.4, color: 'var(--text-muted)', fontSize: '12px', fontStyle: 'italic' }}>
-                      (No se ha configurado texto para este banner)
-                    </div>
-                  )}
-                </div>
-
-              </div>
-            ))}
-          </div>
-
-          {/* Flechas de navegación */}
-          {banners.length > 1 && (
-            <>
-              <button onClick={prev} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', width: '40px', height: '40px', borderRadius: '20px', backgroundColor: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', transition: 'all 0.2s', zIndex: 10 }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-              </button>
-              <button onClick={next} style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', width: '40px', height: '40px', borderRadius: '20px', backgroundColor: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', transition: 'all 0.2s', zIndex: 10 }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-              </button>
-            </>
-          )}
-
-          {/* Controles y paginación */}
-          {banners.length > 1 && (
-            <div style={{ position: 'absolute', bottom: '16px', left: '0', right: '0', display: 'flex', justifyContent: 'center', gap: '6px', zIndex: 10 }}>
-              {banners.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentIndex(i)}
-                  style={{
-                    width: currentIndex === i ? '24px' : '6px',
-                    height: '6px',
-                    borderRadius: '3px',
-                    backgroundColor: currentIndex === i ? 'var(--brand)' : 'rgba(97,18,50,0.2)',
-                    border: 'none',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease'
-                  }}
-                  aria-label={`Ir al banner ${i + 1}`}
-                />
-              ))}
+            {/* Lado izquierdo: Imagen */}
+            <div className="w-full h-[50%] sm:h-full sm:w-[60%] relative overflow-hidden shrink-0 bg-black/20">
+              <a href={b.url || '#'} target={b.url ? '_blank' : '_self'} rel="noreferrer" className="block w-full h-full">
+                {b.imagen ? (
+                  <img
+                    src={getUploadUrl(b.imagen)}
+                    alt={`Promoción ${i + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <span className="text-white/30 text-xs">Sin imagen</span>
+                  </div>
+                )}
+              </a>
             </div>
-          )}
-        </div>
+
+            {/* Lado derecho: Texto */}
+            <div className="w-full h-[50%] sm:h-full sm:w-[40%] p-5 sm:p-6 flex flex-col justify-center overflow-y-auto">
+              {b.titulo && (
+                <h2 style={{ fontSize: 'clamp(15px, 1.8vw, 18px)', fontWeight: '900', color: 'white', lineHeight: '1.2', margin: '0 0 6px' }}>
+                  {b.titulo}
+                </h2>
+              )}
+              {b.subtitulo && (
+                <p style={{ fontSize: 'clamp(11px, 1.2vw, 13px)', color: 'var(--gold-light)', fontWeight: '700', margin: '0 0 12px' }}>
+                  {b.subtitulo}
+                </p>
+              )}
+
+              {b.fechaHora && (
+                <p style={{ fontSize: 'clamp(10px, 1vw, 12px)', color: 'rgba(255,255,255,0.7)', fontWeight: '500', whiteSpace: 'pre-line', margin: '0 0 8px', lineHeight: '1.4' }}>
+                  {b.fechaHora}
+                </p>
+              )}
+              {b.estacionText && (
+                <p style={{ fontSize: 'clamp(10px, 1vw, 12px)', color: 'white', fontWeight: '800', margin: 0 }}>
+                  {b.estacionText}
+                </p>
+              )}
+
+              {!b.titulo && !b.subtitulo && !b.fechaHora && !b.estacionText && (
+                <div style={{ opacity: 0.4, color: 'rgba(255,255,255,0.5)', fontSize: '12px', fontStyle: 'italic' }}>
+                  (No se ha configurado texto para este banner)
+                </div>
+              )}
+            </div>
+
+          </div>
+        ))}
       </div>
-    </section>
+
+      {/* Flechas de navegación */}
+      {banners.length > 1 && (
+        <>
+          <button onClick={prev} style={{ position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-50%)', width: '32px', height: '32px', borderRadius: '16px', backgroundColor: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', transition: 'all 0.2s', zIndex: 10 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <button onClick={next} style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', width: '32px', height: '32px', borderRadius: '16px', backgroundColor: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', transition: 'all 0.2s', zIndex: 10 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </>
+      )}
+
+      {/* Controles y paginación */}
+      {banners.length > 1 && (
+        <div style={{ position: 'absolute', bottom: '12px', left: '0', right: '0', display: 'flex', justifyContent: 'center', gap: '6px', zIndex: 10 }}>
+          {banners.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentIndex(i)}
+              style={{
+                width: currentIndex === i ? '20px' : '6px',
+                height: '6px',
+                borderRadius: '3px',
+                backgroundColor: currentIndex === i ? 'var(--gold-light)' : 'rgba(255,255,255,0.3)',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease'
+              }}
+              aria-label={`Ir al banner ${i + 1}`}
+            />
+          ))}
+        </div>
+      )}
+    </div>
   )
 }

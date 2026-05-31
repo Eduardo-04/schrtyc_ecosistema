@@ -293,7 +293,7 @@
 
 .modal-hero {
   position: relative;
-  height: 340px;
+  min-height: 340px;
   background-color: #1a1a1a;
   display: flex;
   flex-direction: column;
