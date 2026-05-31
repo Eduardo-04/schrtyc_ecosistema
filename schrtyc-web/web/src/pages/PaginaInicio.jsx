@@ -99,7 +99,7 @@ export default function PaginaInicio() {
     return () => clearInterval(t)
   }, [])
 
-  const progActual = programas.find(p => estaEnVivo(p.hora_inicio, p.hora_fin))
+  const progRadio = programas.find(p => p.tipo !== 'TV' && estaEnVivo(p.hora_inicio, p.hora_fin))
   const progTV = programas.find(p => p.tipo === 'TV' && estaEnVivo(p.hora_inicio, p.hora_fin))
   const activas = estaciones.filter(e => e.activa)
 
@@ -168,20 +168,39 @@ export default function PaginaInicio() {
 
             <div className="hi2 hero-glass-card">
               <p style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--gold-light)', marginBottom: '20px' }}>Al aire ahora</p>
-              {progActual ? (
-                <div style={{ marginBottom: '24px' }}>
-                  <div className="live-badge-mini">
+              
+              {/* SECCIÓN RADIO */}
+              <div style={{ marginBottom: '24px' }}>
+                <div className="live-badge-mini" style={{ marginBottom: '12px' }}>
+                  <span className="live-dot" />
+                  <span className="live-text-mini">RADIO EN VIVO</span>
+                </div>
+                {progRadio ? (
+                  <>
+                    <h3 style={{ fontSize: '20px', fontWeight: '900', color: 'white', margin: '0 0 8px', lineHeight: 1.1 }}>{progRadio.nombre}</h3>
+                    {progRadio.conductor && progRadio.conductor.toLowerCase() !== 'sin asignar' && <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', margin: '0 0 12px', fontWeight: '500' }}>con {progRadio.conductor}</p>}
+                    <div className="tv-time-badge" style={{ fontSize: '11px', padding: '4px 10px' }}>
+                      {progRadio.estacion} · {progRadio.hora_inicio}
+                    </div>
+                  </>
+                ) : (
+                  <p style={{ fontSize: '14px', fontWeight: '600', color: 'rgba(255,255,255,0.5)', margin: 0 }}>Programación habitual</p>
+                )}
+              </div>
+
+              {/* SECCIÓN TV */}
+              {progTV && (
+                <div style={{ marginBottom: '24px', paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                  <div className="live-badge-mini" style={{ marginBottom: '12px' }}>
                     <span className="live-dot" />
-                    <span className="live-text-mini">DIRECTO</span>
+                    <span className="live-text-mini">CANAL 10 EN VIVO</span>
                   </div>
-                  <h3 style={{ fontSize: '22px', fontWeight: '900', color: 'white', margin: '0 0 8px', lineHeight: 1.1 }}>{progActual.nombre}</h3>
-                  {progActual.conductor && progActual.conductor.toLowerCase() !== 'sin asignar' && <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', margin: '0 0 16px', fontWeight: '500' }}>con {progActual.conductor}</p>}
-                  <div className="tv-time-badge" style={{ fontSize: '12px' }}>
-                    {progActual.estacion} · {progActual.hora_inicio}
+                  <h3 style={{ fontSize: '20px', fontWeight: '900', color: 'white', margin: '0 0 8px', lineHeight: 1.1 }}>{progTV.nombre}</h3>
+                  {progTV.conductor && progTV.conductor.toLowerCase() !== 'sin asignar' && <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', margin: '0 0 12px', fontWeight: '500' }}>con {progTV.conductor}</p>}
+                  <div className="tv-time-badge" style={{ fontSize: '11px', padding: '4px 10px' }}>
+                    {progTV.hora_inicio} — {progTV.hora_fin}
                   </div>
                 </div>
-              ) : (
-                <p style={{ fontSize: '15px', fontWeight: '600', color: 'rgba(255,255,255,0.3)', marginBottom: '24px' }}>Programación automática</p>
               )}
 
               <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '24px', marginBottom: '24px' }}>
