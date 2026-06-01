@@ -1581,3 +1581,27 @@
   font-weight: 700;
   color: var(--gold);
 }
+
+/* Custom Scrollbar for horizontal/vertical lists */
+.custom-scrollbar::-webkit-scrollbar {
+  height: 4px;
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(165, 127, 44, 0.3);
+  border-radius: 20px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(165, 127, 44, 0.8);
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(165, 127, 44, 0.3) transparent;
+}
