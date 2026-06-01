@@ -23,7 +23,7 @@ const MENU_MODULES = [
     items: [
       { id: 'estaciones',   label: 'Estaciones',            icono: Radio,      roles: ['admin', 'editor_prog'] },
       { id: 'programas',    label: 'Programas',             icono: PlaySquare, roles: ['admin', 'editor_prog'] },
-      { id: 'programacion', label: 'Grilla de Programación',icono: CalendarDays,roles: ['admin', 'editor_prog'] },
+      { id: 'programacion', label: 'Barra de programación',icono: CalendarDays,roles: ['admin', 'editor_prog'] },
     ]
   },
   {

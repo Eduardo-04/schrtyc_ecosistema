@@ -160,7 +160,7 @@ export default function Dashboard({ onNavegar }) {
             </div>
 
             <button onClick={() => onNavegar('programacion')} className="w-full mt-10 py-4 bg-white text-[#611232] rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-[#A57F2C] hover:text-white transition-all">
-              Ver Grilla Completa
+              Ver barra completa
             </button>
           </div>
         </div>

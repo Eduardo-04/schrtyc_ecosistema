@@ -296,7 +296,7 @@ export default function GrillaProgramacion() {
               <div className="w-12 h-1 bg-[#611232] rounded-full"></div>
               <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#611232]">Control de Tráfico</span>
            </div>
-           <h1 className="text-4xl md:text-5xl font-black text-[#611232] tracking-tight">Grilla de Programación</h1>
+           <h1 className="text-4xl md:text-5xl font-black text-[#611232] tracking-tight">Barra de programación</h1>
         </div>
         <div className="flex flex-wrap gap-4">
            <button onClick={() => setModalLimpiar(true)} className="px-6 py-4 border border-gray-100 text-gray-400 hover:text-amber-600 hover:border-amber-100 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all bg-white shadow-sm">Limpiar</button>
@@ -415,7 +415,7 @@ export default function GrillaProgramacion() {
                 <Trash2 size={32} />
              </div>
              <h3 className="text-2xl font-black text-[#611232] mb-4 tracking-tight">¿Eliminar horario?</h3>
-             <p className="text-gray-400 font-medium mb-10 leading-relaxed text-sm">Esta transmisión será removida de la grilla oficial.</p>
+             <p className="text-gray-400 font-medium mb-10 leading-relaxed text-sm">Esta transmisión será removida de la barra de programación oficial.</p>
              <div className="flex gap-4">
                <button onClick={() => setModalEliminar(null)} className="flex-1 py-4 rounded-2xl text-xs font-black text-gray-400 uppercase tracking-widest hover:bg-gray-50 transition-all">Cancelar</button>
                <button onClick={handleEliminar} className="flex-1 py-4 bg-red-500 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-red-500/20 hover:scale-105 active:scale-95 transition-all">Eliminar</button>

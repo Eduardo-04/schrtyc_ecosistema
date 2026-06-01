@@ -6,7 +6,7 @@ const navLinks = [
   { label: 'Radio', href: '/radio' },
   { label: 'Canal 10', href: '/canal10' },
   { label: 'Cinematografía', href: '/cine' },
-  { label: '10 Noticias', href: '/notas' },
+  { label: 'Noticias', href: '/notas' },
   { label: 'Galería de Arte', href: '/galeria' },
   { label: 'Participación Ciudadana', href: '/participacion' },
   { label: 'Transparencia', href: '/transparencia' },
