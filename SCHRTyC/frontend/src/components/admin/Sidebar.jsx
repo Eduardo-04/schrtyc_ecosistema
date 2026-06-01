@@ -36,7 +36,6 @@ const MENU_MODULES = [
   {
     titulo: "Sistema",
     items: [
-      { id: 'usuarios',     label: 'Usuarios y Roles',       icono: Users,    roles: ['admin'] },
       { id: 'configuracion',label: 'Configuración',         icono: Settings, roles: ['admin'] },
     ]
   }

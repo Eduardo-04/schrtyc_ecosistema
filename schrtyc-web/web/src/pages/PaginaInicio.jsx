@@ -145,72 +145,75 @@ export default function PaginaInicio() {
 
 
 
-              <div className="hi3" style={{ marginTop: '40px' }}>
-                {bannersSlider.length > 0 && <SliderPromocional banners={bannersSlider} />}
-              </div>
             </div>
 
-            <div className="hi2 hero-glass-card">
-              <p style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--gold-light)', marginBottom: '20px' }}>Al aire ahora</p>
+            <div className="hi2" style={{ flex: 1, minWidth: '320px', maxWidth: '100%' }}>
+              {bannersSlider.length > 0 && <SliderPromocional banners={bannersSlider} />}
+            </div>
+          </div>
+
+          {/* BARRA AL AIRE AHORA (Debajo del Hero en Desktop y Móvil) */}
+          <div className="hi3" style={{ marginTop: '24px', width: '100%' }}>
+            <div className="hero-glass-card" style={{ maxWidth: '100%', margin: '0', padding: '16px 24px' }}>
+              <p style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--gold-light)', marginBottom: '12px' }}>Al aire ahora</p>
               
-              {/* SECCIÓN RADIO */}
-              <div style={{ marginBottom: '24px' }}>
-                <div className="live-badge-mini" style={{ marginBottom: '12px' }}>
-                  <span className="live-dot" />
-                  <span className="live-text-mini">RADIO EN VIVO</span>
-                </div>
-                {progRadio ? (
-                  <>
-                    <h3 style={{ fontSize: '20px', fontWeight: '900', color: 'white', margin: '0 0 8px', lineHeight: 1.1 }}>{progRadio.nombre}</h3>
-                    {progRadio.conductor && progRadio.conductor.toLowerCase() !== 'sin asignar' && <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', margin: '0 0 12px', fontWeight: '500' }}>con {progRadio.conductor}</p>}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
-                      <div className="tv-time-badge" style={{ fontSize: '11px', padding: '4px 10px', margin: 0 }}>
-                        {progRadio.estacion} · {progRadio.hora_inicio}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '24px', marginBottom: '16px' }}>
+                {/* SECCIÓN RADIO */}
+                <div style={{ flex: 1, minWidth: '220px' }}>
+                  <div className="live-badge-mini" style={{ marginBottom: '10px' }}>
+                    <span className="live-dot" />
+                    <span className="live-text-mini">RADIO EN VIVO</span>
+                  </div>
+                  {progRadio ? (
+                    <>
+                      <h3 style={{ fontSize: '18px', fontWeight: '900', color: 'white', margin: '0 0 6px', lineHeight: 1.1 }}>{progRadio.nombre}</h3>
+                      {progRadio.conductor && progRadio.conductor.toLowerCase() !== 'sin asignar' && <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', margin: '0 0 10px', fontWeight: '500' }}>con {progRadio.conductor}</p>}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '4px' }}>
+                        <div className="tv-time-badge" style={{ fontSize: '10px', padding: '4px 8px', margin: 0 }}>
+                          {progRadio.estacion} · {progRadio.hora_inicio}
+                        </div>
+                        <Link to="/radio" className="hover:scale-[1.05] transition-transform" style={{ fontSize: '10px', fontWeight: '800', backgroundColor: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'white', padding: '4px 10px', borderRadius: '20px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>Sintonizar <Arr /></Link>
                       </div>
-                      <Link to="/radio" className="hover:scale-[1.05] transition-transform" style={{ fontSize: '10px', fontWeight: '800', backgroundColor: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'white', padding: '4px 12px', borderRadius: '20px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>Sintonizar <Arr /></Link>
+                    </>
+                  ) : (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <p style={{ fontSize: '13px', fontWeight: '600', color: 'rgba(255,255,255,0.5)', margin: 0 }}>Programación habitual</p>
+                      <Link to="/radio" className="hover:scale-[1.05] transition-transform" style={{ fontSize: '10px', fontWeight: '800', backgroundColor: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'white', padding: '4px 10px', borderRadius: '20px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>Sintonizar <Arr /></Link>
                     </div>
-                  </>
-                ) : (
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <p style={{ fontSize: '14px', fontWeight: '600', color: 'rgba(255,255,255,0.5)', margin: 0 }}>Programación habitual</p>
-                    <Link to="/radio" className="hover:scale-[1.05] transition-transform" style={{ fontSize: '10px', fontWeight: '800', backgroundColor: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'white', padding: '4px 12px', borderRadius: '20px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>Sintonizar <Arr /></Link>
+                  )}
+                </div>
+
+                {/* SECCIÓN TV */}
+                {progTV && (
+                  <div style={{ flex: 1, minWidth: '220px' }} className="sm:border-l sm:border-white/10 sm:pl-6 border-l-0 pl-0 pt-6 sm:pt-0 border-t border-white/10 sm:border-t-0 mt-4 sm:mt-0">
+                    <div className="live-badge-mini" style={{ marginBottom: '10px' }}>
+                      <span className="live-dot" />
+                      <span className="live-text-mini">CANAL 10 EN VIVO</span>
+                    </div>
+                    <h3 style={{ fontSize: '18px', fontWeight: '900', color: 'white', margin: '0 0 6px', lineHeight: 1.1 }}>{progTV.nombre}</h3>
+                    {progTV.conductor && progTV.conductor.toLowerCase() !== 'sin asignar' && <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', margin: '0 0 10px', fontWeight: '500' }}>con {progTV.conductor}</p>}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '4px' }}>
+                      <div className="tv-time-badge" style={{ fontSize: '10px', padding: '4px 8px', margin: 0 }}>
+                        {progTV.hora_inicio} — {progTV.hora_fin}
+                      </div>
+                      <Link to="/canal10" className="hover:scale-[1.05] transition-transform" style={{ fontSize: '10px', fontWeight: '800', backgroundColor: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'white', padding: '4px 10px', borderRadius: '20px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>Sintonizar <Arr /></Link>
+                    </div>
                   </div>
                 )}
               </div>
 
-              {/* SECCIÓN TV */}
-              {progTV && (
-                <div style={{ marginBottom: '24px', paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-                  <div className="live-badge-mini" style={{ marginBottom: '12px' }}>
-                    <span className="live-dot" />
-                    <span className="live-text-mini">CANAL 10 EN VIVO</span>
-                  </div>
-                  <h3 style={{ fontSize: '20px', fontWeight: '900', color: 'white', margin: '0 0 8px', lineHeight: 1.1 }}>{progTV.nombre}</h3>
-                  {progTV.conductor && progTV.conductor.toLowerCase() !== 'sin asignar' && <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', margin: '0 0 12px', fontWeight: '500' }}>con {progTV.conductor}</p>}
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
-                    <div className="tv-time-badge" style={{ fontSize: '11px', padding: '4px 10px', margin: 0 }}>
-                      {progTV.hora_inicio} — {progTV.hora_fin}
-                    </div>
-                    <Link to="/canal10" className="hover:scale-[1.05] transition-transform" style={{ fontSize: '10px', fontWeight: '800', backgroundColor: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'white', padding: '4px 12px', borderRadius: '20px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>Sintonizar <Arr /></Link>
-                  </div>
-                </div>
-              )}
-
-              <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '24px', marginBottom: '24px' }}>
-                <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', fontWeight: '800', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '16px' }}>Estaciones Destacadas</p>
+              {/* ESTACIONES DESTACADAS HORIZONTALES */}
+              <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '12px', display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                <p style={{ fontSize: '9px', color: 'rgba(255,255,255,0.3)', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase', margin: 0 }}>Destacadas:</p>
                 {activas.slice(0, 3).map(e => (
-                  <div key={e.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                    <div style={{ width: '32px', height: '32px', borderRadius: '10px', backgroundColor: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', color: 'var(--gold-light)', fontWeight: '900' }}>
-                      📻
-                    </div>
-                    <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', fontWeight: '600' }}>{e.nombre}</span>
+                  <div key={e.id} style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '20px', padding: '4px 12px', fontSize: '11px', color: 'rgba(255,255,255,0.7)', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ color: 'var(--gold-light)' }}>📻</span> {e.nombre}
                   </div>
                 ))}
+                <Link to="/radio" style={{ fontSize: '11px', fontWeight: '800', color: 'white', textDecoration: 'underline', marginLeft: 'auto' }}>
+                  Ver todas →
+                </Link>
               </div>
-
-              <Link to="/radio" className="btn-primary" style={{ width: '100%', padding: '14px', fontSize: '13px', backgroundColor: 'var(--brand)', color: 'white', justifyContent: 'center' }}>
-                Ver todas las estaciones <Arr />
-              </Link>
             </div>
           </div>
         </div>
@@ -485,7 +488,7 @@ function SliderPromocional({ banners }) {
   const prev = () => setCurrentIndex(c => (c - 1 + banners.length) % banners.length)
 
   return (
-    <div className="w-full overflow-hidden shadow-[0_20px_40px_rgba(0,0,0,0.3)] rounded-2xl h-[400px] sm:h-[300px] relative bg-[rgba(255,255,255,0.03)] backdrop-blur-md border border-[rgba(255,255,255,0.1)]">
+    <div className="w-full overflow-hidden shadow-[0_20px_40px_rgba(0,0,0,0.3)] rounded-2xl h-[420px] sm:h-[420px] relative bg-[rgba(255,255,255,0.03)] backdrop-blur-md border border-[rgba(255,255,255,0.1)]">
       <div
         style={{
           display: 'flex',
@@ -495,10 +498,10 @@ function SliderPromocional({ banners }) {
         }}
       >
         {banners.map((b, i) => (
-          <div key={b.id || i} className="min-w-full flex flex-col sm:flex-row h-full">
+          <div key={b.id || i} className="min-w-full flex flex-col h-full">
 
-            {/* Lado izquierdo: Imagen */}
-            <div className="w-full h-[50%] sm:h-full sm:w-[60%] relative overflow-hidden shrink-0 bg-black/20">
+            {/* Parte Superior: Imagen */}
+            <div className="w-full h-[65%] sm:h-[65%] relative overflow-hidden shrink-0 bg-black/20">
               <a href={b.url || '#'} target={b.url ? '_blank' : '_self'} rel="noreferrer" className="block w-full h-full">
                 {b.imagen ? (
                   <img
@@ -514,8 +517,8 @@ function SliderPromocional({ banners }) {
               </a>
             </div>
 
-            {/* Lado derecho: Texto */}
-            <div className="w-full h-[50%] sm:h-full sm:w-[40%] p-5 sm:p-6 flex flex-col justify-center overflow-y-auto">
+            {/* Parte Inferior: Texto */}
+            <div className="w-full h-[35%] sm:h-[35%] p-5 sm:p-6 flex flex-col justify-center overflow-y-auto">
               {b.titulo && (
                 <h2 style={{ fontSize: 'clamp(15px, 1.8vw, 18px)', fontWeight: '900', color: 'white', lineHeight: '1.2', margin: '0 0 6px' }}>
                   {b.titulo}
