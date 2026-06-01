@@ -501,7 +501,7 @@ function SliderPromocional({ banners }) {
           <div key={b.id || i} className="min-w-full flex flex-col h-full">
 
             {/* Parte Superior: Imagen */}
-            <div className="w-full h-[65%] sm:h-[65%] relative overflow-hidden shrink-0 bg-black/20">
+            <div className="w-full h-[60%] sm:h-[60%] relative overflow-hidden shrink-0 bg-black/20">
               <a href={b.url || '#'} target={b.url ? '_blank' : '_self'} rel="noreferrer" className="block w-full h-full">
                 {b.imagen ? (
                   <img
@@ -518,7 +518,7 @@ function SliderPromocional({ banners }) {
             </div>
 
             {/* Parte Inferior: Texto */}
-            <div className="w-full h-[35%] sm:h-[35%] p-5 sm:p-6 flex flex-col justify-center overflow-y-auto">
+            <div className="w-full h-[40%] sm:h-[40%] py-3 px-5 sm:py-4 sm:px-6 flex flex-col justify-center overflow-hidden">
               {b.titulo && (
                 <h2 style={{ fontSize: 'clamp(15px, 1.8vw, 18px)', fontWeight: '900', color: 'white', lineHeight: '1.2', margin: '0 0 6px' }}>
                   {b.titulo}
