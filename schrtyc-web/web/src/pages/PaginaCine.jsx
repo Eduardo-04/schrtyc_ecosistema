@@ -420,7 +420,7 @@ export default function PaginaCine() {
 
         <div className="relative z-10 max-w-7xl mx-auto px-6">
           <p className="text-xs tracking-widest uppercase opacity-60 mb-2">
-            🎬 {heroBadge}
+            {heroBadge}
           </p>
           <h1 className="text-3xl font-bold">
             {loading
