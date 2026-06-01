@@ -392,6 +392,12 @@ export default function GestionGaleria() {
   const [modalPagina, setModalPagina] = useState(false)
   const [modalFiltros, setModalFiltros] = useState(false)
   const [modalAutores, setModalAutores] = useState(false)
+  const [filtroAutorCMS, setFiltroAutorCMS] = useState('')
+
+  const itemsFiltrados = useMemo(() => {
+    if (!filtroAutorCMS) return items
+    return items.filter(o => o.autor === filtroAutorCMS)
+  }, [items, filtroAutorCMS])
 
   const cargar = async () => {
     setLoading(true)
@@ -553,13 +559,21 @@ export default function GestionGaleria() {
 
       {/* 3. Galería de Obras */}
       <div className="space-y-8">
-        <div className="flex items-center gap-6">
+        <div className="flex flex-wrap items-center gap-4 md:gap-6">
           <h3 className="text-xl font-black text-gray-900 tracking-tight">Catálogo Digital</h3>
-          <div className="h-px flex-1 bg-gradient-to-r from-gray-100 to-transparent"></div>
+          <div className="h-px hidden md:block flex-1 bg-gradient-to-r from-gray-100 to-transparent"></div>
           <div className="flex items-center gap-2 px-4 py-1.5 bg-[#A57F2C]/10 rounded-full">
             <div className="w-2 h-2 rounded-full bg-[#A57F2C] animate-pulse"></div>
-            <span className="text-[10px] font-black text-[#A57F2C] uppercase tracking-widest">{items.length} obras</span>
+            <span className="text-[10px] font-black text-[#A57F2C] uppercase tracking-widest">{itemsFiltrados.length} obras</span>
           </div>
+          <select 
+            value={filtroAutorCMS}
+            onChange={e => setFiltroAutorCMS(e.target.value)}
+            className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-gray-700 outline-none focus:border-[#611232] cursor-pointer w-full md:w-auto"
+          >
+            <option value="">Todos los artistas</option>
+            {autores.map(a => <option key={a.id} value={a.nombre}>{a.nombre}</option>)}
+          </select>
         </div>
 
         {loading ? (
@@ -570,7 +584,7 @@ export default function GestionGaleria() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 items-start">
-            {items.map(item => (
+            {itemsFiltrados.map(item => (
               <div key={item.id} className="group bg-white rounded-[2.5rem] border border-gray-100 overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500">
                 <div className="aspect-[4/3] relative overflow-hidden bg-gray-100">
                   <img
@@ -600,7 +614,7 @@ export default function GestionGaleria() {
                 </div>
               </div>
             ))}
-            {items.length === 0 && (
+            {itemsFiltrados.length === 0 && (
               <div className="col-span-full py-32 text-center bg-white rounded-[4rem] border-2 border-dashed border-gray-100">
                 <ImageIcon className="mx-auto text-gray-100 mb-6" size={80} strokeWidth={1} />
                 <p className="text-gray-400 font-black uppercase tracking-[0.3em] text-sm">No hay obras en el acervo</p>

@@ -224,7 +224,17 @@ export default function PaginaGaleria() {
   const imagenPortada = data?.imagenportada || data?.imagen_portada || ''
 
   const parrafos = contenido.split('\n\n').map(p => p.trim()).filter(Boolean)
-  const tecnicas = ['Todas', ...new Set(items.map(o => o.tecnica).filter(Boolean))]
+
+  const tecnicas = useMemo(() => {
+    const itemsParaFiltro = filtroAutor ? items.filter(o => o.autor === filtroAutor) : items;
+    return ['Todas', ...new Set(itemsParaFiltro.map(o => o.tecnica).filter(Boolean))];
+  }, [items, filtroAutor]);
+
+  useEffect(() => {
+    if (filtroTecnica !== 'Todas' && !tecnicas.includes(filtroTecnica)) {
+      setFiltroTecnica('Todas');
+    }
+  }, [tecnicas, filtroTecnica]);
 
   const artistas = useMemo(() => {
     const grupos = {}
@@ -389,10 +399,10 @@ export default function PaginaGaleria() {
               )}
 
               {/* Filtros de Técnica */}
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8">
-                <div>
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8 overflow-hidden w-full">
+                <div className="flex-1 min-w-0">
                   <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Filtrar por Técnica</p>
-                  <div className="flex flex-wrap gap-6">
+                  <div className="flex gap-6 overflow-x-auto pb-4 custom-scrollbar whitespace-nowrap scroll-smooth">
                     {tecnicas.map(t => (
                       <button 
                         key={t} 
